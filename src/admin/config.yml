@@ -35,4 +35,17 @@ collections:
           - { label: URL, name: url, widget: string }
           - { label: Email, name: email, widget: string }
           - { label: Instagram, name: instagram, widget: string }
+          - { label: Behold Feed URL, name: beholdFeedUrl, widget: string }
+
+  - label: "People"
+    name: "people"
+    folder: src/people
+    create: true
+    identifier_field: name
+    fields:
+      - { label: Name, name: name, widget: string } 
+      - { label: Role, name: role, widget: string } 
+      - { label: Picture, name: picture, widget: image }
+      - { label: Body, name: body, widget: markdown }
+
 

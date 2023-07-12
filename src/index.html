@@ -29,7 +29,7 @@ path: home
 
       <h1 class="ml-16 lg:mx-0">About</h1>
 
-      <div class="leading-relaxed space-y-8 mx-16 lg:mx-auto mt-16 prose text-text text-lg">
+      <div class="leading-relaxed space-y-8 mx-16 lg:mx-auto mt-16 max-w-4xl text-text text-lg">
         <p>
           Our Moving Stories is a community focussed company currently based in Southall and the surrounding areas. We
           are a
@@ -58,35 +58,22 @@ path: home
     <div class="max-w-5xl mx-12 lg:mx-auto">
 
       <h1 class="mb-20">People</h1>
-
+      {%- for person in collections.people -%}
       <div class="flex justify-between space-y-12 md:space-y-0 md:space-x-12 lg:ml-16 flex-col md:flex-row">
         <div class="space-y-4 flex-grow">
-          <img src="./static/img/sarah_profile.jpg" alt="Sarah" class="mx-auto lg:max-w-xs" />
+          <img src="{{person.data.picture | url}}" alt="Sarah" class="mx-auto lg:max-w-xs" />
         </div>
         <div class="space-y-4">
           <div class="space-y-4">
-            <h2 class="text-text font-bold text-xl">Sarah Sulemanji</h2>
-            <span class="text-text text-base">Director</span>
+            <h2 class="text-text font-bold text-xl">{{person.data.name}}</h2>
+            <span class="text-text text-base">{{person.data.role}}</span>
           </div>
           <div class="prose text-text text-lg">
-            <p>
-              Sarah Sulemanji is a dancer, movement practitioner and lecturer based in London, United Kingdom. Her
-              interest
-              lies in
-              movement languages as a form of self expression and communication. Her work is grounded in improvisational
-              methods,
-              community practice and Graham-based contemporary dance technique.
-            </p>
-            <p>
-              Sarah holds a First-Class Honours degree in
-              Dance
-              Performance, an MA in Professional Practice, a PGCHE, an enhanced DBS Certificate, is a qualified yoga
-              instructor, a
-              fellow of the Higher Education Academy and a member of the Foundation for Community Dance.
-            </p>
+            {{person.content | safe}}
           </div>
         </div>
       </div>
+      {%- endfor -%}
     </div>
   </section>
 
@@ -100,7 +87,7 @@ path: home
   <section class="w-full bg-light text-left py-24" id="contact">
     <div class="max-w-5xl mx-12 lg:mx-auto">
       <h1>Get in touch</h1>
-      <div class="leading-relaxed space-y-8 mt-16 lg:mx-0 lg:ml-16 prose text-text text-lg">
+      <div class="leading-relaxed space-y-8 mt-16 lg:mx-0 lg:ml-16 max-w-4xl text-text text-lg">
         <p>
           As well as engaging with movement vocabularies through classes and creative projects, we are keen to connect
           with
