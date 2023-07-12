@@ -1,0 +1,21 @@
+<ul class="grid px-8 lg:px-0 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8 md:gap-4" x-data="{ posts: [] }"
+  x-init="posts = await (await fetch('/static/data/feed.json')).json()">
+  <template x-for="(post, index) in posts">
+    <li class="list-none">
+      <a x-bind:href="post.permalink" class="frame">
+        <template x-if="post.mediaType === 'IMAGE'">
+          <img x-bind:src="post.thumbnailUrl" />
+        </template>
+
+        <template x-if="post.mediaType === 'CAROUSEL_ALBUM'">
+          <img x-bind:src="post.mediaUrl" />
+        </template>
+
+        <template x-if="post.mediaType === 'VIDEO'">
+          <img x-bind:src="post.thumbnailUrl" />
+        </template>
+
+      </a>
+    </li>
+  </template>
+</ul>

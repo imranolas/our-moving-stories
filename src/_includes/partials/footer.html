@@ -1,9 +1,36 @@
-<footer class="{{ 'fixed' if path == 'home' }} bottom-0 text-center w-full py-4">
-    <small class="text-gray-500">Copyright ©
-        {{settings.name}}
-        2020. Made with ❤ by
-        <a href="{{settings.url}}" target="_blank" class="underline">{{settings.author}}</a>
-        •
-        <a href="https://github.com/surjithctly/neat-starter" class="underline" target="_blank" rel="noopener">View on Github</a>
-    </small>
+<footer class="bottom-0 text-left w-full py-24">
+    <div class="max-w-5xl mx-12 lg:mx-auto space-y-10">
+        <div>
+            <form>
+                <h3 class="text-text font-bold mb-2 uppercase text-sm">Subscribe to our newsletter</h3>
+                <div class="w-full md:w-1/2 flex space-x-4">
+                    <input type="email" name="email" id="email" placeholder="Email"
+                        class="border-text border-2 rounded p-2 flex-grow">
+                    <button type="submit"
+                        class="bg-text uppercase font-medium text-light text-sm py-3 px-8 hover:cursor-pointer tracking-widest">OK</button>
+                    <label for="email" class="sr-only">Email</label>
+                </div>
+            </form>
+
+        </div>
+
+
+        <div>
+            <div>
+                <img src="/static/img/mail.svg" alt="Email" class="inline-block w-12 mr-2">
+                <a href="mailto:{{settings.email}}" class="">{{settings.email}}</a>
+            </div>
+
+            <div>
+                <img src="/static/img/instagram.svg" alt="Instagram" class="inline-block w-10 mr-2">
+                <a href="https://instagram.com/{{settings.instagram}}" target="_blank"
+                    class="">@{{settings.instagram}}</a>
+            </div>
+        </div>
+
+        <div class="text-text text-sm">Copyright ©
+            {{settings.name}}
+            {{ page.date.getFullYear() }}. All rights reserved.
+        </div>
+    </div>
 </footer>
