@@ -2,7 +2,7 @@
   x-init="posts = await (await fetch('{{settings.beholdFeedUrl}}')).json()">
   <template x-for="(post, index) in posts">
     <li class="list-none">
-      <a x-bind:href="post.permalink" class="frame">
+      <a x-bind:href="post.permalink" class="frame" target="_blank">
         <template x-if="post.mediaType === 'IMAGE'">
           <img x-bind:src="post.thumbnailUrl" />
         </template>
