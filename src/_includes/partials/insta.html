@@ -4,15 +4,15 @@
     <li class="list-none">
       <a x-bind:href="post.permalink" class="frame" target="_blank">
         <template x-if="post.mediaType === 'IMAGE'">
-          <img x-bind:src="post.thumbnailUrl" />
+          <img x-bind:src="post.thumbnailUrl" x-bind:alt="post.prunedCaption" width="" />
         </template>
 
         <template x-if="post.mediaType === 'CAROUSEL_ALBUM'">
-          <img x-bind:src="post.mediaUrl" />
+          <img x-bind:src="post.mediaUrl" x-bind:alt="post.prunedCaption" />
         </template>
 
         <template x-if="post.mediaType === 'VIDEO'">
-          <img x-bind:src="post.thumbnailUrl" />
+          <img x-bind:src="post.thumbnailUrl" x-bind:alt="post.prunedCaption" />
         </template>
 
       </a>
