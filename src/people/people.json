@@ -1,3 +1,4 @@
 {
-  "tags": ["people"]
+  "tags": ["people"],
+  "eleventyExcludeFromCollections": true
 }
