@@ -2,6 +2,7 @@
 name: Sarah Sulemanji
 qualifications: BA(Hons), MA, PGCHE, FHEA
 role: Founder
+date: 2023-01-01
 picture: /static/img/sarah_profile.jpg
 ---
 Sarah Sulemanji is a dancer, movement practitioner and lecturer based in London, United Kingdom. Her interest lies in movement languages as a form of self expression and communication. Her work is grounded in improvisational methods, community practice and Graham-based contemporary dance technique.
