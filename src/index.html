@@ -63,22 +63,28 @@ vibrant community."
     <div class="max-w-5xl mx-12 lg:mx-auto">
 
       <h1 class="mb-20">People</h1>
-      {%- for person in collections.people -%}
-      <div class="flex justify-between space-y-12 md:space-y-0 md:space-x-12 lg:ml-16 flex-col md:flex-row">
-        <div class="space-y-4 flex-grow">
-          <img src="{{person.data.picture | url}}" alt="Sarah" class="mx-auto lg:max-w-xs" />
-        </div>
-        <div class="space-y-4">
+      <ul class="space-y-12 divide-y-2 divide-text divide-opacity-20">
+        {%- for person in collections.people -%}
+        <li
+          class="flex justify-between space-y-12 md:space-y-0 md:space-x-12 lg:ml-16 flex-col md:flex-row pt-12 first:pt-0">
+          <div class="space-y-4 flex-grow">
+            <img src="{{person.data.picture | url}}" alt="Sarah" class="mx-auto lg:max-w-xs" />
+          </div>
           <div class="space-y-4">
-            <h2 class="text-text font-bold text-xl">{{person.data.name}}</h2>
-            <span class="text-text text-base">{{person.data.role}}</span>
+            <div class="space-y-4">
+              <span class="space-x-2 block">
+                <h2 class="text-text font-bold text-xl inline-block">{{person.data.name}}</h2>
+                <!-- <span class="text-sm font-medium opacity-80 inline-block">{{person.data.qualifications}}</span> -->
+              </span>
+              <span class="text-text text-base font-semibold">{{person.data.role}}</span>
+            </div>
+            <div class="prose text-text text-lg">
+              {{person.content | safe}}
+            </div>
           </div>
-          <div class="prose text-text text-lg">
-            {{person.content | safe}}
-          </div>
-        </div>
-      </div>
-      {%- endfor -%}
+        </li>
+        {%- endfor -%}
+      </ul>
     </div>
   </section>
 
