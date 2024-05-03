@@ -23,13 +23,13 @@
             <ul class="list-reset lg:flex justify-start flex-1 items-center">
                 {% for item in navigation.items %}
                 <li class="nav__item">
-                    <a @click="isOpen = false" class="text-ml inline-block text-text font-bold no-underline py-2 px-4"
+                    <a @click="isOpen = false" class="text-ml inline-block text-text font-bold border-b-0 py-2 px-4"
                         href="{{ item.url }}">{{ item.text }}</a>
                 </li>
                 {% endfor %}
                 <li>
 
-                    <a href="https://instagram.com/{{settings.instagram}}" target="_blank" class=""><img
+                    <a href="https://instagram.com/{{settings.instagram}}" target="_blank" class="border-b-0"><img
                             src="/static/img/instagram.svg" alt="Instagram" class="inline-block w-8">
                     </a>
 

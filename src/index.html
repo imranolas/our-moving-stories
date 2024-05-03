@@ -58,7 +58,41 @@ vibrant community."
 
   </section>
 
-  <section class="w-full text-left py-24" id="people">
+  <section class="w-full text-left py-24" id="whats-on">
+
+    <div class="max-w-5xl mx-12 lg:mx-auto">
+
+      <h1 class="mb-20">Whats on</h1>
+      <ul class="divide-text divide-opacity-20 grid grid-cols-2 gap-12">
+        {%- for event in collections.events -%}
+        <li class="w-full space-y-4">
+          <div class="overflow-hidden max-h-[300px]">
+            <img src="{{event.data.picture | url}}" alt=""
+              class="pointer-events-none object-cover group-hover:opacity-75">
+          </div>
+          <div class="space-y-1">
+            <span class="space-x-2 block">
+              <h2 class="text-text font-bold text-2xl inline-block">{{event.data.name}}</h2>
+              <span class="text-text text-base font-semibold">{{event.data.cost}}</span>
+            </span>
+            <span class="text-text text-base font-semibold block">{{event.data.when}}</span>
+            <span class="text-text text-base font-semibold block">{{event.data.time}}</span>
+
+            <span class="text-text text-base font-semibold block pt-4">
+              <img src="/static/img/pin.svg" alt="Instagram" class="inline-block w-8 text-text">
+              <a href="{{event.data.addressLink}}">
+                {{event.data.address}}
+              </a></span>
+          </div>
+        </li>
+        {%- endfor -%}
+      </ul>
+    </div>
+
+
+  </section>
+
+  <section class="w-full bg-light text-left py-24" id="people">
 
     <div class="max-w-5xl mx-12 lg:mx-auto">
 
@@ -68,7 +102,7 @@ vibrant community."
         <li
           class="flex justify-between space-y-12 md:space-y-0 md:space-x-12 lg:ml-16 flex-col md:flex-row pt-12 first:pt-0">
           <div class="space-y-4 flex-grow">
-            <img src="{{person.data.picture | url}}" alt="Sarah" class="mx-auto lg:max-w-xs" />
+            <img src="{{person.data.picture | url}}" alt={{person.data.name}} class="mx-auto lg:max-w-xs" />
           </div>
           <div class="space-y-4">
             <div class="space-y-4">
