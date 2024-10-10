@@ -1,0 +1,3 @@
+[build]
+publish = "web/_site"
+command = "nx run @our-moving-stories/web:build"
