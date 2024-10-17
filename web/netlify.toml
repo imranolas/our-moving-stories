@@ -2,8 +2,19 @@
 publish = "web/_site"
 command = "nx run @our-moving-stories/web:build"
 
-[functions]
-directory = "web/.netlify/functions"
+[[redirects]]
+from = "/safeguarding-policy/"
+to = "/.netlify/functions/serverless"
+status = 200
+force = true
+_generated_by_eleventy_serverless = "serverless"
+
+[[redirects]]
+from = "/"
+to = "/.netlify/functions/serverless"
+status = 200
+force = true
+_generated_by_eleventy_serverless = "serverless"
 
 [[redirects]]
 from = "/:slug/"
