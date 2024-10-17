@@ -3,14 +3,9 @@ const { DateTime } = require("luxon");
 const syntaxHighlight = require("@11ty/eleventy-plugin-syntaxhighlight");
 const htmlmin = require("html-minifier");
 const markdownIt = require("markdown-it");
-const { register } = require("esbuild-register/dist/node");
 const path = require("path");
 const fs = require("fs");
 const { EleventyServerlessBundlerPlugin } = require("@11ty/eleventy");
-
-register({
-  tsconfig: "./tsconfig.json",
-});
 
 module.exports = function (eleventyConfig) {
   eleventyConfig.addPlugin(EleventyServerlessBundlerPlugin, {
