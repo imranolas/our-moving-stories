@@ -3,14 +3,18 @@ const { DateTime } = require("luxon");
 const syntaxHighlight = require("@11ty/eleventy-plugin-syntaxhighlight");
 const htmlmin = require("html-minifier");
 const markdownIt = require("markdown-it");
-const path = require("path");
-const fs = require("fs");
 const { EleventyServerlessBundlerPlugin } = require("@11ty/eleventy");
 
 module.exports = function (eleventyConfig) {
   eleventyConfig.addPlugin(EleventyServerlessBundlerPlugin, {
     name: "serverless",
-    functionsDir: "./netlify/functions/",
+    functionsDir: "./netlify/functions",
+    copy: [
+      {
+        from: "./netlify/functions/serverless/eleventy-serverless-map.json",
+        to: "../../../../eleventy-serverless-map.json",
+      },
+    ],
   });
 
   eleventyConfig.addWatchTarget("./src/static/*.css");
