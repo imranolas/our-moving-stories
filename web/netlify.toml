@@ -5,6 +5,7 @@ command = "nx run @our-moving-stories/web:build"
 [functions]
 directory = "web/netlify/functions"
 node_bundler = "esbuild"
+external_node_modules = ["uglify-js"]
 
 [[redirects]]
 from = "/safeguarding-policy/"

@@ -25,7 +25,6 @@
     "tailwindcss": "^3.0.13"
   },
   "dependencies": {
-    "@11ty/eleventy-upgrade-help": "3",
     "@portabletext/to-html": "^2.0.13",
     "@sanity/block-content-to-html": "^2.0.0",
     "@sanity/block-content-to-markdown": "^0.0.6",

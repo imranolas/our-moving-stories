@@ -10,3 +10,6 @@ package-lock.json
 netlify
 .nx
 .sanity
+
+# Local Netlify folder
+.netlify
