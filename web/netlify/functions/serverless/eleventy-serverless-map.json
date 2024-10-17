@@ -1,0 +1,4 @@
+{
+  "/safeguarding-policy/": "./src/index.11ty.tsx",
+  "/": "./src/index.11ty.tsx"
+}
