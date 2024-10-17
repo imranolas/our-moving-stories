@@ -1,0 +1,9 @@
+items:
+  - text: About
+    url: /#about
+  - text: People
+    url: /#people
+  - text: Whats on
+    url: /#whats-on
+  - text: Contact
+    url: /#contact

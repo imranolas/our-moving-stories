@@ -2,8 +2,30 @@ const yaml = require("js-yaml");
 const { DateTime } = require("luxon");
 const syntaxHighlight = require("@11ty/eleventy-plugin-syntaxhighlight");
 const htmlmin = require("html-minifier");
+const markdownIt = require("markdown-it");
+const { register } = require("esbuild-register/dist/node");
+const path = require("path");
+const fs = require("fs");
+const { EleventyServerlessBundlerPlugin } = require("@11ty/eleventy");
+
+register({
+  tsconfig: "./tsconfig.json",
+});
 
 module.exports = function (eleventyConfig) {
+  eleventyConfig.addPlugin(EleventyServerlessBundlerPlugin, {
+    name: "serverless",
+    functionsDir: "./netlify/functions/",
+  });
+
+  eleventyConfig.addWatchTarget("./src/static/*.css");
+
+  eleventyConfig.addExtension(["11ty.jsx", "11ty.ts", "11ty.tsx"], {
+    key: "11ty.js",
+  });
+
+  eleventyConfig.addTemplateFormats("11ty.jsx,11ty.tsx");
+
   // Disable automatic use of your .gitignore
   eleventyConfig.setUseGitIgnore(false);
 
@@ -52,6 +74,15 @@ module.exports = function (eleventyConfig) {
     }
 
     return content;
+  });
+
+  eleventyConfig.addFilter("markdownify", function (value) {
+    const md = new markdownIt({
+      html: true,
+      breaks: true,
+      linkify: true,
+    });
+    return md.render(value);
   });
 
   // Let Eleventy transform HTML files as nunjucks

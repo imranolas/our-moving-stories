@@ -2,9 +2,13 @@
   "name": "@our-moving-stories/root",
   "version": "1.0.0",
   "workspaces": [
-    "web"
+    "web",
+    "studio"
   ],
   "devDependencies": {
     "nx": "20.0.0"
+  },
+  "dependencies": {
+    "@sanity/cli": "^3.60.0"
   }
 }
