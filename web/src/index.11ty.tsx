@@ -12,8 +12,20 @@ export const data = {
     size: 1,
     alias: "page",
   },
-  permalink: ({ page }) => {
-    return page.slug.current + "/";
+  permalink: {
+    build: ({ page }) => {
+      return page.slug.current + "/";
+    },
+    serverless: ({ page }) => {
+      // pretty format the url for the serverless function
+      // it must have a single leading slash and single trailing slash
+      // but not a trailing slash for the index page or it will be a 404
+
+      let path = page.slug.current;
+      if (path === "/") return "/";
+
+      return `/${path}/`;
+    },
   },
 };
 

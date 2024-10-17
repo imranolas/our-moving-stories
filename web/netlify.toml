@@ -1,3 +1,12 @@
 [build]
 publish = "web/_site"
 command = "nx run @our-moving-stories/web:build"
+
+[functions]
+directory = "web/.netlify/functions"
+
+[[redirects]]
+from = "/:slug/"
+to = "/.netlify/functions/serverless"
+status = 200
+force = true
