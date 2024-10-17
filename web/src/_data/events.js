@@ -1,5 +1,5 @@
-const grok = require("groq");
-const client = require("../utils/sanity-client");
+import grok from "groq";
+import client from "../utils/sanity-client";
 
 async function get() {
   // Expand the person reference to get the full document

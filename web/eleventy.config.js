@@ -1,20 +1,12 @@
-const yaml = require("js-yaml");
-const { DateTime } = require("luxon");
-const syntaxHighlight = require("@11ty/eleventy-plugin-syntaxhighlight");
-const htmlmin = require("html-minifier");
-const markdownIt = require("markdown-it");
-const { EleventyServerlessBundlerPlugin } = require("@11ty/eleventy");
+import yaml from "js-yaml";
+import { DateTime } from "luxon";
+import htmlmin from "html-minifier";
+import { EleventyServerlessBundlerPlugin } from "@11ty/eleventy";
 
 module.exports = function (eleventyConfig) {
   eleventyConfig.addPlugin(EleventyServerlessBundlerPlugin, {
     name: "serverless",
-    functionsDir: "./netlify/functions",
-    copy: [
-      {
-        from: "./netlify/functions/serverless/eleventy-serverless-map.json",
-        to: "../../../../eleventy-serverless-map.json",
-      },
-    ],
+    functionsDir: "../netlify/functions",
   });
 
   eleventyConfig.addWatchTarget("./src/static/*.css");
@@ -37,9 +29,6 @@ module.exports = function (eleventyConfig) {
       "dd LLL yyyy"
     );
   });
-
-  // Syntax Highlighting for Code blocks
-  eleventyConfig.addPlugin(syntaxHighlight);
 
   // To Support .yaml Extension in _data
   // You may remove this if you can use JSON
@@ -73,15 +62,6 @@ module.exports = function (eleventyConfig) {
     }
 
     return content;
-  });
-
-  eleventyConfig.addFilter("markdownify", function (value) {
-    const md = new markdownIt({
-      html: true,
-      breaks: true,
-      linkify: true,
-    });
-    return md.render(value);
   });
 
   // Let Eleventy transform HTML files as nunjucks

@@ -1,6 +1,5 @@
-const grok = require("groq");
-const BlocksToMarkdown = require("@sanity/block-content-to-markdown");
-const client = require("../utils/sanity-client");
+import grok from "groq";
+import client from "../utils/sanity-client";
 
 async function get() {
   // get settings by id
