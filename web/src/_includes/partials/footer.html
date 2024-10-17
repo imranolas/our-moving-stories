@@ -23,9 +23,15 @@
             </div>
         </div>
 
-        <div class="text-text text-sm">Copyright ©
-            {{settings.name}}
-            {{ page.date.getFullYear() }}. All rights reserved.
+        <div>
+            <div class="text-text text-sm">
+                {{settings.companyName}}
+                {{ settings.companyNumber }}
+            </div>
+            <div class="text-text text-sm">Copyright ©
+                {{settings.title}}
+                {{ page.date.getFullYear() }}. All rights reserved.
+            </div>
         </div>
     </div>
 </footer>

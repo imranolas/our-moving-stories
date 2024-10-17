@@ -1,9 +1,22 @@
-const yaml = require("js-yaml");
-const { DateTime } = require("luxon");
-const syntaxHighlight = require("@11ty/eleventy-plugin-syntaxhighlight");
-const htmlmin = require("html-minifier");
+import yaml from "js-yaml";
+import { DateTime } from "luxon";
+import htmlmin from "html-minifier";
+import { EleventyServerlessBundlerPlugin } from "@11ty/eleventy";
 
 module.exports = function (eleventyConfig) {
+  eleventyConfig.addPlugin(EleventyServerlessBundlerPlugin, {
+    name: "serverless",
+    functionsDir: "../netlify/functions",
+  });
+
+  eleventyConfig.addWatchTarget("./src/static/*.css");
+
+  eleventyConfig.addExtension(["11ty.jsx", "11ty.ts", "11ty.tsx"], {
+    key: "11ty.js",
+  });
+
+  eleventyConfig.addTemplateFormats("11ty.jsx,11ty.tsx");
+
   // Disable automatic use of your .gitignore
   eleventyConfig.setUseGitIgnore(false);
 
@@ -16,9 +29,6 @@ module.exports = function (eleventyConfig) {
       "dd LLL yyyy"
     );
   });
-
-  // Syntax Highlighting for Code blocks
-  eleventyConfig.addPlugin(syntaxHighlight);
 
   // To Support .yaml Extension in _data
   // You may remove this if you can use JSON

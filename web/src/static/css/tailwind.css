@@ -39,8 +39,14 @@ body pre[class*="language-"] {
 }
 
 a {
+  /* text-decoration: none!important; */
   @apply border-b-2 border-text;
 
+}
+
+.prose a {
+  @apply no-underline;
+  @apply text-text;
 }
 
 @layer utilities {

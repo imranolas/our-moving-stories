@@ -30,13 +30,7 @@
 
   {% include "./partials/footer.html" %}
 
-  <script src="/static/js/alpine.js"></script>
-
-  {% if path == "home" %}
-  <!-- Netlify Identity Widget -->
-  <!-- Needed only if you are using Netlify Identity feature -->
-  <script type="text/javascript" src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
-  {% endif %}
+  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 
 </body>
 </html>
