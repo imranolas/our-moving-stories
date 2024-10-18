@@ -2,12 +2,15 @@
 import Nav from "../components/Nav.astro";
 import Footer from "../components/Footer.astro";
 import "../styles/tailwind.css";
+import { VisualEditing } from "@sanity/astro/visual-editing";
 
 interface Props {
   title: string;
 }
 
 const { title } = Astro.props;
+const visualEditingEnabled = import.meta.env
+  .PUBLIC_SANITY_VISUAL_EDITING_ENABLED;
 ---
 
 <!doctype html>
@@ -28,5 +31,6 @@ const { title } = Astro.props;
     <Nav />
     <slot />
     <Footer />
+    <VisualEditing enabled={visualEditingEnabled} />
   </body>
 </html>

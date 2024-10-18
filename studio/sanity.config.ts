@@ -4,7 +4,11 @@ import { structureTool } from "sanity/structure";
 import { schemaTypes } from "./schemas";
 import { googleMapsInput } from "@sanity/google-maps-input";
 import { structure } from "./structure";
-import { defineDocuments, presentationTool } from "sanity/presentation";
+import {
+  defineDocuments,
+  defineLocations,
+  presentationTool,
+} from "sanity/presentation";
 
 export const projectId = process.env.SANITY_STUDIO_PROJECT_ID!;
 export const dataset = process.env.SANITY_STUDIO_DATASET!;
@@ -26,18 +30,38 @@ export default defineConfig({
     }),
     presentationTool({
       previewUrl:
-        process.env.SANITY_STUDIO_PREVIEW_URL || "http://localhost:3001",
+        process.env.SANITY_STUDIO_PREVIEW_URL || "http://localhost:4321",
       resolve: {
         mainDocuments: defineDocuments([
           {
-            route: "/",
-            filter: `_type == "page" && slug.current == "/"`,
-          },
-          {
             route: "/:slug",
             filter: `_type == "page" && slug.current == $slug`,
+            resolve: (doc) => ({
+              title: doc?.title,
+              description: doc?.description,
+            }),
+          },
+          {
+            route: "/",
+            filter: `_type == "page" && slug.current == "index"`,
           },
         ]),
+        locations: {
+          page: defineLocations({
+            select: {
+              title: "title",
+              slug: "slug.current",
+            },
+            resolve: (doc) => ({
+              locations: [
+                {
+                  title: doc?.title,
+                  href: doc?.slug === "index" ? "/" : `/${doc?.slug}`,
+                },
+              ],
+            }),
+          }),
+        },
       },
     }),
     visionTool(),
