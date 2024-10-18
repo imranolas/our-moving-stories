@@ -6,10 +6,12 @@ import Block from "../components/Block.astro";
 
 export async function getStaticPaths() {
   const { data: pages } = await loadQuery<SanityDocument[]>({
-    query: `*[_type == "page"]`,
+    query: `*[_type == "page"] {
+      slug
+    }`,
   });
 
-  return pages.map(({ slug }) => {
+  return pages.map(({ slug }: { slug: { current: string } }) => {
     return {
       params: {
         slug: slug.current === "index" ? undefined : slug.current,
@@ -37,8 +39,12 @@ const { data: page } = await loadQuery({
 });
 ---
 
-<Layout>
+<Layout title={page?.title}>
   <div class="overflow-x-clip">
-    {page.pageBuilder.map((block) => <Block key={block._key} {...block} />)}
+    {
+      page.pageBuilder.map((block: any) => (
+        <Block key={block._key} {...block} />
+      ))
+    }
   </div>
 </Layout>

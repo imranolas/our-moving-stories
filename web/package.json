@@ -16,12 +16,15 @@
     "@astrojs/tailwind": "^5.1.2",
     "@portabletext/to-html": "^2.0.13",
     "@sanity/astro": "^3.1.6",
+    "@sanity/cli": "^3.60.0",
+    "@sanity/client": "^6.22.2",
     "@sanity/image-url": "^1.0.2",
+    "@sanity/visual-editing": "^2.1.10",
     "@tailwindcss/aspect-ratio": "^0.4.2",
     "@tailwindcss/typography": "^0.5.15",
     "astro": "^4.16.6",
     "luxon": "^3.5.0",
-    "sanity": "^3.61.0",
+    "sanity": "3.51.0",
     "typescript": "^5.6.3",
     "vhtml": "^2.2.0"
   }

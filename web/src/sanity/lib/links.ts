@@ -14,7 +14,8 @@ export type NavigationItem = {
 export const formatInternalLink = (
   link: NavigationItem["navigationItemUrl"]
 ) => {
-  let href = link.internalLink.reference.slug.current;
+  let href = link.internalLink.reference?.slug.current;
+  if (!href) return null;
   if (link.internalLink.reference.slug.current === "index") {
     href = "/";
   }

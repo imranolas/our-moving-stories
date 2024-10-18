@@ -1,7 +1,7 @@
 import { type QueryParams } from "sanity";
 import { sanityClient } from "sanity:client";
 
-const isPreview = import.meta.env.PUBLIC_SANITY_VISUAL_EDITING_ENABLED;
+const isPreview = true; //import.meta.env.PUBLIC_SANITY_VISUAL_EDITING_ENABLED
 const perspective = isPreview ? "previewDrafts" : "published";
 
 export async function loadQuery<QueryResponse>({
@@ -13,12 +13,11 @@ export async function loadQuery<QueryResponse>({
 }) {
   const { result, resultSourceMap } = await sanityClient.fetch<QueryResponse>(
     query,
-
     params ?? {},
     {
       filterResponse: false,
-      perspective,
-      resultSourceMap: isPreview ? "withKeyArraySelector" : undefined,
+      perspective: perspective,
+      // resultSourceMap: isPreview ? "withKeyArraySelector" : undefined,
     }
   );
 

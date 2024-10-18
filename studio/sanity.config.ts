@@ -28,6 +28,7 @@ export default defineConfig({
     structureTool({
       structure,
     }),
+    visionTool(),
     presentationTool({
       previewUrl:
         process.env.SANITY_STUDIO_PREVIEW_URL || "http://localhost:4321",
@@ -64,7 +65,6 @@ export default defineConfig({
         },
       },
     }),
-    visionTool(),
     googleMapsInput({
       apiKey: process.env.SANITY_STUDIO_GOOGLE_MAPS_API_KEY!,
       defaultLocation: {
