@@ -3,5 +3,5 @@ publish = "web/dist"
 command = "nx run @our-moving-stories/web:build"
 
 [context.staging.environment]
-SANITY_STUDIO_PREVIEW_URL = "staging--ourmovingstories.netlify.app"
+SANITY_STUDIO_PREVIEW_URL = "https://staging--ourmovingstories.netlify.app"
 PUBLIC_SANITY_VISUAL_EDITING_ENABLED = "true"
