@@ -9,6 +9,12 @@ import netlify from "@astrojs/netlify";
 
 const isPreview = process.env.PUBLIC_SANITY_VISUAL_EDITING_ENABLED;
 
+console.log("isPreview", isPreview);
+console.log(
+  "process.env.SANITY_PREVIEW_TOKEN",
+  process.env.SANITY_PREVIEW_TOKEN
+);
+
 if (isPreview) {
   console.log("Using preview token", process.env.SANITY_PREVIEW_TOKEN);
 }
