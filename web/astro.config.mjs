@@ -7,15 +7,19 @@ import tailwind from "@astrojs/tailwind";
 
 import netlify from "@astrojs/netlify";
 
-const isPreview = import.meta.env.PUBLIC_SANITY_VISUAL_EDITING_ENABLED;
+const isPreview = process.env.PUBLIC_SANITY_VISUAL_EDITING_ENABLED;
+
+if (isPreview) {
+  console.log("Using preview token", process.env.SANITY_PREVIEW_TOKEN);
+}
 
 // https://astro.build/config
 export default defineConfig({
   integrations: [
     sanity({
-      projectId: import.meta.env.SANITY_STUDIO_PROJECT_ID,
-      dataset: import.meta.env.SANITY_STUDIO_DATASET,
-      token: isPreview ? import.meta.env.SANITY_PREVIEW_TOKEN : undefined,
+      projectId: process.env.SANITY_STUDIO_PROJECT_ID,
+      dataset: process.env.SANITY_STUDIO_DATASET,
+      token: isPreview ? process.env.SANITY_PREVIEW_TOKEN : undefined,
       useCdn: !isPreview,
       apiVersion: "2024-10-17",
     }),
