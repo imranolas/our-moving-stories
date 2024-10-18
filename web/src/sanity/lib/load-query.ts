@@ -1,7 +1,7 @@
 import { type QueryParams } from "sanity";
 import { sanityClient } from "sanity:client";
 
-const isPreview = process.env.PUBLIC_SANITY_VISUAL_EDITING_ENABLED;
+const isPreview = import.meta.env.PUBLIC_SANITY_VISUAL_EDITING_ENABLED;
 const perspective = isPreview ? "previewDrafts" : "published";
 
 export async function loadQuery<QueryResponse>({
