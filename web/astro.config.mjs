@@ -15,7 +15,7 @@ export default defineConfig({
     sanity({
       projectId: process.env.SANITY_STUDIO_PROJECT_ID,
       dataset: process.env.SANITY_STUDIO_DATASET,
-      token: process.env.SANITY_PREVIEW_TOKEN,
+      token: process.env.SANITY_READ_TOKEN,
       useCdn: false,
       perspective: isPreview ? "previewDrafts" : "published",
       apiVersion: "2024-10-17",
