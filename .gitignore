@@ -13,3 +13,4 @@ netlify
 
 # Local Netlify folder
 .netlify
+dist
