@@ -3,12 +3,22 @@
   "version": "1.0.0",
   "workspaces": [
     "web",
+    "website",
     "studio"
   ],
   "devDependencies": {
     "nx": "20.0.0"
   },
   "dependencies": {
-    "@sanity/cli": "^3.60.0"
+    "@astrojs/react": "^3.6.2",
+    "@sanity/astro": "^3.1.6",
+    "@sanity/cli": "^3.60.0",
+    "@sanity/client": "^6.22.2",
+    "@sanity/visual-editing": "^2.1.10",
+    "@types/react": "^18.3.11",
+    "@types/react-dom": "^18.3.1",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "sanity": "^3.61.0"
   }
 }

@@ -1,6 +1,6 @@
 // ./schemas/textWithIllustration.js
 
-import { ImageIcon, TextIcon } from "@sanity/icons";
+import { TextIcon } from "@sanity/icons";
 import { defineField, defineType } from "sanity";
 
 export const textSectionType = defineType({
@@ -16,12 +16,16 @@ export const textSectionType = defineType({
     // Rich text field
     defineField({
       name: "excerpt",
-      type: "array",
-      of: [
-        {
-          type: "block",
-        },
-      ],
+      type: "portableText",
+    }),
+
+    defineField({
+      name: "anchorId",
+      type: "slug",
+      title: "Anchor ID",
+      options: {
+        source: "heading",
+      },
     }),
   ],
 

@@ -1,0 +1,44 @@
+---
+import type { SanityDocument } from "@sanity/client";
+import { loadQuery } from "../sanity/lib/load-query";
+import Layout from "../layouts/Layout.astro";
+import Block from "../components/Block.astro";
+
+export async function getStaticPaths() {
+  const { data: pages } = await loadQuery<SanityDocument[]>({
+    query: `*[_type == "page"]`,
+  });
+
+  return pages.map(({ slug }) => {
+    return {
+      params: {
+        slug: slug.current === "index" ? undefined : slug.current,
+      },
+    };
+  });
+}
+
+const { params } = Astro;
+
+const { data: page } = await loadQuery({
+  query: `*[_type == "page" && slug.current == $slug][0] {
+    ...,
+  pageBuilder[] {
+    ...,
+    _type == "people" => {
+      ...,
+      people[]->
+    }
+  }}`,
+  params: {
+    ...params,
+    slug: params.slug || "index",
+  },
+});
+---
+
+<Layout>
+  <div class="overflow-x-clip">
+    {page.pageBuilder.map((block) => <Block key={block._key} {...block} />)}
+  </div>
+</Layout>

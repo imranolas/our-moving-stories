@@ -29,13 +29,8 @@ export const personType = defineType({
     defineField({
       name: "bio",
       title: "Bio",
-      type: "array",
+      type: "portableText",
       validation: (Rule) => Rule.required(),
-      of: [
-        {
-          type: "block",
-        },
-      ],
     }),
     defineField({
       name: "profile",

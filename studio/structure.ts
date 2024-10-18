@@ -6,7 +6,7 @@ export const structure: StructureResolver = (S) =>
     .items([
       // list all document types except 'siteSettings'
       ...S.documentTypeListItems().filter(
-        (item) => item.getId() !== "settings"
+        (item) => !["settings", "footer", "nav"].includes(item.getId())
       ),
       S.divider(),
 
@@ -16,6 +16,14 @@ export const structure: StructureResolver = (S) =>
         // that we're editing the single instance of the document
         S.document().schemaType("settings").documentId("settings")
       ),
-      // then add the 'sideSettings' type separate
-      // S.documentTypeListItem("siteSettings").title("Site settings"),
+
+      S.listItem()
+        .title("Footer Links")
+        .id("footer")
+        .child(S.document().schemaType("footer").documentId("footer")),
+
+      S.listItem()
+        .title("Main Navigation")
+        .id("nav")
+        .child(S.document().schemaType("nav").documentId("nav")),
     ]);

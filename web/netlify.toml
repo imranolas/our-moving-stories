@@ -1,29 +1,3 @@
 [build]
-publish = "web/_site"
+publish = "web/dist"
 command = "nx run @our-moving-stories/web:build"
-
-[functions]
-directory = "netlify/functions"
-node_bundler = "esbuild"
-external_node_modules = [ "uglify-js", "esbuild-register" ]
-included_files = [ "netlify/functions/**/*", "tsconfig.json" ]
-
-[[redirects]]
-from = "/safeguarding-policy/"
-to = "/.netlify/functions/serverless"
-status = 200
-force = true
-_generated_by_eleventy_serverless = "serverless"
-
-[[redirects]]
-from = "/"
-to = "/.netlify/functions/serverless"
-status = 200
-force = true
-_generated_by_eleventy_serverless = "serverless"
-
-[[redirects]]
-from = "/:slug/"
-to = "/.netlify/functions/serverless"
-status = 200
-force = true

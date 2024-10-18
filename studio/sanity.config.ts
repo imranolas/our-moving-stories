@@ -4,6 +4,7 @@ import { structureTool } from "sanity/structure";
 import { schemaTypes } from "./schemas";
 import { googleMapsInput } from "@sanity/google-maps-input";
 import { structure } from "./structure";
+import { defineDocuments, presentationTool } from "sanity/presentation";
 
 export const projectId = process.env.SANITY_STUDIO_PROJECT_ID!;
 export const dataset = process.env.SANITY_STUDIO_DATASET!;
@@ -12,7 +13,7 @@ export const dataset = process.env.SANITY_STUDIO_DATASET!;
 const singletonActions = new Set(["publish", "discardChanges", "restore"]);
 
 // Define the singleton document types
-const singletonTypes = new Set(["settings"]);
+export const singletonTypes = new Set(["settings", "footer", "nav"]);
 
 export default defineConfig({
   name: "our-moving-stories",
@@ -23,11 +24,22 @@ export default defineConfig({
     structureTool({
       structure,
     }),
-    // presentationTool({
-    //   previewUrl:
-    //     process.env.SANITY_STUDIO_PREVIEW_URL || "http://localhost:3000",
-    //   locate,
-    // }),
+    presentationTool({
+      previewUrl:
+        process.env.SANITY_STUDIO_PREVIEW_URL || "http://localhost:3001",
+      resolve: {
+        mainDocuments: defineDocuments([
+          {
+            route: "/",
+            filter: `_type == "page" && slug.current == "/"`,
+          },
+          {
+            route: "/:slug",
+            filter: `_type == "page" && slug.current == $slug`,
+          },
+        ]),
+      },
+    }),
     visionTool(),
     googleMapsInput({
       apiKey: process.env.SANITY_STUDIO_GOOGLE_MAPS_API_KEY!,

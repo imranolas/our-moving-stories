@@ -1,0 +1,35 @@
+---
+import Hero, { type Props as HeroProps } from "./Hero.astro";
+import TextSection, {
+  type Props as TextSectionProps,
+} from "./TextSection.astro";
+import PeopleSection, {
+  type Props as PeopleSectionProps,
+} from "./PeopleSection.astro";
+// import InstagramSection from "./insta";
+import EventsSection, {
+  type Props as EventsSectionProps,
+} from "./EventsSection.astro";
+
+type Props =
+  | HeroProps
+  | TextSectionProps
+  | PeopleSectionProps
+  | EventsSectionProps;
+// | {
+//     _type: "instagram";
+//   };
+
+const typeMap = {
+  hero: Hero,
+  textSection: TextSection,
+  people: PeopleSection,
+  events: EventsSection,
+  // instagram: InstagramSection,
+};
+
+const Element = typeMap[Astro.props._type] || "div";
+const props = Astro.props;
+---
+
+<Element {...props} />
