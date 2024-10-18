@@ -1,0 +1,66 @@
+---
+import { urlFor } from "../sanity/lib/urlFor";
+import { toHTML } from "@portabletext/to-html";
+import type { PortableTextBlock } from "@portabletext/types";
+
+export type Props = {
+  _type: "people";
+  _key: string;
+  title: string;
+  people: {
+    name: string;
+    role: string;
+    email: string;
+    social: {
+      platform: string;
+      handle: string;
+    }[];
+    profile: {
+      asset: {
+        url: string;
+      };
+    };
+    qual: string[];
+    bio: PortableTextBlock;
+  }[];
+};
+
+const { people } = Astro.props;
+---
+
+<section class="w-full text-left py-24 bg-light" id="people">
+  <div class="max-w-5xl mx-12 lg:mx-auto">
+    <h1 class="mb-20">People</h1>
+    <ul class="space-y-12 divide-y-2 divide-text divide-opacity-20">
+      {
+        people.map((person) => (
+          <li class="flex justify-between space-y-12 md:space-y-0 md:space-x-12 lg:ml-16 flex-col md:flex-row pt-12 first:pt-0">
+            <div class="space-y-4 flex-grow">
+              <img
+                src={urlFor(person.profile).height(400).width(320).url()}
+                alt={person.name}
+                class="mx-auto lg:max-w-xs"
+              />
+            </div>
+            <div class="space-y-4">
+              <div class="space-y-4">
+                <span class="space-x-2 block">
+                  <h2 class="text-text font-bold text-xl inline-block">
+                    {person.name}
+                  </h2>
+                </span>
+                <span class="text-text text-base font-semibold">
+                  {person.role}
+                </span>
+              </div>
+              <div
+                class="prose text-text text-lg"
+                set:html={toHTML(person.bio)}
+              />
+            </div>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</section>

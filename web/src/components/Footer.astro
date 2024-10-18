@@ -1,0 +1,127 @@
+---
+import { loadQuery } from "../sanity/lib/load-query";
+import { formatInternalLink, type NavigationItem } from "../sanity/lib/links";
+import { urlFor } from "../sanity/lib/urlFor";
+
+const { data } = await loadQuery({
+  query: `*[_type == "settings" || _type == "footer"] {
+    ...,
+    items[] {
+      ...,
+      navigationItemUrl {
+        ...,
+        internalLink {
+        ...,
+          reference-> {
+            slug
+          },
+        }
+      }
+    }
+  }`,
+  params: {},
+});
+
+const { settings, footer } = data.reduce((acc, it) => {
+  if (it._type === "settings") {
+    acc.settings = it;
+  }
+  if (it._type === "footer") {
+    acc.footer = it;
+  }
+
+  return acc;
+}, {});
+---
+
+<footer
+  class="bottom-0 text-left w-full pt-24 pb-8 px-16 grid grid-cols-2 mx-auto max-w-screen-2xl"
+>
+  <!-- Newsletter -->
+  <div class="space-y-1 col-span-2">
+    <span class="text-text font-bold mb-2 uppercase text-sm"
+      >Subscribe to our newsletter</span
+    >
+    <div class="max-w-xl">
+      <iframe
+        src="https://embeds.beehiiv.com/88e94e2d-a0b8-434a-8258-58bfb9ae99df?slim=true"
+        data-test-id="beehiiv-embed"
+        height="52"
+        width="100%"
+        style="margin: 0; border-radius: 0px !important; background-color: transparent;"
+      ></iframe>
+    </div>
+  </div>
+
+  <!-- Contact -->
+  <div class="mt-6">
+    <div class="text-base lg:text-lg">
+      <div>
+        <img src="/img/mail.svg" alt="Email" class="inline-block w-8 mr-2" />
+        <a href="mailto:{{settings.email}}" class="">{settings.email}</a>
+      </div>
+
+      <div>
+        <img
+          src="/img/instagram.svg"
+          alt="Instagram"
+          class="inline-block w-8 mr-2"
+        />
+        <a
+          href="https://instagram.com/{{settings.instagram}}"
+          target="_blank"
+          class="">@{settings.instagram}</a
+        >
+      </div>
+    </div>
+  </div>
+
+  <!-- Navigation -->
+  <div class="mt-6">
+    <ul class="space-y-2">
+      {
+        (footer.items as NavigationItem[]).map((item) => (
+          <li class="nav__item">
+            <a
+              class="text-text font-bold border-b-0 py-2 px-4"
+              href={formatInternalLink(item.navigationItemUrl)}
+            >
+              {item.text}
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+
+  <!-- Funders -->
+  <div class="mt-16">
+    <p class="text-text font-bold mb-3 uppercase text-sm">Funded by</p>
+    <ul class="flex flex-wrap gap-x-6">
+      {
+        footer.funders.map((funder) => (
+          <li class="inline-block">
+            <img
+              class="inline-block"
+              src={urlFor(funder.logo).height(50).url()}
+              alt={funder.name}
+            />
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+
+  <!-- Company Info -->
+  <div class="col-span-2 mt-24">
+    <div class="text-text text-sm">
+      {settings.companyName}
+      {settings.companyNumber}
+    </div>
+    <div class="text-text text-sm">
+      Copyright ©
+      {settings.title}
+      {new Date().getFullYear()}. All rights reserved.
+    </div>
+  </div>
+</footer>

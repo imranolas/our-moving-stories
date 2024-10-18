@@ -1,0 +1,27 @@
+---
+import { type PortableTextBlock } from "@portabletext/types";
+import { toHTML } from "@portabletext/to-html";
+
+export type Props = {
+  _type: "textSection";
+  _key: string;
+  heading: string;
+  excerpt: PortableTextBlock;
+  anchorId?: {
+    current: string;
+  };
+};
+
+const { heading, excerpt, anchorId } = Astro.props;
+---
+
+<section class="w-full text-left py-24 bg-light" id={anchorId?.current}>
+  <div class="max-w-5xl mx-auto">
+    <h1 class="ml-16 lg:mx-0">{heading}</h1>
+
+    <div
+      class="leading-relaxed space-y-8 mx-16 lg:mx-auto mt-16 max-w-4xl text-text text-lg"
+      set:html={toHTML(excerpt)}
+    />
+  </div>
+</section>

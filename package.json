@@ -2,9 +2,23 @@
   "name": "@our-moving-stories/root",
   "version": "1.0.0",
   "workspaces": [
-    "web"
+    "web",
+    "studio"
   ],
   "devDependencies": {
     "nx": "20.0.0"
+  },
+  "dependencies": {},
+  "resolutions": {
+    "sanity": "3.55.0",
+    "@sanity/cli": "3.55.0",
+    "@sanity/client": "^6.22.2",
+    "@sanity/codegen": "3.55.0",
+    "@sanity/diff": "3.55.0",
+    "@sanity/migrate": "3.55.0",
+    "@sanity/mutator": "3.55.0",
+    "@sanity/schema": "3.55.0",
+    "@sanity/types": "3.55.0",
+    "@sanity/util": "3.55.0"
   }
 }
