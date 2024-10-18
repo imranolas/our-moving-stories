@@ -7,7 +7,7 @@ import tailwind from "@astrojs/tailwind";
 
 import netlify from "@astrojs/netlify";
 
-const isPreview = false; // !!process.env.PUBLIC_SANITY_VISUAL_EDITING_ENABLED;
+const isPreview = !!process.env.PUBLIC_SANITY_VISUAL_EDITING_ENABLED;
 
 // https://astro.build/config
 export default defineConfig({
@@ -15,8 +15,8 @@ export default defineConfig({
     sanity({
       projectId: process.env.SANITY_STUDIO_PROJECT_ID,
       dataset: process.env.SANITY_STUDIO_DATASET,
-      token: process.env.SANITY_READ_TOKEN,
-      useCdn: false,
+      token: isPreview ? process.env.SANITY_READ_TOKEN : undefined,
+      useCdn: !isPreview,
       perspective: isPreview ? "previewDrafts" : "published",
       apiVersion: "2024-10-17",
     }),
