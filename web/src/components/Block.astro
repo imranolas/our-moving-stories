@@ -6,7 +6,7 @@ import TextSection, {
 import PeopleSection, {
   type Props as PeopleSectionProps,
 } from "./PeopleSection.astro";
-// import InstagramSection from "./insta";
+import InstagramSection from "./InstagramSection";
 import EventsSection, {
   type Props as EventsSectionProps,
 } from "./EventsSection.astro";
@@ -15,17 +15,17 @@ type Props =
   | HeroProps
   | TextSectionProps
   | PeopleSectionProps
-  | EventsSectionProps;
-// | {
-//     _type: "instagram";
-//   };
+  | EventsSectionProps
+  | {
+      _type: "instagram";
+    };
 
 const typeMap = {
   hero: Hero,
   textSection: TextSection,
   people: PeopleSection,
   events: EventsSection,
-  // instagram: InstagramSection,
+  instagram: InstagramSection,
 };
 
 const Element = typeMap[Astro.props._type] || "div";

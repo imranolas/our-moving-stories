@@ -1,6 +1,4 @@
-import h from "vhtml";
-
-export default function Insta({
+export default function InstagramSection({
   settings,
 }: {
   settings: { beholdFeedUrl: string };
@@ -8,10 +6,11 @@ export default function Insta({
   return (
     <section class="w-full text-left pt-24 bg-light" id="gallery">
       <div class="max-w-5xl mx-auto">
+        <h1 class="mb-20">Instagram</h1>
         <ul
           className="grid px-8 lg:px-0 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8 md:gap-4"
           x-data="{ posts: [] }"
-          x-init={`posts = await (await fetch('${settings.beholdFeedUrl}')).json()`}
+          x-init={`posts = await (await fetch('https://feed.ourmovingstories.com')).json()`}
         >
           <template x-for="(post, index) in posts">
             <li className="list-none">
