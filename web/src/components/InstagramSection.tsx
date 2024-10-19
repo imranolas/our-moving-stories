@@ -4,9 +4,9 @@ export default function InstagramSection({
   settings: { beholdFeedUrl: string };
 }) {
   return (
-    <section className="w-full text-left pt-24 bg-light" id="gallery">
-      <div className="max-w-5xl mx-16 lg:mx-auto">
-        <h1 className="mb-20">Instagram</h1>
+    <section className="w-full text-left  bg-light" id="gallery">
+      <div className="max-w-5xl mx-6 md:mx-16 lg:mx-auto">
+        <h1 className="mb-10 md:mb-20">Instagram</h1>
         <ul
           className="grid px-0 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8 md:gap-4"
           x-data="{ posts: [] }"
