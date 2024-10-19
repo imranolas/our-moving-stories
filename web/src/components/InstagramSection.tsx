@@ -4,11 +4,11 @@ export default function InstagramSection({
   settings: { beholdFeedUrl: string };
 }) {
   return (
-    <section class="w-full text-left pt-24 bg-light" id="gallery">
-      <div class="max-w-5xl mx-auto">
-        <h1 class="mb-20">Instagram</h1>
+    <section className="w-full text-left pt-24 bg-light" id="gallery">
+      <div className="max-w-5xl mx-16 lg:mx-auto">
+        <h1 className="mb-20">Instagram</h1>
         <ul
-          className="grid px-8 lg:px-0 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8 md:gap-4"
+          className="grid px-0 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8 md:gap-4"
           x-data="{ posts: [] }"
           x-init={`posts = await (await fetch('https://feed.ourmovingstories.com')).json()`}
         >
