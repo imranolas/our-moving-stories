@@ -35,7 +35,7 @@ const { settings, footer } = data.reduce((acc, it) => {
 ---
 
 <footer
-  class="bottom-0 text-left w-full pt-24 pb-8 px-16 grid grid-cols-2 mx-auto max-w-screen-2xl"
+  class="bottom-0 text-left w-full pt-24 pb-8 px-16 grid grid-cols-2 mx-auto max-w-screen-2xl space-y-8"
 >
   <!-- Newsletter -->
   <div class="space-y-1 col-span-2">
@@ -54,7 +54,7 @@ const { settings, footer } = data.reduce((acc, it) => {
   </div>
 
   <!-- Contact -->
-  <div class="mt-6">
+  <div class="mt-6 col-span-2 sm:col-span-1">
     <div class="text-base lg:text-lg">
       <div>
         <img src="/img/mail.svg" alt="Email" class="inline-block w-8 mr-2" />
@@ -77,13 +77,13 @@ const { settings, footer } = data.reduce((acc, it) => {
   </div>
 
   <!-- Navigation -->
-  <div class="mt-6">
+  <div class="mt-6 col-span-2 sm:col-span-1">
     <ul class="space-y-2">
       {
         (footer.items as NavigationItem[]).map((item) => (
           <li class="nav__item">
             <a
-              class="text-text font-bold border-b-0 py-2 px-4"
+              class="text-text font-bold border-b-0 py-2"
               href={formatInternalLink(item.navigationItemUrl)}
             >
               {item.text}
@@ -95,7 +95,7 @@ const { settings, footer } = data.reduce((acc, it) => {
   </div>
 
   <!-- Funders -->
-  <div class="mt-16">
+  <div class="mt-16 col-span-2 sm:col-span-1">
     <p class="text-text font-bold mb-3 uppercase text-sm">Funded by</p>
     <ul class="flex flex-wrap gap-x-6">
       {
