@@ -20,6 +20,8 @@ export async function getStaticPaths() {
   });
 }
 
+export const prerender = true;
+
 const { params } = Astro;
 
 const { data: page } = await loadQuery({
@@ -37,6 +39,10 @@ const { data: page } = await loadQuery({
     slug: params.slug || "index",
   },
 });
+
+if (!page) {
+  Astro.response.status = 404;
+}
 ---
 
 <Layout title={page?.title}>
