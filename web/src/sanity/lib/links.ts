@@ -1,28 +1,33 @@
 export type NavigationItem = {
   navigationItemUrl: {
     _type: "link";
-    internalLink: {
-      reference: { slug: { current: string; _type: "slug" } };
+    internalLink?: {
+      reference?: { slug: { current: string; _type: "slug" } };
       anchor?: string;
     };
+    externalUrl?: string;
   };
   _type: "navigationItem";
   text: string;
   _key: string;
 };
 
-export const formatInternalLink = (
+export const formatLink = (
   link: NavigationItem["navigationItemUrl"]
-) => {
-  let href = link.internalLink.reference?.slug.current;
-  if (!href) return null;
-  if (link.internalLink.reference.slug.current === "index") {
-    href = "/";
-  }
+): string | null => {
+  if (link.externalUrl) return link.externalUrl;
 
-  if (link.internalLink.anchor) {
+  const slug = link.internalLink?.reference?.slug?.current;
+  if (!slug) return null;
+
+  let href = slug === "index" ? "/" : `/${slug}`;
+
+  if (link.internalLink?.anchor) {
     return `${href}#${link.internalLink.anchor}`;
   }
 
   return href;
 };
+
+/** @deprecated Use formatLink instead */
+export const formatInternalLink = formatLink;

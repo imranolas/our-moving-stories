@@ -1,0 +1,38 @@
+---
+import { urlFor } from "../sanity/lib/urlFor";
+import { eventHref, fmtShort, nextSession, repeatLabel, timeRange, type Event } from "../lib/schedule";
+
+interface Props {
+  event: Event;
+}
+
+const { event } = Astro.props;
+const next = nextSession(event);
+const image = event.photo?.asset ? event.photo : event.poster;
+const thumb = image?.asset ? urlFor(image).width(240).height(320).fit("crop").auto("format").url() : undefined;
+const external = !event.slug?.current;
+---
+
+<a
+  href={eventHref(event)}
+  target={external ? "_blank" : undefined}
+  rel={external ? "noopener noreferrer" : undefined}
+  class="group grid grid-cols-[72px_minmax(0,1fr)] sm:grid-cols-[104px_minmax(0,1fr)] lg:grid-cols-[104px_176px_minmax(0,1fr)_auto] gap-x-5 sm:gap-x-7 gap-y-3 items-center py-5 border-b-[1.5px] border-ink text-ink no-underline transition-all duration-150 hover:bg-peach hover:px-4 hover:text-ink"
+>
+  <div class="row-span-2 lg:row-span-1 w-[72px] sm:w-[104px] aspect-3/4 overflow-hidden bg-sand rotate-[-1.5deg]">
+    {thumb && <img src={thumb} alt="" class="w-full h-full object-cover block" loading="lazy" width="104" height="139" />}
+  </div>
+  <div>
+    <div class="font-mono text-[11px] uppercase tracking-wider mb-1.5">Next date</div>
+    <div class="display text-[30px] sm:text-[36px] leading-[0.9] text-grape">{next ? fmtShort(next.date) : "TBC"}</div>
+    <div class="font-mono text-xs uppercase mt-1.5">{repeatLabel(event).short}</div>
+  </div>
+  <div class="col-start-2 lg:col-start-auto">
+    <div class="text-[20px] sm:text-[23px] font-bold leading-[1.15] mb-1.5">{event.name}</div>
+    <div class="font-mono text-[13px] leading-relaxed">
+      {next ? timeRange(next.startTime, next.endTime) : ""}{event.venue?.name ? ` · ${event.venue.name}` : ""}
+    </div>
+    {event.audience && <div class="tag mt-2">{event.audience}</div>}
+  </div>
+  <span class="hidden lg:inline-block font-mono text-[13px] uppercase whitespace-nowrap px-3.5 py-2.5 bg-coral text-ink group-hover:bg-ink group-hover:text-cream">Details →</span>
+</a>

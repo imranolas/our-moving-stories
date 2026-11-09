@@ -1,17 +1,7 @@
-import type { Props } from "./eventsSection";
+import { formatAddress, type Venue } from "../lib/schedule";
 
-export const Address = ({
-  address,
-  name,
-}: Props["events"][number]["venue"]) => {
-  const formattedAddress = Object.keys(address)
-    .map((key) => address[key])
-    .filter((e) => e.trim().length > 0)
-    .join(", ");
-
-  return (
-    <span>
-      {name}, {formattedAddress}
-    </span>
-  );
+/** Venue name and address on one line, e.g. "Open Havelock, Willowbrook Road, UB2 4RH". */
+export const Address = ({ name, address }: Venue) => {
+  const formatted = formatAddress({ address });
+  return <span>{[name, formatted].filter(Boolean).join(", ")}</span>;
 };

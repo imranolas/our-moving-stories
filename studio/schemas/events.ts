@@ -1,5 +1,6 @@
 import { defineField, defineType, defineArrayMember } from "sanity";
-import { CalendarIcon } from "@sanity/icons";
+import { CalendarIcon } from "@sanity/icons/Calendar";
+import { SessionGeneratorInput } from "../components/SessionGenerator";
 
 export const eventType = defineType({
   name: "event",
@@ -10,76 +11,158 @@ export const eventType = defineType({
     defineField({
       name: "name",
       type: "string",
+      title: "Event Name",
+      description: "The name of the event as it will appear on the site.",
+    }),
+
+    defineField({
+      name: "slug",
+      type: "slug",
+      title: "Slug",
+      description:
+        "URL path for this event's detail page (auto-generated from name).",
+      options: { source: "name" },
+      validation: (Rule) => Rule.required(),
+    }),
+
+    defineField({
+      name: "audience",
+      type: "string",
+      title: "Who it's for",
+      description: "Short tag shown on the listing, e.g. 'Under-5s + grown-ups' or 'Everyone'.",
+    }),
+
+    defineField({
+      name: "summary",
+      type: "text",
+      rows: 3,
+      title: "Summary",
+      description: "One or two sentences shown under the title on the event page.",
+    }),
+
+    defineField({
+      name: "photo",
+      type: "image",
+      title: "Card photo",
+      description:
+        "A photo from the sessions, used on listings and the event page. If empty, the poster is used instead.",
+      options: { hotspot: true },
     }),
 
     defineField({
       name: "poster",
       type: "image",
+      title: "Poster Image",
+      description: "A promotional image or poster for the event.",
     }),
 
     defineField({
       name: "link",
       type: "url",
+      title: "Booking Link",
+      description:
+        "External URL for tickets or registration (e.g. Eventbrite, Google Forms).",
     }),
 
     defineField({
+      name: "eventbriteId",
+      type: "string",
+      title: "Eventbrite ID",
+      description:
+        "Set by the Eventbrite sync (scripts/sync-eventbrite.ts). Sessions and the booking link are kept in step with this Eventbrite event or series.",
+      readOnly: true,
+    }),
+    defineField({
       name: "venue",
       type: "reference",
+      title: "Venue",
+      description: "Where the event takes place. Select from existing venues or create a new one.",
       to: [{ type: "venue" }],
     }),
 
     defineField({
       name: "description",
       type: "portableText",
+      title: "Description",
+      description: "Full description of the event, including what to expect and who it's for.",
     }),
 
     defineField({
-      name: "startDate",
-      type: "datetime",
-      title: "Start Date & Time",
-    }),
-
-    defineField({
-      name: "endDate",
-      type: "datetime",
-      title: "End Date & Time",
-    }),
-
-    defineField({
-      name: "isRecurring",
-      type: "boolean",
-      title: "Recurring Event",
-    }),
-
-    // Optional field
-    defineField({
-      name: "recurrence",
-      title: "Recurrence",
-      type: "object",
-      hidden: ({ parent }) => !parent.isRecurring,
-      fields: [
-        defineField({
-          name: "frequency",
-          type: "string",
-          options: {
-            list: [
-              { title: "Daily", value: "daily" },
-              { title: "Weekly", value: "weekly" },
-              { title: "Monthly", value: "monthly" },
-              { title: "Yearly", value: "yearly" },
-            ],
+      name: "sessions",
+      type: "array",
+      title: "Sessions",
+      description:
+        "Individual session dates for this event. Use the generator to create dates from a recurrence pattern.",
+      of: [
+        defineArrayMember({
+          type: "object",
+          fields: [
+            defineField({
+              name: "date",
+              type: "date",
+              title: "Date",
+              validation: (Rule) => Rule.required(),
+            }),
+            defineField({
+              name: "startTime",
+              type: "string",
+              title: "Start Time",
+              description:
+                "e.g. 09:30 (24h format).",
+            }),
+            defineField({
+              name: "endTime",
+              type: "string",
+              title: "End Time",
+              description:
+                "e.g. 11:30 (24h format).",
+            }),
+            defineField({
+              name: "note",
+              type: "string",
+              title: "Note",
+              description:
+                "Optional note for this session (e.g. 'Guest artist: Jane Doe').",
+            }),
+            defineField({
+              name: "cancelled",
+              type: "boolean",
+              title: "Cancelled",
+              description:
+                "Mark this session as cancelled. It still appears, crossed out, with the note as the reason (e.g. 'Half term').",
+              initialValue: false,
+            }),
+          ],
+          preview: {
+            select: { date: "date", note: "note", cancelled: "cancelled" },
+            prepare({ date, note, cancelled }) {
+              return {
+                title: cancelled ? `[CANCELLED] ${date}` : date || "No date",
+                subtitle: note || "",
+              };
+            },
           },
         }),
-        defineField({
-          name: "interval",
-          type: "number",
-          description:
-            "The interval between recurrences. For example, an interval of 2 with a frequency of weekly means every 2 weeks.",
-        }),
-        defineField({
-          name: "endDate",
-          type: "date",
-          description: "The end date of the recurrence.",
+      ],
+      components: {
+        input: SessionGeneratorInput,
+      },
+    }),
+
+    defineField({
+      name: "info",
+      type: "array",
+      title: "Key details",
+      description: "Rows such as Who / Access / Facilities shown on the event page. 'Where' and 'Cost' are added automatically.",
+      of: [
+        defineArrayMember({
+          type: "object",
+          name: "infoRow",
+          fields: [
+            defineField({ name: "label", type: "string", title: "Label", validation: (Rule) => Rule.required() }),
+            defineField({ name: "value", type: "string", title: "Value", validation: (Rule) => Rule.required() }),
+          ],
+          preview: { select: { title: "label", subtitle: "value" } },
         }),
       ],
     }),
@@ -87,6 +170,8 @@ export const eventType = defineType({
     defineField({
       name: "price",
       type: "number",
+      title: "Price",
+      description: "Ticket price in GBP. Leave at 0 or empty for free events.",
       validation: (Rule) => Rule.min(0) && Rule.precision(2),
     }),
   ],

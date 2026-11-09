@@ -2,36 +2,82 @@
 import Nav from "../components/Nav.astro";
 import Footer from "../components/Footer.astro";
 import "../styles/tailwind.css";
-import { VisualEditing } from "@sanity/astro/visual-editing";
+import { stegaClean } from "@sanity/client/stega";
+import SanityVisualEditing from "../components/SanityVisualEditing";
 
 interface Props {
   title: string;
+  /** Use this exact <title>, without the " · Our Moving Stories" suffix (e.g. the homepage's SEO title). */
+  fullTitle?: string;
+  description?: string;
+  ogImage?: string;
+  /** Keep the page out of search results. It stays reachable and its links are still followed. */
+  noindex?: boolean;
+  /** @deprecated The header is always solid now; kept so older callers still compile. */
+  transparentNav?: boolean;
 }
 
-const { title } = Astro.props;
-const visualEditingEnabled = import.meta.env
-  .PUBLIC_SANITY_VISUAL_EDITING_ENABLED;
+const SITE = "https://ourmovingstories.com";
+const props = Astro.props;
+// In draft mode Sanity strings carry invisible stega markers; keep them out of <head>.
+const title = stegaClean(props.title);
+const fullTitleOverride = stegaClean(props.fullTitle);
+const ogImage = stegaClean(props.ogImage);
+const noindex = props.noindex ?? false;
+const description = stegaClean(props.description) || "Free community dance, art and movement sessions for families in West London. Explore movement, make art, and connect through creativity with Our Moving Stories.";
+// Canonical URLs have no trailing slash (src/middleware.ts redirects slash URLs to match).
+const canonicalUrl = new URL(Astro.url.pathname.replace(/(.)\/+$/, "$1"), SITE);
+const fullTitle =
+  fullTitleOverride?.trim() ||
+  (title && title !== "Our Moving Stories" ? `${title} · Our Moving Stories` : "Our Moving Stories");
+// 1200×630 crop of the hero poster, used wherever a page has no image of its own.
+const ogImageUrl = new URL(ogImage || "/img/og-default.jpg", SITE).href;
 ---
 
 <!doctype html>
-<html lang="en">
+<html lang="en-GB">
   <head>
     <meta charset="UTF-8" />
-    <meta name="description" content="Astro description" />
-    <meta name="viewport" content="width=device-width" />
+    <meta name="description" content={description} />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#F3EDE2" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="sitemap" href="/sitemap.xml" />
+    {noindex ? <meta name="robots" content="noindex, follow" /> : <link rel="canonical" href={canonicalUrl.href} />}
     <meta name="generator" content={Astro.generator} />
-    <script
-      defer
-      src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"
-    ></script>
-    <title>{title}</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;800;900&family=Karla:wght@400;500;700&family=DM+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonicalUrl.href} />
+    <meta property="og:site_name" content="Our Moving Stories" />
+    <meta property="og:locale" content="en_GB" />
+    <meta property="og:image" content={ogImageUrl} />
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={fullTitle} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImageUrl} />
+
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.15.11/dist/cdn.min.js"></script>
+    <title>{fullTitle}</title>
   </head>
-  <body class="bg-primary text-text">
+  <body>
+    <a href="#main" class="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-200 bg-ink text-cream px-4 py-2 font-mono text-sm uppercase">Skip to content</a>
     <Nav />
-    <slot />
+    <main id="main">
+      <slot />
+    </main>
     <Footer />
-    <VisualEditing enabled={visualEditingEnabled} />
+    {Astro.locals.preview && <SanityVisualEditing client:only="react" />}
   </body>
 </html>

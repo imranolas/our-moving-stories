@@ -1,6 +1,6 @@
 // ./schemas/promotionType.ts
 
-import { StarIcon } from "@sanity/icons";
+import { StarIcon } from "@sanity/icons/Star";
 import { defineField, defineType } from "sanity";
 
 export const promotionType = defineType({
@@ -11,10 +11,14 @@ export const promotionType = defineType({
     defineField({
       name: "title",
       type: "string",
+      title: "Title",
+      description: "Promotional headline or message text.",
     }),
     defineField({
       name: "link",
       type: "url",
+      title: "Link",
+      description: "URL the promotion links to (e.g. a booking page or event).",
     }),
   ],
   icon: StarIcon,

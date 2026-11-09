@@ -1,0 +1,99 @@
+---
+import { loadQuery } from "../../sanity/lib/load-query";
+import { stegaClean } from "@sanity/client/stega";
+import Layout from "../../layouts/Layout.astro";
+import { EVENT_FIELDS, eventHref, parseDate, timeRange, todayISO, type Event } from "../../lib/schedule";
+
+
+const { data } = await loadQuery<Event[]>({ query: `*[_type == "event"]{ ${EVENT_FIELDS} }`, preview: Astro.locals.preview });
+const today = todayISO();
+
+const rows = (data ?? [])
+  .flatMap((e) =>
+    (e.sessions ?? []).map((s) => ({
+      date: s.date,
+      time: timeRange(s.startTime, s.endTime),
+      start: s.startTime ?? "",
+      note: s.note,
+      cancelled: !!s.cancelled,
+      event: e.name,
+      href: eventHref(e),
+      venue: e.venue?.name ?? "",
+    }))
+  )
+  .sort((a, b) => a.date.localeCompare(b.date) || a.start.localeCompare(b.start));
+
+const eventNames = [...new Set(rows.map((r) => r.event))].sort();
+const venueNames = [...new Set(rows.map((r) => r.venue).filter(Boolean))].sort();
+const dayLabel = (s: string) => parseDate(s).toLocaleDateString("en-GB", { weekday: "short", day: "numeric", month: "short" });
+const yearLabel = (s: string) => parseDate(s).getFullYear();
+---
+
+<Layout
+  title="Session timetable"
+  description="Dates, times and venues for every free Our Moving Stories session in Southall and Acton. Filter by event, venue or date, then book free on Eventbrite."
+>
+  <section
+    class="wrap pt-14 md:pt-20 pb-20 md:pb-24"
+    x-data={`{
+      period: 'upcoming', event: '', venue: '', today: '${today}', visible: 0,
+      weekEnd() { const d = new Date(); d.setDate(d.getDate() + (7 - d.getDay())); return d.toISOString().slice(0, 10); },
+      monthEnd() { const d = new Date(); return new Date(d.getFullYear(), d.getMonth() + 1, 0).toISOString().slice(0, 10); },
+      show(el) {
+        const { date, cancelled, event, venue } = el.dataset;
+        if (this.event && event !== this.event) return false;
+        if (this.venue && venue !== this.venue) return false;
+        const up = date >= this.today;
+        if (this.period === 'upcoming') return up;
+        if (this.period === 'week') return up && date <= this.weekEnd();
+        if (this.period === 'month') return up && date <= this.monthEnd();
+        if (this.period === 'past') return !up;
+        return true;
+      },
+      count() { this.$nextTick(() => { this.visible = [...this.$refs.list.children].filter(li => li.style.display !== 'none').length; }); }
+    }`}
+    x-effect="period; event; venue; count()"
+  >
+    <div class="eyebrow text-grape mb-3.5">
+      <img src="/img/leaves/leaf-5.svg" alt="" aria-hidden="true" style="transform: rotate(18deg)" />Diary
+    </div>
+    <h1 class="display text-[clamp(64px,10vw,160px)] leading-[0.82] text-grape mb-10">All <span class="text-coral">sessions</span></h1>
+
+    <div class="flex flex-wrap gap-2 font-mono text-[13px] uppercase mb-4" role="group" aria-label="When">
+      {[["upcoming", "All upcoming"], ["week", "This week"], ["month", "This month"], ["past", "Past"]].map(([key, label]) => (
+        <button type="button" @click={`period = '${key}'`} :aria-pressed={`period === '${key}'`} :class={`period === '${key}' ? 'bg-ink text-cream' : 'text-ink'`} class="border-2 border-ink px-4 py-2.5">{label}</button>
+      ))}
+    </div>
+    <div class="flex flex-wrap gap-3 mb-8">
+      <label class="sr-only" for="f-event">Event</label>
+      <select id="f-event" x-model="event" class="font-mono text-[13px] uppercase bg-cream border-2 border-ink px-3 py-2.5 text-ink">
+        <option value="">All events</option>
+        {eventNames.map((n) => <option value={stegaClean(n)}>{n}</option>)}
+      </select>
+      <label class="sr-only" for="f-venue">Venue</label>
+      <select id="f-venue" x-model="venue" class="font-mono text-[13px] uppercase bg-cream border-2 border-ink px-3 py-2.5 text-ink">
+        <option value="">All venues</option>
+        {venueNames.map((n) => <option value={stegaClean(n)}>{n}</option>)}
+      </select>
+    </div>
+
+    <ul x-ref="list" class="border-t-[3px] border-ink">
+      {rows.map((r) => (
+        <li data-date={r.date} data-cancelled={String(r.cancelled)} data-event={stegaClean(r.event)} data-venue={stegaClean(r.venue)} x-show="show($el)">
+          <a href={r.href} class:list={["grid grid-cols-[minmax(0,1fr)] sm:grid-cols-[190px_170px_minmax(0,1fr)_auto] gap-x-6 gap-y-1 items-baseline py-4 border-b-[1.5px] border-ink text-ink no-underline hover:bg-peach hover:px-4 transition-all duration-150", r.cancelled && "opacity-60"]}>
+            <span class:list={["display text-[28px] leading-none text-grape", r.cancelled && "line-through"]}>
+              {dayLabel(r.date)} <span class="font-mono text-xs font-normal text-ink/60 align-middle">{yearLabel(r.date)}</span>
+            </span>
+            <span class="font-mono text-[13px] uppercase">{r.time}</span>
+            <span class="text-[19px] font-bold leading-tight">
+              {r.event}
+              {r.cancelled ? <span class="block font-mono text-xs uppercase text-coral-deep mt-1">Cancelled{r.note ? ` · ${r.note}` : ""}</span> : r.note && <span class="block font-normal text-[15px] text-ink/70">{r.note}</span>}
+            </span>
+            <span class="font-mono text-[13px]">{r.venue}</span>
+          </a>
+        </li>
+      ))}
+    </ul>
+    <p x-show="visible === 0" x-cloak class="py-8 text-lg">No sessions match these filters.</p>
+  </section>
+</Layout>

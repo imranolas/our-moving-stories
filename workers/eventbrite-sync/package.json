@@ -1,0 +1,21 @@
+{
+  "name": "@our-moving-stories/eventbrite-sync-worker",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "cf dev",
+    "build": "cf build",
+    "deploy": "cf deploy",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@our-moving-stories/eventbrite-sync": "workspace:*",
+    "@sanity/client": "^8.15.0"
+  },
+  "devDependencies": {
+    "@cloudflare/vite-plugin": "2.0.0-beta.v.9",
+    "cf": "1.0.0-beta.28",
+    "typescript": "^6.0.3",
+    "vite": "^8.3.5"
+  }
+}

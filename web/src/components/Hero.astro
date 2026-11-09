@@ -1,43 +1,233 @@
 ---
+import { urlFor } from "../sanity/lib/urlFor";
+import { loadQuery } from "../sanity/lib/load-query";
+import { highlight, splitHighlight } from "../lib/text";
+import { stegaClean } from "@sanity/client/stega";
+import { EVENT_FIELDS, eventHref, fmtShort, nextSession, splitEvents, timeRange, type Event } from "../lib/schedule";
+
+type SanityFile = { asset?: { url?: string } };
+
 export type Props = {
   _type: "hero";
   _key: string;
+  kicker?: string;
   title: string;
   subtitle?: string;
-  backgroundImage?: {
-    asset: {
-      url: string;
-    };
-  };
-  cta?: {
-    title: string;
-    link: string;
-  };
+  image?: any;
+  posterTall?: any;
+  video?: SanityFile;
+  videoSmall?: SanityFile;
+  videoTall?: SanityFile;
+  videoDescription?: string;
+  overlayStrength?: number;
+  badge?: string;
+  badgeRing?: string;
+  cta?: { title?: string; link?: string };
+  showNextUp?: boolean;
 };
 
-const { title, cta } = Astro.props;
+const {
+  kicker,
+  title,
+  subtitle,
+  image,
+  posterTall,
+  video,
+  videoSmall,
+  videoTall,
+  videoDescription,
+  overlayStrength,
+  badge = "Free",
+  badgeRing = "All ages · All abilities · Free · ",
+  cta,
+  showNextUp = true,
+} = Astro.props;
+
+const isHome = Astro.url.pathname === "/";
+const uploadedVideo = video?.asset?.url;
+// The homepage falls back to the montage bundled with the site.
+const useVideo = !!uploadedVideo || (!image?.asset && isHome);
+const sources = {
+  wide: uploadedVideo || "/video/hero-wide.mp4",
+  small: videoSmall?.asset?.url || (uploadedVideo ? uploadedVideo : "/video/hero-wide-720.mp4"),
+  tall: videoTall?.asset?.url || (uploadedVideo ? "" : "/video/hero-tall.mp4"),
+};
+const posterWide = image?.asset
+  ? urlFor(image).width(1920).height(1080).auto("format").url()
+  : useVideo && !uploadedVideo
+    ? "/video/hero-wide-poster.jpg"
+    : undefined;
+const posterNarrow = posterTall?.asset
+  ? urlFor(posterTall).width(1080).height(1920).auto("format").url()
+  : !uploadedVideo
+    ? "/video/hero-tall-poster.jpg"
+    : posterWide;
+const objectPosition = image?.hotspot
+  ? `${(image.hotspot.x * 100).toFixed(1)}% ${(image.hotspot.y * 100).toFixed(1)}%`
+  : "center";
+const hasMedia = useVideo || !!image?.asset;
+
+const k = (overlayStrength ?? 60) / 60;
+const a = (x: number) => Math.min(1, x * k).toFixed(2);
+const overlay = `linear-gradient(to top, rgba(30,20,51,${a(0.9)}) 0%, rgba(30,20,51,${a(0.68)}) 32%, rgba(30,20,51,0) 64%), linear-gradient(to right, rgba(30,20,51,${a(0.56)}) 0%, rgba(30,20,51,0) 60%)`;
+
+const { lead, accent } = splitHighlight(title);
+// The coral accent is as big as the design allows (the clamp), but shrinks to keep its words on one line:
+// Big Shoulders Display capitals average under 0.5em each, so N characters fit in N × 0.5em of the
+// heading's width (100cqi; the h1 is a size container). It never goes below the white lead's 40px; longer
+// text than that allows wraps instead. Short accents like "Movement." keep the full clamp size.
+const accentSize = accent && `max(40px, min(clamp(64px, 15vw, 232px), 100cqi / ${stegaClean(accent).length * 0.5}))`;
+
+// "Next up" uses the soonest session across all events.
+let nextUp: { title: string; href: string; date: string; time: string; venue?: string } | null = null;
+if (showNextUp) {
+  const { data: events } = await loadQuery<Event[]>({ query: `*[_type == "event"]{ ${EVENT_FIELDS} }`, preview: Astro.locals.preview });
+  const first = splitEvents(events ?? []).upcoming[0];
+  const s = first && nextSession(first);
+  if (first && s) {
+    nextUp = { title: first.name, href: eventHref(first), date: fmtShort(s.date), time: timeRange(s.startTime, s.endTime), venue: first.venue?.name };
+  }
+}
+
+const SWASH = "M203.449 626.485C203.449 626.485 222.534 651.302 222.534 651.302C285.515 626.485 509.738 598.589 662.547 607.713C662.547 600.629 642.881 587.582 642.881 587.582C615.398 577.572 264.493 601.162 203.449 626.485Z";
 ---
 
-<section class="w-full max-w-5xl mx-auto text-center pb-24 relative">
-  <img src="/img/yellow.svg" class="absolute z-0 -left-48" alt="" />
-  <img src="/img/teal.svg" class="absolute top-[-300px] -right-48 z-0" alt="" />
-  <div class="z-10 relative">
-    <div
-      class="box-content m-auto px-4 lg:px-0 max-w-lg text-[38px] font-bold leading-[150%] text-center my-24"
-    >
-      {title}
-    </div>
+{hasMedia ? (
+  <section id="top" class="relative h-[calc(100svh-64px)] md:h-[calc(100svh-80px)] min-h-[560px] max-h-[1080px] overflow-hidden bg-ink text-cream">
+    {useVideo ? (
+      <video
+        data-hero-video
+        data-preview-keep="data-wide data-small data-tall data-poster-wide data-poster-tall"
+        data-wide={sources.wide}
+        data-small={sources.small}
+        data-tall={sources.tall}
+        data-poster-wide={posterWide}
+        data-poster-tall={posterNarrow}
+        poster={posterWide}
+        muted
+        loop
+        playsinline
+        preload="metadata"
+        aria-label={videoDescription || "Montage filmed at our sessions"}
+        class="absolute inset-0 w-full h-full object-cover block"
+      ></video>
+    ) : (
+      <img src={posterWide} alt="" class="absolute inset-0 w-full h-full object-cover" style={`object-position: ${objectPosition}`} loading="eager" fetchpriority="high" />
+    )}
+    <div aria-hidden="true" class="absolute inset-0" style={`background: ${overlay}`}></div>
 
-    {
-      cta && (
-        <a
-          href={cta.link}
-          class="inline-block focus:outline-none bg-text uppercase font-medium text-light text-sm py-2 px-4 hover:cursor-pointer tracking-widest"
-          aria-label="subscribe"
-        >
-          {cta.title}
+    {/* Badge: at least 220px wide so the ring text stays readable on phones; its text scales with it (cqi). */}
+    {badge && (
+      <div class="absolute top-4 right-3 z-2 w-[clamp(220px,calc(160px_+_18vw),400px)] aspect-3/2 [container-type:inline-size] pointer-events-none" aria-hidden="true">
+        <img src="/img/leaves/wing-left.svg" alt="" class="absolute left-0 top-0 w-[52%] h-auto origin-[92%_88%] rotate-[-8deg]" />
+        <img src="/img/leaves/wing-right.svg" alt="" class="absolute right-0 top-0 w-[52%] h-auto origin-[8%_88%] rotate-[8deg]" />
+        <div class="absolute left-1/2 top-[56%] w-[42%] aspect-square rounded-full bg-cream border-2 border-ink flex items-center justify-center -translate-x-1/2 -translate-y-1/2 rotate-[-8deg]">
+          <div class="absolute inset-[5px] animate-oms-spin">
+            <svg viewBox="0 0 100 100" width="100%" height="100%">
+              <defs><path id="omsCirc" d="M50,50 m-38,0 a38,38 0 1,1 76,0 a38,38 0 1,1 -76,0" /></defs>
+              <text class="font-mono uppercase" style="font-size: 9.6px; letter-spacing: 1.3px;" fill="#1E1433"><textPath href="#omsCirc">{badgeRing}</textPath></text>
+            </svg>
+          </div>
+          <span class="display text-grape text-[length:9.5cqi]">{badge}</span>
+        </div>
+      </div>
+    )}
+
+    <div class="relative z-1 h-full wrap py-8 flex flex-col justify-end">
+      {kicker && <div class="eyebrow mb-[18px] text-cream">{kicker}</div>}
+      <h1 class="display text-cream [container-type:inline-size] [text-shadow:0_2px_24px_rgba(30,20,51,0.35)]">
+        <span class="block text-[clamp(40px,6.2vw,100px)] max-w-[11.5em] text-balance">{lead}</span>
+        {accent && (
+          <span class="inline-block leading-[0.8] mt-[0.03em] text-coral tracking-[-0.005em] text-balance" style={`font-size: ${accentSize}`}>
+            {accent}
+            <svg aria-hidden="true" viewBox="200 574 466 80" preserveAspectRatio="none" class="block w-[94%] h-[0.12em] mt-[0.03em] ml-[3%] overflow-visible">
+              <path d={SWASH} fill="#F3EDE2" />
+            </svg>
+          </span>
+        )}
+      </h1>
+      <div class="flex justify-between items-center gap-3 flex-wrap mt-[26px]">
+        <a href="https://instagram.com/our.movingstories" target="_blank" rel="noopener noreferrer" class="font-mono text-xs uppercase tracking-[0.04em] text-cream hover:text-coral-soft">@our.movingstories ↗</a>
+        {useVideo && (
+          <button type="button" data-hero-toggle data-preview-keep class="font-mono text-xs uppercase tracking-[0.04em] bg-transparent text-cream px-3 py-2 border-2 border-cream hover:bg-cream hover:text-ink" aria-label="Pause the video">❚❚ Pause</button>
+        )}
+      </div>
+    </div>
+  </section>
+) : (
+  <section id="top" class="wrap pt-14 md:pt-20 pb-6">
+    {kicker && <div class="eyebrow text-grape mb-4">{kicker}</div>}
+    <h1 class="display text-grape text-[clamp(56px,9vw,140px)] leading-[0.82] text-balance" set:html={highlight(title)} />
+  </section>
+)}
+
+{(subtitle || nextUp) && (
+  <section class="wrap pt-12 pb-[72px]">
+    <div class="grid gap-x-12 gap-y-6 items-end grid-cols-[repeat(auto-fit,minmax(min(100%,300px),1fr))]">
+      {subtitle && <p class="text-[21px] leading-[1.45] text-pretty">{subtitle}</p>}
+      <div class="flex gap-3 flex-wrap">
+        <a href="/#whats-on" class="btn-primary">See what's on</a>
+        {cta?.title && cta?.link ? (
+          <a href={cta.link} class="btn-outline">{cta.title}</a>
+        ) : (
+          <a href="#contact" class="btn-outline">Newsletter</a>
+        )}
+      </div>
+      {nextUp && (
+        <a href={nextUp.href} class="block border-t-2 border-ink pt-3.5 text-ink no-underline hover:text-grape">
+          <div class="eyebrow text-grape mb-1.5">Next up · {nextUp.date}</div>
+          <div class="font-display font-extrabold text-[28px] uppercase leading-none">{nextUp.title} →</div>
+          <div class="text-[15px] mt-1">{nextUp.time}{nextUp.venue ? ` · ${nextUp.venue}` : ""}</div>
         </a>
-      )
-    }
-  </div>
-</section>
+      )}
+    </div>
+  </section>
+)}
+
+<script>
+  const video = document.querySelector<HTMLVideoElement>("[data-hero-video]");
+  const toggle = document.querySelector<HTMLButtonElement>("[data-hero-toggle]");
+  if (video) {
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const tallQuery = window.matchMedia("(max-aspect-ratio: 4/5)");
+    let paused = reduce;
+
+    const setLabel = () => {
+      if (!toggle) return;
+      toggle.textContent = paused ? "▶ Play" : "❚❚ Pause";
+      toggle.setAttribute("aria-label", paused ? "Play the video" : "Pause the video");
+    };
+
+    const pick = () => {
+      const d = video.dataset;
+      const conn = (navigator as any).connection;
+      const small =
+        window.innerWidth * (window.devicePixelRatio || 1) <= 1400 ||
+        !!(conn && (conn.saveData || /(^|-)(2g|3g)$/.test(conn.effectiveType || "")));
+      const tall = tallQuery.matches && !!d.tall;
+      const src = tall ? d.tall! : small ? d.small! : d.wide!;
+      if (video.dataset.current !== src) {
+        video.dataset.current = src;
+        const poster = tall ? d.posterTall : d.posterWide;
+        if (poster) video.poster = poster;
+        video.src = src;
+      }
+      if (!paused) video.play().catch(() => { paused = true; setLabel(); });
+    };
+
+    video.muted = true;
+    pick();
+    setLabel();
+    tallQuery.addEventListener?.("change", pick);
+    toggle?.addEventListener("click", () => {
+      if (video.paused) {
+        paused = false;
+        video.play().catch(() => {});
+      } else {
+        paused = true;
+        video.pause();
+      }
+      setLabel();
+    });
+  }
+</script>

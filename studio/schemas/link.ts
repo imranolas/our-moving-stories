@@ -8,28 +8,31 @@ export default {
     {
       title: "Internal Link",
       name: "internalLink",
-      description: "Select pages for navigation",
+      description: "Link to a page within this site.",
       type: "object",
       fields: [
         {
           name: "reference",
-          title: "Reference",
+          title: "Page",
           type: "reference",
+          description: "Select the page to link to.",
           to: [{ type: "page" }],
         },
         {
           name: "anchor",
           title: "Anchor",
           type: "string",
-          description: "Use the ID of the element you want to link to",
+          description:
+            "Optional anchor to scroll to a specific section on the page (e.g. 'whats-on').",
         },
       ],
     },
     {
       name: "externalUrl",
-      title: "External URL",
-      description: "Use fully qualified URLS for external link",
-      type: "url",
+      title: "URL / Path",
+      description:
+        "A URL or path for the link (e.g. /events, /sessions, or https://example.com). Leave empty if using an internal link above.",
+      type: "string",
     },
   ],
 };

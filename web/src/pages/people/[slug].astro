@@ -1,0 +1,83 @@
+---
+import type { SanityDocument } from "@sanity/client";
+import { loadQuery } from "../../sanity/lib/load-query";
+import { urlFor } from "../../sanity/lib/urlFor";
+import { toHTML } from "@portabletext/to-html";
+import Layout from "../../layouts/Layout.astro";
+import { clip } from "../../lib/text";
+
+const { slug } = Astro.params;
+
+const { data: person } = await loadQuery<SanityDocument>({
+  query: `*[_type == "person" && slug.current == $slug][0] { name, role, bio, excerpt, profile, qual, social }`,
+  params: { slug },
+  preview: Astro.locals.preview,
+});
+
+if (!person) {
+  return Astro.rewrite("/404");
+}
+
+const socialUrls: Record<string, (handle: string) => string> = {
+  twitter: (h) => `https://x.com/${h}`,
+  linkedin: (h) => `https://linkedin.com/in/${h}`,
+  facebook: (h) => `https://facebook.com/${h}`,
+  instagram: (h) => `https://instagram.com/${h}`,
+};
+const bio = person.bio ? toHTML(person.bio) : "";
+---
+
+<Layout
+  title={person.name}
+  description={person.excerpt ? clip(person.excerpt) : undefined}
+  ogImage={person.profile ? urlFor(person.profile).width(1200).height(630).fit("crop").url() : undefined}
+>
+  <section class="wrap pt-7 pb-20 md:pb-[88px]">
+    <a href="/#people" class="inline-block font-mono text-[13px] uppercase text-ink no-underline mb-9 hover:text-grape">← The team</a>
+    <div class="grid gap-x-16 gap-y-12 items-start md:grid-cols-[minmax(0,1fr)_minmax(0,420px)]">
+      <div>
+        {person.role && <div class="eyebrow text-grape mb-4">{person.role}</div>}
+        <h1 class="display text-[clamp(56px,8vw,128px)] text-grape mb-8 text-balance">{person.name}</h1>
+        {person.excerpt && <p class="text-[21px] leading-[1.45] max-w-[30em] mb-8">{person.excerpt}</p>}
+        {person.social?.length > 0 && (
+          <div class="flex gap-3 flex-wrap">
+            {person.social.map((s: { platform: string; handle: string }) => (
+              <a href={socialUrls[s.platform]?.(s.handle) || "#"} target="_blank" rel="noopener noreferrer" class="btn-outline py-2.5 px-4 text-[13px]">{s.platform} ↗</a>
+            ))}
+          </div>
+        )}
+      </div>
+      {person.profile && (
+        <div class="relative pt-[18px] pr-[18px]">
+          <div class="absolute top-0 right-0 w-[88%] h-[92%] bg-coral rotate-2"></div>
+          <div class="relative aspect-4/5 overflow-hidden bg-lilac-mid rotate-[-1.5deg]">
+            <img src={urlFor(person.profile).width(840).height(1050).fit("crop").auto("format").url()} alt={person.name} class="w-full h-full object-cover block" />
+          </div>
+        </div>
+      )}
+    </div>
+  </section>
+
+  {(bio || person.qual?.length > 0) && (
+    <section class="bg-grape text-cream">
+      <div class="wrap pt-20 pb-[88px] grid gap-x-16 gap-y-14 items-start md:grid-cols-2">
+        {bio && (
+          <div>
+            <div class="eyebrow text-coral-soft mb-[18px]">About {person.name.split(" ")[0]}</div>
+            <div class="rich text-[19px] leading-relaxed [&_a]:text-cream" set:html={bio} />
+          </div>
+        )}
+        {person.qual?.length > 0 && (
+          <div>
+            <div class="eyebrow text-coral-soft mb-[18px]">Training &amp; qualifications</div>
+            <ul class="border-t-2 border-cream">
+              {person.qual.map((q: string) => (
+                <li class="py-3.5 border-b-[1.5px] border-dashed border-lilac-dash text-base">{q}</li>
+              ))}
+            </ul>
+          </div>
+        )}
+      </div>
+    </section>
+  )}
+</Layout>

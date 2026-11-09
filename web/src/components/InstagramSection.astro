@@ -1,0 +1,48 @@
+---
+export type Props = {
+  _type: "instagram";
+  _key: string;
+  enabled?: boolean;
+  eyebrow?: string;
+  title?: string;
+};
+
+const { enabled = true, eyebrow = "On Instagram", title = "@our.movingstories" } = Astro.props;
+---
+
+{enabled !== false && (
+  <section id="gallery" class="border-t-[3px] border-ink">
+    <div class="wrap py-20 md:py-24">
+      <div class="flex items-end justify-between gap-6 flex-wrap mb-9">
+        <div>
+          <div class="eyebrow text-grape mb-3.5">
+            <img src="/img/leaves/leaf-6.svg" alt="" aria-hidden="true" style="transform: rotate(-20deg)" />{eyebrow}
+          </div>
+          <h2 class="display text-[clamp(40px,6vw,88px)] leading-[0.86] text-grape normal-case">{title}</h2>
+        </div>
+        <a href="https://instagram.com/our.movingstories" target="_blank" rel="noopener noreferrer" class="btn-outline">Follow us ↗</a>
+      </div>
+      <ul
+        class="grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-4"
+        x-data="{ posts: [], loading: true }"
+        x-init="fetch('https://feed.ourmovingstories.com').then(r => r.json()).then(d => { posts = (Array.isArray(d) ? d : d.posts || []).slice(0, 6) }).catch(() => {}).finally(() => { loading = false })"
+      >
+        <template x-if="loading">
+          <li class="col-span-full py-12 font-mono text-sm uppercase text-ink/60">Loading posts…</li>
+        </template>
+        <template x-for="(post, index) in posts" :key="index">
+          <li>
+            <a x-bind:href="post.permalink" target="_blank" rel="noopener noreferrer" class="block aspect-square overflow-hidden bg-sand">
+              <img
+                x-bind:src="post.mediaType === 'VIDEO' ? post.thumbnailUrl : post.mediaUrl"
+                x-bind:alt="post.prunedCaption || 'Instagram post'"
+                class="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
+                loading="lazy"
+              />
+            </a>
+          </li>
+        </template>
+      </ul>
+    </div>
+  </section>
+)}

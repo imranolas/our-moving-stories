@@ -6,7 +6,7 @@ export const structure: StructureResolver = (S) =>
     .items([
       // list all document types except 'siteSettings'
       ...S.documentTypeListItems().filter(
-        (item) => !["settings", "footer", "nav"].includes(item.getId())
+        (item) => !["settings", "footer", "nav"].includes(item.getId() ?? "")
       ),
       S.divider(),
 

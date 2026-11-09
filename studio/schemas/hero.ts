@@ -1,44 +1,142 @@
-import { defineField, defineType, defineArrayMember } from "sanity";
-import { BoltIcon } from "@sanity/icons";
+import { defineField, defineType } from "sanity";
+import { BoltIcon } from "@sanity/icons/Bolt";
 
 export const heroType = defineType({
   name: "hero",
   title: "Hero",
   type: "object",
   icon: BoltIcon,
+  groups: [
+    { name: "content", title: "Content", default: true },
+    { name: "media", title: "Video & image" },
+    { name: "badge", title: "Badge" },
+  ],
   fields: [
+    defineField({
+      name: "kicker",
+      type: "string",
+      title: "Kicker",
+      group: "content",
+      description: "Small line above the headline, e.g. 'Free movement, art & community events · Across Ealing'.",
+    }),
     defineField({
       name: "title",
       type: "string",
       title: "Title",
+      group: "content",
+      description:
+        "The main headline. Wrap the final word(s) in *asterisks* to set them huge and coral with the brush swash, e.g. 'Everyone has a story to tell through *Movement.*'",
       validation: (Rule) => Rule.required(),
     }),
     defineField({
       name: "subtitle",
-      type: "string",
-      title: "Subtitle",
+      type: "text",
+      rows: 3,
+      title: "Intro",
+      group: "content",
+      description: "Paragraph shown just below the hero, next to the buttons and the 'Next up' session.",
     }),
     defineField({
-      name: "backgroundImage",
-      type: "image",
-      title: "Background Image",
+      name: "showNextUp",
+      type: "boolean",
+      title: "Show 'Next up'",
+      group: "content",
+      description: "Show the soonest upcoming session beside the intro.",
+      initialValue: true,
     }),
     defineField({
       name: "cta",
-      title: "Call to Action",
+      title: "Second button",
       type: "object",
+      group: "content",
+      description: "Shown next to 'See what's on'. Leave empty for a 'Newsletter' button.",
       fields: [
-        defineField({
-          name: "title",
-          type: "string",
-          title: "Title",
-        }),
+        defineField({ name: "title", type: "string", title: "Button text" }),
         defineField({
           name: "link",
           type: "string",
           title: "Link",
+          description: "URL or path (e.g. /about or https://example.com).",
         }),
       ],
     }),
+    defineField({
+      name: "video",
+      type: "file",
+      title: "Video (desktop, 1080p)",
+      group: "media",
+      description:
+        "Looping 16:9 MP4, ideally under 12 MB. On the homepage, leave all video fields empty to use the montage built into the site.",
+      options: { accept: "video/mp4,video/webm" },
+    }),
+    defineField({
+      name: "videoSmall",
+      type: "file",
+      title: "Video (small screens, 720p)",
+      group: "media",
+      description: "Optional lighter 16:9 version for laptops, tablets and slow connections.",
+      options: { accept: "video/mp4,video/webm" },
+    }),
+    defineField({
+      name: "videoTall",
+      type: "file",
+      title: "Video (phones, portrait)",
+      group: "media",
+      description: "Optional 9:16 version shown on phones held upright.",
+      options: { accept: "video/mp4,video/webm" },
+    }),
+    defineField({
+      name: "videoDescription",
+      type: "string",
+      title: "Video description",
+      group: "media",
+      description: "What the video shows, for screen-reader users.",
+    }),
+    defineField({
+      name: "image",
+      type: "image",
+      title: "Image / poster",
+      group: "media",
+      description:
+        "Shown before the video loads. With no video set (on pages other than the homepage) this becomes the hero background. Use the hotspot to set the focal point.",
+      options: { hotspot: true },
+    }),
+    defineField({
+      name: "posterTall",
+      type: "image",
+      title: "Portrait poster",
+      group: "media",
+      description: "Optional poster for the portrait phone video.",
+      options: { hotspot: true },
+    }),
+    defineField({
+      name: "overlayStrength",
+      type: "number",
+      title: "Overlay strength",
+      group: "media",
+      description: "How dark the gradient behind the headline is (0–100). Default 60.",
+      initialValue: 60,
+      validation: (Rule) => Rule.min(0).max(100),
+    }),
+    defineField({
+      name: "badge",
+      type: "string",
+      title: "Badge word",
+      group: "badge",
+      description: "Word in the spinning badge with the paper wings. Leave empty to hide the badge.",
+      initialValue: "Free",
+    }),
+    defineField({
+      name: "badgeRing",
+      type: "string",
+      title: "Badge ring text",
+      group: "badge",
+      description: "Text that circles the badge. End with ' · ' so it loops neatly.",
+      initialValue: "All ages · All abilities · Free · ",
+    }),
   ],
+  preview: {
+    select: { title: "title", media: "image" },
+    prepare: ({ title, media }) => ({ title: (title || "Hero").replace(/\*/g, ""), subtitle: "Hero", media }),
+  },
 });
