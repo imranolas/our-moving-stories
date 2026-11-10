@@ -2,7 +2,7 @@
 import { loadQuery } from "../sanity/lib/load-query";
 import { highlight } from "../lib/text";
 import EventRow from "./EventRow.astro";
-import { EVENT_FIELDS, eventHref, fmtDayMonth, lastSession, splitEvents, type Event } from "../lib/schedule";
+import { EVENT_FIELDS, splitEvents, type Event } from "../lib/schedule";
 
 // Re-exported so pages that import these types from here keep working.
 export type { Event, Session } from "../lib/schedule";
@@ -26,7 +26,6 @@ const {
 const { data } = await loadQuery<Event[]>({ query: `*[_type == "event"]{ ${EVENT_FIELDS} }`, preview: Astro.locals.preview });
 const { upcoming, past } = splitEvents(data ?? []);
 const shown = upcoming.slice(0, limit);
-const recent = past.slice(0, 3);
 ---
 
 <section id="whats-on" class="wrap py-20 md:py-24">
@@ -50,15 +49,8 @@ const recent = past.slice(0, 3);
     )}
   </div>
 
-  <div class="flex gap-x-[22px] gap-y-2.5 flex-wrap items-baseline mt-[26px] font-mono text-[13px]">
-    {recent.length > 0 && (
-      <>
-        <span class="uppercase tracking-wider">Recently:</span>
-        {recent.map((e) => (
-          <a href={eventHref(e)} class="text-grape hover:text-ink">{e.name} (last held {fmtDayMonth(lastSession(e)!.date)})</a>
-        ))}
-      </>
-    )}
-    <a href="/events" class="ml-auto uppercase text-ink hover:text-grape">All events →</a>
+  <div class="flex items-baseline justify-between gap-6 mt-3.5 font-mono text-sm uppercase">
+    {past.length > 0 && <span class="tracking-wider">{past.length} past {past.length === 1 ? "event" : "events"}</span>}
+    <a href="/events" class="ml-auto inline-block py-3 text-ink hover:text-grape">All events →</a>
   </div>
 </section>

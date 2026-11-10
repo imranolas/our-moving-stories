@@ -104,13 +104,5 @@ export const personType = defineType({
         }),
       ],
     }),
-    defineField({
-      name: "sortOrder",
-      type: "number",
-      title: "Sort Order",
-      description:
-        "Controls the display order on the site. Lower numbers appear first.",
-      validation: (Rule) => Rule.required(),
-    }),
   ],
 });

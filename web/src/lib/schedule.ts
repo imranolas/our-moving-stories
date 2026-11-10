@@ -35,6 +35,8 @@ export type Event = {
   venue?: Venue;
   info?: { label?: string; value?: string }[];
   description?: PortableTextBlock[];
+  /** From the event's Eventbrite page on synced events. */
+  faqs?: { question?: string; answer?: string }[];
   sessions?: Session[];
 };
 
@@ -123,6 +125,22 @@ export function rangeLabel(e: Event): string {
   const last = held[held.length - 1].date;
   if (first === last) return fmt(first, { weekday: "long", day: "numeric", month: "long", year: "numeric" });
   return `${fmt(first, { day: "numeric", month: "short", year: "numeric" })} – ${fmt(last, { day: "numeric", month: "short", year: "numeric" })}`;
+}
+
+/**
+ * When a past event ran, as briefly as reads naturally: "20 Dec 2025", "Oct 2026", "Apr – Sept 2026",
+ * "Sept 2024 – Jul 2025". Cancelled dates don't count.
+ */
+export function ranLabel(e: Event): string {
+  const held = sorted(e.sessions).filter((s) => !s.cancelled);
+  if (!held.length) return "";
+  const first = held[0].date;
+  const last = held[held.length - 1].date;
+  if (first === last) return fmt(first, { day: "numeric", month: "short", year: "numeric" });
+  const [a, b] = [parseDate(first), parseDate(last)];
+  if (a.getFullYear() !== b.getFullYear()) return `${fmt(first, { month: "short", year: "numeric" })} – ${fmt(last, { month: "short", year: "numeric" })}`;
+  if (a.getMonth() !== b.getMonth()) return `${fmt(first, { month: "short" })} – ${fmt(last, { month: "short", year: "numeric" })}`;
+  return fmt(first, { month: "short", year: "numeric" });
 }
 
 export type MonthGroup = {
@@ -219,7 +237,7 @@ export function splitEvents(events: Event[], today = todayISO()) {
 
 /** GROQ projection shared by every event query. */
 export const EVENT_FIELDS = `
-  _id, name, slug, link, price, audience, summary, info, description, sessions,
+  _id, name, slug, link, price, audience, summary, info, description, faqs, sessions,
   poster, photo,
   venue->{ name, address, googleMapsLink }
 `;

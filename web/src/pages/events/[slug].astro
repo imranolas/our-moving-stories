@@ -6,7 +6,6 @@ import Layout from "../../layouts/Layout.astro";
 import {
   EVENT_FIELDS,
   formatAddress,
-  fmtFull,
   fmtLong,
   futureSessions,
   lastSession,
@@ -15,6 +14,7 @@ import {
   monthGroups,
   nextSession,
   priceLabel,
+  ranLabel,
   rangeLabel,
   repeatLabel,
   timeRange,
@@ -61,6 +61,7 @@ const info = [
 if (!info.some((i) => /cost|price/i.test(i.label))) info.splice(where ? 1 : 0, 0, { label: "Cost", value: priceLabel(event.price) });
 const description = event.description ? toHTML(event.description as any) : "";
 const summary = event.summary || "";
+const faqs = (event.faqs ?? []).filter((f) => f.question && f.answer);
 ---
 
 <!-- Events with no upcoming dates stay reachable (and their links followed) but leave search results
@@ -94,8 +95,8 @@ const summary = event.summary || "";
             </>
           ) : (
             <>
-              <div class="eyebrow text-grape mb-2">No upcoming dates</div>
-              <div class="display text-[clamp(40px,4.4vw,60px)] leading-[0.9]">{last ? `Last held ${fmtFull(last.date)}` : "Dates to be announced"}</div>
+              <div class="eyebrow text-grape mb-2">{last ? "Past event" : "No dates yet"}</div>
+              <div class="display text-[clamp(40px,4.4vw,60px)] leading-[0.9]">{last ? ranLabel(event) : "Dates to be announced"}</div>
               <div class="text-lg mt-2.5">New dates are announced on Instagram and in the newsletter.</div>
             </>
           )}
@@ -131,6 +132,19 @@ const summary = event.summary || "";
             </div>
           ))}
         </div>
+        {faqs.length > 0 && (
+          <>
+            <h2 class="eyebrow text-coral-soft mt-14 mb-[18px]">Questions</h2>
+            <dl class="border-t-2 border-cream">
+              {faqs.map((f) => (
+                <div class="py-4 border-b-[1.5px] border-dashed border-lilac-dash">
+                  <dt class="font-bold text-lg leading-snug mb-1.5">{f.question}</dt>
+                  <dd class="text-base leading-relaxed whitespace-pre-line">{f.answer}</dd>
+                </div>
+              ))}
+            </dl>
+          </>
+        )}
       </div>
 
       <div x-data="{ all: false }">

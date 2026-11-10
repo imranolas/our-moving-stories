@@ -1,4 +1,5 @@
 import { bindings, defineConfig } from "cf/config";
+import * as entrypoint from "./src/worker.ts" with { type: "cf-worker" };
 
 /**
  * The public site: Astro on Cloudflare Workers via @astrojs/cloudflare. `cf build` runs `astro build`;
@@ -15,6 +16,9 @@ import { bindings, defineConfig } from "cf/config";
 export default defineConfig({
   worker: {
     name: "our-moving-stories",
+    // Astro's handler plus byte ranges for /video/* (Safari needs them to play video); see src/worker.ts.
+    entrypoint,
+    assets: { runWorkerFirst: ["/video/*"] },
     compatibilityDate: "2026-11-01",
     compatibilityFlags: ["nodejs_compat"],
     observability: { enabled: true },

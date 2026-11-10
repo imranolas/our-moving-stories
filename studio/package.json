@@ -7,7 +7,7 @@
     "build": "sanity build",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
-    "sync:eventbrite": "sanity exec scripts/sync-eventbrite.ts --with-user-token",
+    "sync:eventbrite": "sanity exec scripts/sync-eventbrite.ts --with-user-token --",
     "sync:eventbrite:apply": "sanity exec scripts/sync-eventbrite.ts --with-user-token -- --apply"
   },
   "dependencies": {

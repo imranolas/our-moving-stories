@@ -3,7 +3,7 @@ import { loadQuery } from "../../sanity/lib/load-query";
 import Layout from "../../layouts/Layout.astro";
 import EventRow from "../../components/EventRow.astro";
 import { urlFor } from "../../sanity/lib/urlFor";
-import { EVENT_FIELDS, eventHref, fmtFull, lastSession, splitEvents, type Event } from "../../lib/schedule";
+import { EVENT_FIELDS, eventHref, ranLabel, splitEvents, type Event } from "../../lib/schedule";
 
 
 const { data } = await loadQuery<Event[]>({ query: `*[_type == "event"]{ ${EVENT_FIELDS} }`, preview: Astro.locals.preview });
@@ -48,7 +48,7 @@ const { upcoming, past } = splitEvents(data ?? []);
                     {img?.asset && <img src={urlFor(img).width(440).height(587).fit("crop").auto("format").url()} alt="" class="w-full h-full object-cover grayscale-40 group-hover:grayscale-0 transition-[filter]" loading="lazy" />}
                   </div>
                   <div class="text-[20px] font-bold leading-tight mt-3">{e.name}</div>
-                  <div class="font-mono text-xs uppercase mt-1">Last held {fmtFull(lastSession(e)!.date)}</div>
+                  <div class="font-mono text-xs uppercase mt-1">{ranLabel(e)}</div>
                 </a>
               </li>
             );

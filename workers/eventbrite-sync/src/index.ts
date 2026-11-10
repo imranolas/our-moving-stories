@@ -1,17 +1,19 @@
 /**
  * Keeps Sanity's events in step with Eventbrite (see packages/eventbrite-sync for what it owns).
  *
- * - POST /eventbrite/<WEBHOOK_SECRET>  Eventbrite webhook. Replies 202 at once and syncs in the background.
- *   Eventbrite doesn't sign payloads, so the body is only a signal: everything is re-read with our token.
+ * - POST /eventbrite/<WEBHOOK_SECRET>  Eventbrite webhook. Replies 202 at once, then syncs the event the
+ *   payload names (its whole series), or everything if it names none (Eventbrite's "Test" button).
  * - GET  /eventbrite/<WEBHOOK_SECRET>  Dry run: returns what a sync would change, writes nothing.
+ *   Add ?event=<Eventbrite event ID> to dry-run one event, as its webhook would.
  * - GET  /health                       Liveness check.
- * - Cron (hourly)                      Same sync, as a safety net for missed webhooks.
+ * - Cron (daily)                       Full sync. The webhook is answered before it syncs, so Eventbrite
+ *                                      never retries a sync that failed; this catches it up.
  */
 import { env } from "cloudflare:workers";
 import { createClient } from "@sanity/client";
 import { syncEventbrite } from "@our-moving-stories/eventbrite-sync";
 
-async function runSync(trigger: string, apply: boolean) {
+async function runSync(trigger: string, apply: boolean, eventId?: string) {
   const lines: string[] = [];
   const client = createClient({
     projectId: env.SANITY_PROJECT_ID,
@@ -21,7 +23,7 @@ async function runSync(trigger: string, apply: boolean) {
     useCdn: false,
   });
   try {
-    const result = await syncEventbrite({ client, eventbriteToken: env.EVENTBRITE_PRIVATE_TOKEN, apply, log: (l) => lines.push(l) });
+    const result = await syncEventbrite({ client, eventbriteToken: env.EVENTBRITE_PRIVATE_TOKEN, apply, eventId, log: (l) => lines.push(l) });
     console.log(JSON.stringify({ trigger, ...result }));
     if (result.changed) console.log(lines.join("\n"));
     return lines;
@@ -40,6 +42,13 @@ function matchesSecret(candidate: string) {
   return a.byteLength === b.byteLength && crypto.subtle.timingSafeEqual(a, b);
 }
 
+/**
+ * The event a webhook is about. Event actions send `api_url: "https://www.eventbriteapi.com/v3/events/<id>/"`.
+ * Only that exact shape is accepted, and the sync builds its own requests from the ID.
+ */
+const eventIdFrom = (apiUrl: unknown) =>
+  typeof apiUrl === "string" ? /^https:\/\/www\.eventbriteapi\.com\/v3\/events\/(\d+)\/?$/.exec(apiUrl)?.[1] : undefined;
+
 const canWrite = () => env.SYNC_APPLY === "true";
 
 export default {
@@ -51,14 +60,22 @@ export default {
     if (!secret || !matchesSecret(decodeURIComponent(secret))) return new Response("Not found", { status: 404 });
 
     if (request.method === "POST") {
-      const payload = (await request.json().catch(() => null)) as { config?: { action?: string }; api_url?: string } | null;
+      const payload = (await request.json().catch(() => null)) as { config?: { action?: string }; api_url?: unknown } | null;
       const action = payload?.config?.action ?? "unknown";
-      ctx.waitUntil(runSync(`webhook:${action}`, canWrite()).catch(() => {}));
+      const eventId = eventIdFrom(payload?.api_url);
+      ctx.waitUntil(runSync(`webhook:${action}${eventId ? `:${eventId}` : ""}`, canWrite(), eventId).catch(() => {}));
       return new Response("accepted", { status: 202 });
     }
     if (request.method === "GET") {
-      const lines = await runSync("dry-run", false);
-      return new Response(lines.join("\n").trim() + "\n", { headers: { "content-type": "text/plain; charset=utf-8" } });
+      const eventId = url.searchParams.get("event") ?? undefined;
+      if (eventId !== undefined && !/^\d+$/.test(eventId)) return new Response("?event must be an Eventbrite event ID\n", { status: 400 });
+      const headers = { "content-type": "text/plain; charset=utf-8" };
+      try {
+        const lines = await runSync(eventId ? `dry-run:${eventId}` : "dry-run", false, eventId);
+        return new Response(lines.join("\n").trim() + "\n", { headers });
+      } catch (err) {
+        return new Response(`Sync failed: ${(err as Error).message}\n`, { status: 502, headers });
+      }
     }
     return new Response("Method not allowed", { status: 405, headers: { allow: "GET, POST" } });
   },

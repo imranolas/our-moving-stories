@@ -44,12 +44,14 @@ This file explains what exists, what decisions were made, and what is left.
    Move and Make @ Open Havelock 2026/27 (Wed 09:30–11:30, 4 Nov – 10 Feb, 12 dates), Story Space
    (Thu 15:30–17:00, 5 Nov – 10 Dec, 6 dates), and three Winter Together one-offs (Westcott Park Fri 11 Dec,
    Windmill Park Sat 12 Dec, Open Havelock Sat 19 Dec). From now on the `workers/eventbrite-sync` Worker
-   keeps it in step (webhooks + hourly cron); by hand, from `studio/`: `bun run sync:eventbrite` (dry run)
+   keeps it in step (webhooks + a daily full sync); by hand, from `studio/`: `bun run sync:eventbrite` (dry run)
    or `bun run sync:eventbrite:apply`. Still to do in Studio:
    - set "Who it's for" on the new events (the sync leaves audience to editors);
    - add cancelled sessions with a "Christmas break" note for Move and Make on 16, 23, 30 Dec if the
      diary should show the gap (the sync keeps editor-added sessions);
-   - check Open Havelock's postcode: UB2 4RH in Sanity, UB2 4RP on Eventbrite.
+   - the venue is "Westcot Park Community Centre" on purpose: that's how Google Maps spells it. A correction
+     was suggested to Google (Nov 2026); if it changes, rename it on Eventbrite under the latest event
+     held there (→ Location) and the venue follows.
 4. Optional content: write short person excerpts (cards truncate the bio at ~200 chars otherwise).
    Event images come from Eventbrite (the sync fills "Poster" once, when it's empty), and the current ones
    are photos that crop well at 3:4. Only set an event's "Card photo" when its Eventbrite image is a text
@@ -71,7 +73,10 @@ Observability tab (or `npx wrangler tail <worker>`).
 - **Site** (`web/`): Worker `our-moving-stories`, the only site deployment (draft mode is per request; see
   below). It uses `@astrojs/cloudflare` 15 (beta), the version that works with `cf` (v14 needs Wrangler
   config). Every page renders on request, and static files are served by Workers Assets (`/_astro/*`
-  immutable). There are no KV or Images bindings: sessions are off and images come from Sanity. Astro reads
+  immutable). Cloudflare's static assets ignore `Range` (always a full 200), and Safari won't play video without
+  206 Partial Content, so `/video/*` goes to the Worker first (`assets.runWorkerFirst`) and `src/worker.ts`, the
+  entrypoint wrapping Astro's handler, answers byte ranges. There are no KV or Images bindings: sessions are
+  off and images come from Sanity. Astro reads
   `SANITY_STUDIO_PROJECT_ID` and `SANITY_STUDIO_DATASET` at build time. One Worker secret,
   `SANITY_READ_TOKEN` (Viewer), read at runtime and only by draft mode; locally it comes from
   `web/.dev.vars` (see `web/.dev.vars.example`). `bun run dev` runs Astro on workerd.
@@ -111,13 +116,35 @@ Observability tab (or `npx wrangler tail <worker>`).
     Presentation. Draft mode needs `web/.dev.vars`.
 - **Eventbrite sync** (`workers/eventbrite-sync`): Worker `our-moving-stories-eventbrite-sync`, the only
   thing holding a Sanity write token.
-  - `POST /eventbrite/<WEBHOOK_SECRET>`: Eventbrite webhook. It replies 202 and syncs in the background.
-    Payloads are unsigned, so they're only a trigger; everything is re-read with our token.
-  - `GET` on the same path: dry run that returns the log and writes nothing.
-  - An hourly cron (`:17`) runs the same sync as a safety net.
-  - The shared logic is in `packages/eventbrite-sync`, also used by `studio`'s `bun run sync:eventbrite`.
+  - `POST /eventbrite/<WEBHOOK_SECRET>`: Eventbrite webhook. It replies 202, then syncs the event named
+    by the payload's `api_url` (its whole series) in the background. The secret in the URL is what
+    authenticates Eventbrite (payloads aren't signed); `api_url` is only accepted as
+    `https://www.eventbriteapi.com/v3/events/<id>/`, and the sync builds its own requests from the ID.
+    A payload without one (the "Test" button) runs a full sync.
+  - `GET` on the same path: dry run that returns the log and writes nothing. `?event=<id>` dry-runs one
+    event the way its webhook would.
+  - A daily cron (05:17 UTC) runs a full sync. Eventbrite gets its 202 before the sync runs, so it never
+    retries one that failed; this catches up anything a failed or missed webhook left behind.
+  - Every run writes only what differs, so documents' `_updatedAt` only moves when something changed.
+  - Eventbrite owns a synced event's name, summary, description (its "Overview", converted to Portable
+    Text by `packages/eventbrite-sync/src/portable-text.ts`), FAQs, price, booking link, poster, venue
+    and session times; Studio shows those read-only on synced events (`readOnly: fromEventbrite` in
+    `studio/schemas/events.ts`), so editors change them on Eventbrite. Audience, card photo, key details
+    and session notes stay Sanity's. A Studio draft of a synced event gets the same changes, so publishing
+    it doesn't undo them. The package header has the full list.
+  - Venues: one Sanity venue per place (the site filters on venue), though Eventbrite makes a venue
+    record per event. `venueFor` uses the venue linked to the Eventbrite record (`eventbriteId`), else
+    one with the same postcode or name, else creates `venue-eb-<id>`. A venue takes its name, address and
+    map pin from the newest Eventbrite record for the place (the latest event held there); older records
+    only point events at it, so they can't overwrite it. Linked venues are read-only in Studio: fix a
+    venue's name or address on Eventbrite, on the latest event held there (→ Location).
+  - The shared logic is in `packages/eventbrite-sync`, also used by `studio`'s `bun run sync:eventbrite`
+    (dry run; `bun run sync:eventbrite:apply` writes). Add `--event <id>` for one event, or `--all` for
+    every event Eventbrite has ever had, creating past ones Sanity lacks (the history backfill).
+  - Sessions: Eventbrite's dates win. A date Eventbrite doesn't list is removed unless an editor marked
+    it cancelled or gave it a note.
   - Locally: `npx cf dev` (dry runs only), with secrets in `.dev.vars` (see `.dev.vars.example`).
-    Fire the cron with `curl 'localhost:8787/cdn-cgi/local/scheduled?cron=17+*+*+*+*'`.
+    Fire the cron with `curl 'localhost:8787/cdn-cgi/local/scheduled?cron=17+5+*+*+*'`.
 - **CI** (`.github/workflows/deploy.yml`): PRs and `develop` build, type-check and dry-run. Pushes to
   `master` deploy the site and the sync Worker.
 
@@ -149,12 +176,12 @@ Observability tab (or `npx wrangler tail <worker>`).
 6. Set up GitHub.
    - Repository secrets: `CLOUDFLARE_API_TOKEN` (Workers Scripts edit), `CLOUDFLARE_ACCOUNT_ID`.
    - Repository variables: `SANITY_STUDIO_PROJECT_ID`, `SANITY_STUDIO_DATASET` = `production`.
-7. Add the Eventbrite webhook. This needs the organisation owner (Sarah): Imran's role, "check-in
-   attendee and guest", can't manage webhooks. Either she makes him an Admin, or she adds it herself:
+7. Add the Eventbrite webhook. It needs an organisation Admin (Imran is one since November 2026):
    - Eventbrite → Account Settings → Developer Links → Webhooks → Add webhook.
    - URL: the Worker's `/eventbrite/<WEBHOOK_SECRET>` address.
    - Actions: `event.created`, `event.published`, `event.updated`, `event.unpublished`, for all events.
-   - Until it's added, the hourly cron keeps Sanity in step.
+   - Done 2026-11-10 through the API (`POST /v3/organizations/2281976374053/webhooks/`): webhook 15946660.
+     If `WEBHOOK_SECRET` changes, update the webhook's URL too.
 8. Cut the domain over. `ourmovingstories.com` is already on Cloudflare DNS, proxied to Netlify.
    - Uncomment `domains` in `web/cloudflare.config.ts`.
    - Cloudflare won't attach a Worker custom domain over existing records, so remove the Netlify
@@ -211,7 +238,9 @@ rather than "*Movement & Arts.*", which keeps the coral word at full size.
   Media precedence: uploaded Sanity video → hero image (non-home pages) → bundled montage
   (`/video/hero-*.mp4`, homepage only).
 - `components/TextSection.astro`: cream/purple/dark themes, split or stacked layout, "highlights" rows.
-- `components/EventsSection.astro` + `EventRow.astro`: "Coming up" list and "Recently" line.
+- `components/EventsSection.astro` + `EventRow.astro`: "Coming up" list, then a count of past events (not
+  links; they live on /events). Past events are labelled with when they ran (`ranLabel`: "20 Dec 2025",
+  "Apr – Sept 2026"), not "last held".
 - `components/UpcomingSessionsSection.astro`, `PeopleSection.astro`, `InstagramSection.astro`,
   `Footer.astro` (dark contact block, Beehiiv iframe in the newsletter card, funder logos, legal line).
 - Pages: `[...slug].astro` (Sanity pages), `events/index.astro`, `events/[slug].astro`,
@@ -224,7 +253,9 @@ rather than "*Movement & Arts.*", which keeps the coral word at full size.
   `badge`, `badgeRing`; field groups; `subtitle` became a text field labelled "Intro".
 - `textSection`: `eyebrow`, `theme` (cream/purple/dark), `layout` (split/stacked), `pillars[]`
   ({title, text, accent}).
-- `event`: `audience`, `summary`, `photo` (card photo, falls back to poster), `info[]` ({label, value}).
+- `event`: `audience`, `summary`, `photo` (card photo, falls back to poster), `info[]` ({label, value}),
+  `faqs[]` ({question, answer}; from Eventbrite on synced events, shown under the key details), and
+  `poster.eventbriteId` (hidden: which Eventbrite image the poster is).
 - `eventsSection`: `eyebrow`, `intro`. `upcomingSessionsSection`, `peopleSection`: `eyebrow`.
   `instagramSection`: `eyebrow`, `title`.
 - `footer`: `contactEyebrow`, `contactHeading`, `contactText`, `newsletterHeading`, `newsletterText`,

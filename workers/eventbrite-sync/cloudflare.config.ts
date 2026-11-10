@@ -25,7 +25,7 @@ export default defineConfig(({ mode }) => ({
       EVENTBRITE_PRIVATE_TOKEN: bindings.secret(),
       WEBHOOK_SECRET: bindings.secret(),
     },
-    // Hourly at :17, a safety net for webhooks that never arrive.
-    triggers: [triggers.scheduled({ schedule: "17 * * * *" })],
+    // Daily full sync at 05:17 UTC, for webhooks that failed or never arrived (see src/index.ts).
+    triggers: [triggers.scheduled({ schedule: "17 5 * * *" })],
   },
 }));
