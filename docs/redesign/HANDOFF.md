@@ -9,8 +9,6 @@ is left. `README.md` has the short version and the day-to-day flow.
 - `web/` (Astro 7 + Tailwind 4, rendered on request on Cloudflare Workers) restyled end to end.
   Builds and deploys with the `cf` CLI; see "Hosting (Cloudflare)".
   All dependencies were upgraded on 9 Nov 2026; see "Dependency upgrade" below.
-  Pages were rendered against a fixture copy of the Sanity content and screenshotted
-  (`screenshots/`; Sanity images were blocked in that sandbox, so photos show as empty boxes).
 - `studio/` schemas extended with optional fields only. Existing content stays valid.
 - Sanity: the site and Studio now read `SANITY_STUDIO_DATASET=production` from the root `.env`
   (loaded by direnv via `.envrc`). `production` now holds a copy of staging plus the seeded design copy.
@@ -57,7 +55,7 @@ is left. `README.md` has the short version and the day-to-day flow.
    are photos that crop well at 3:4. Only set an event's "Card photo" when its Eventbrite image is a text
    flyer that crops badly; it then replaces the poster on cards and the event page. `photos/*.jpg` here
    were design placeholders, not needed.
-5. `bun run dev` in `web/` and review every page against `screenshots/` at desktop and ~390px wide.
+5. `bun run dev` in `web/` and review every page at desktop and ~390px wide.
    First pass done 9 Nov 2026 against production: home, events, event detail, sessions, text pages and 404
    match the design at both widths. Not yet reviewable: person pages (no published person has a slug
    until 2a) and anything driven by upcoming sessions (needs step 3).
