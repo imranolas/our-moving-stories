@@ -4,6 +4,7 @@ import { structureTool } from "sanity/structure";
 import { schemaTypes } from "./schemas";
 import { googleMapsInput } from "@sanity/google-maps-input";
 import { structure } from "./structure";
+import { LivePreviewInput } from "./components/LivePreviewInput";
 import {
   defineDocuments,
   defineLocations,
@@ -30,21 +31,30 @@ export default defineConfig({
     }),
     visionTool(),
     presentationTool({
-      previewUrl:
-        process.env.SANITY_STUDIO_PREVIEW_URL || "http://localhost:4321",
+      // The site, framed. Presentation calls previewMode.enable (web/src/pages/api/draft-mode/enable.ts)
+      // first, which turns draft mode on for this editor only. Set SANITY_STUDIO_PREVIEW_URL to the
+      // deployed site when running `sanity deploy`.
+      previewUrl: {
+        initial: process.env.SANITY_STUDIO_PREVIEW_URL || "http://localhost:4321",
+        previewMode: { enable: "/api/draft-mode/enable" },
+      },
       resolve: {
         mainDocuments: defineDocuments([
           {
             route: "/:slug",
             filter: `_type == "page" && slug.current == $slug`,
-            resolve: (doc) => ({
-              title: doc?.title,
-              description: doc?.description,
-            }),
           },
           {
             route: "/",
             filter: `_type == "page" && slug.current == "index"`,
+          },
+          {
+            route: "/events/:slug",
+            filter: `_type == "event" && slug.current == $slug`,
+          },
+          {
+            route: "/people/:slug",
+            filter: `_type == "person" && slug.current == $slug`,
           },
         ]),
         locations: {
@@ -62,6 +72,21 @@ export default defineConfig({
               ],
             }),
           }),
+          event: defineLocations({
+            select: { name: "name", slug: "slug.current" },
+            resolve: (doc) => ({
+              locations: [
+                ...(doc?.slug ? [{ title: doc.name || "Event", href: `/events/${doc.slug}` }] : []),
+                { title: "Events", href: "/events" },
+                { title: "Sessions", href: "/sessions" },
+              ],
+            }),
+          }),
+          person: defineLocations({
+            select: { name: "name", slug: "slug.current" },
+            resolve: (doc) =>
+              doc?.slug ? { locations: [{ title: doc.name || "Person", href: `/people/${doc.slug}` }] } : null,
+          }),
         },
       },
     }),
@@ -73,6 +98,9 @@ export default defineConfig({
       },
     }),
   ],
+  // Streams unsaved edits to the Presentation preview as you type (see the component).
+  form: { components: { input: LivePreviewInput } },
+
   schema: {
     types: schemaTypes,
 

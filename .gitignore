@@ -14,3 +14,14 @@ netlify
 # Local Netlify folder
 .netlify
 dist
+
+# Cloudflare Wrangler local state and local secrets
+.wrangler
+.dev.vars*
+!.dev.vars.example
+
+# Local media work, not part of the site: raw reel exports, Instagram downloads and banner experiments,
+# and the SEO audit's screenshots (the audit text is committed; the hero videos live in web/public/video).
+/*.mp4
+/instagram/
+docs/seo/*/screenshots/

@@ -1,0 +1,62 @@
+---
+import { allEvents } from "../../lib/data";
+import Layout from "../../layouts/Layout.astro";
+import EventRow from "../../components/EventRow.astro";
+import { srcset } from "../../sanity/lib/urlFor";
+import { breadcrumb } from "../../lib/schema";
+import { eventHref, ranLabel, splitEvents } from "../../lib/schedule";
+
+const { upcoming, past } = splitEvents(await allEvents(Astro.locals));
+---
+
+<Layout
+  title="Free family events in Southall & Acton"
+  description="Free weekly sessions for under-5s and their grown-ups, story time and seasonal family events in Southall and Acton. See dates and venues, and book free on Eventbrite."
+  schema={[breadcrumb([{ name: "Home", path: "/" }, { name: "Events", path: "/events" }])]}
+>
+  <section class="wrap pt-14 md:pt-20 pb-20 md:pb-24" x-data="{ tab: 'upcoming' }">
+    <div class="flex items-end justify-between gap-6 flex-wrap mb-9">
+      <div>
+        <div class="eyebrow text-grape mb-3.5">
+          <img src="/img/leaves/leaf-3.svg" alt="" aria-hidden="true" style="transform: rotate(-25deg)" />Events
+        </div>
+        <h1 class="display text-[clamp(64px,10vw,160px)] leading-[0.82] text-grape">What's <span class="text-coral">on</span></h1>
+      </div>
+      <div class="flex gap-2 font-mono text-sm uppercase" role="tablist">
+        <button type="button" role="tab" @click="tab = 'upcoming'" :aria-selected="tab === 'upcoming'" :class="tab === 'upcoming' ? 'bg-ink text-cream' : 'text-ink'" class="min-h-11 border-2 border-ink px-4 py-2">Upcoming ({upcoming.length})</button>
+        <button type="button" role="tab" @click="tab = 'past'" :aria-selected="tab === 'past'" :class="tab === 'past' ? 'bg-ink text-cream' : 'text-ink'" class="min-h-11 border-2 border-ink px-4 py-2">Past ({past.length})</button>
+      </div>
+    </div>
+
+    <div x-show="tab === 'upcoming'" class="border-t-[3px] border-ink">
+      {upcoming.length > 0 ? (
+        upcoming.map((e, i) => <EventRow event={e} eager={i < 3} />)
+      ) : (
+        <p class="py-8 text-lg border-b-[1.5px] border-ink">No dates announced right now. Follow <a href="https://instagram.com/our.movingstories" target="_blank" rel="noopener noreferrer">@our.movingstories</a> for new sessions.</p>
+      )}
+    </div>
+
+    <div x-show="tab === 'past'" x-cloak>
+      {past.length > 0 ? (
+        <ul class="grid gap-x-6 gap-y-10 grid-cols-[repeat(auto-fill,minmax(min(100%,220px),1fr))] border-t-[3px] border-ink pt-7">
+          {past.map((e) => {
+            const img = e.photo?.asset ? e.photo : e.poster;
+            return (
+              <li>
+                <a href={eventHref(e)} class="group block text-ink no-underline hover:text-grape">
+                  <div class="aspect-3/4 overflow-hidden bg-sand">
+                    {img?.asset && <img {...srcset(img, 3 / 4, [220, 330, 440, 660])} sizes="(min-width: 640px) 330px, calc(100vw - 40px)" alt="" class="w-full h-full object-cover grayscale-40 group-hover:grayscale-0 transition-[filter]" loading="lazy" width="440" height="587" />}
+                  </div>
+                  <div class="text-[20px] font-bold leading-tight mt-3">{e.name}</div>
+                  <div class="font-mono text-xs uppercase mt-1">{ranLabel(e)}</div>
+                </a>
+              </li>
+            );
+          })}
+        </ul>
+      ) : (
+        <p class="py-8 text-lg border-t-[3px] border-ink">No past events yet.</p>
+      )}
+    </div>
+  </section>
+</Layout>

@@ -1,123 +1,58 @@
 ---
-import { loadQuery } from "../sanity/lib/load-query";
-import { formatInternalLink, type NavigationItem } from "../sanity/lib/links";
+import { formatLink, type NavigationItem } from "../sanity/lib/links";
+import type { SiteData } from "../lib/data";
 
-const { data } = await loadQuery({
-  query: `*[_type == "settings" || _type == "nav"] {
-    ...,
-    items[] {
-      ...,
-      navigationItemUrl {
-        ...,
-        internalLink {
-        ...,
-          reference-> {
-            slug
-          },
-        }
-      }
-    }
-  }`,
-  params: {},
-});
+interface Props {
+  site: SiteData;
+}
 
-const { settings, navigation } = data.reduce((acc, it) => {
-  if (it._type === "settings") {
-    acc.settings = it;
-  }
-  if (it._type === "nav") {
-    acc.navigation = it;
-  }
-
-  return acc;
-}, {});
+const { settings, nav: navigation } = Astro.props.site;
+const items = ((navigation.items ?? []) as NavigationItem[])
+  .map((item) => ({ text: item.text, href: formatLink(item.navigationItemUrl) }))
+  .filter((i) => i.href);
 ---
 
-<div class="w-full relative z-20">
-  <nav
-    class="flex flex-col-reverse lg:flex-row items-center justify-center lg:justify-between flex-wrap p-6 lg:px-0 container mx-auto"
-    x-data="{ isOpen: false }"
-    @keydown.escape="isOpen = false"
-    @click.away="isOpen = false"
-  >
-    <!--Toggle button (hidden on large screens)-->
+<header class="sticky top-0 z-100 bg-cream border-b-2 border-ink" x-data="{ open: false }" @keydown.escape.window="open = false">
+  <div class="wrap h-16 md:h-20 flex items-center justify-between gap-6">
+    <a href="/" class="flex items-center h-full shrink-0" aria-label={settings.title || "Our Moving Stories"}>
+      <img src="/img/logo-purple.svg" alt="" class="h-11 md:h-[62px] w-auto block" width="96" height="70" />
+    </a>
+
+    <nav aria-label="Main" class="hidden md:flex items-center gap-6 font-mono text-sm uppercase">
+      {items.map((item) => (
+        <a href={item.href} class="py-3 text-ink no-underline hover:text-grape">{item.text}</a>
+      ))}
+      <a href="/#whats-on" class="no-underline whitespace-nowrap bg-grape text-cream px-4 py-3 hover:bg-ink hover:text-cream">Join in</a>
+    </nav>
+
     <button
-      @click="isOpen = !isOpen"
       type="button"
-      class="mt-4 block lg:hidden px-2 text-primary-500 hover:text-primary-500 focus:outline-none focus:text-primary-500"
-      :class="{ 'transition transform-180': isOpen }"
-      aria-label="Menu"
+      class="md:hidden min-h-11 font-mono text-sm uppercase border-2 border-ink px-4 py-2 text-ink"
+      @click="open = !open"
+      :aria-expanded="open"
+      aria-controls="mobile-menu"
     >
-      <svg
-        class="h-6 w-6 fill-current"
-        xmlns="http://www.w3.org/2000/svg"
-        viewbox="0 0 24 24"
-      >
-        <path
-          x-show="isOpen"
-          fill-rule="evenodd"
-          clip-rule="evenodd"
-          d="M18.278 16.864a1 1 0 0 1-1.414 1.414l-4.829-4.828-4.828 4.828a1 1 0 0 1-1.414-1.414l4.828-4.829-4.828-4.828a1 1 0 0 1 1.414-1.414l4.829 4.828 4.828-4.828a1 1 0 1 1 1.414 1.414l-4.828 4.829 4.828 4.828z"
-        ></path>
-        <path
-          x-show="!isOpen"
-          fill-rule="evenodd"
-          d="M4 5h16a1 1 0 0 1 0 2H4a1 1 0 1 1 0-2zm0 6h16a1 1 0 0 1 0 2H4a1 1 0 0 1 0-2zm0 6h16a1 1 0 0 1 0 2H4a1 1 0 0 1 0-2z"
-        ></path>
-      </svg>
+      <span x-text="open ? 'Close' : 'Menu'">Menu</span>
     </button>
+  </div>
 
-    <!--Menu-->
-    <div
-      class="w-full lg:flex lg:items-center lg:w-auto text-center flex-grow basis-0"
-      :class="{ 'block shadow-3xl': isOpen, 'hidden': !isOpen }"
-      x-show.transition="true"
-    >
-      <ul class="list-reset lg:flex justify-start flex-1 items-center">
-        {
-          (navigation as { items: NavigationItem[] }).items.map((item) => (
-            <li class="nav__item">
-              <a
-                @click="isOpen = false"
-                class="text-ml inline-block text-text font-bold border-b-0 py-2 px-4"
-                href={formatInternalLink(item.navigationItemUrl)}
-              >
-                {item.text}
-              </a>
-            </li>
-          ))
-        }
-        <li>
-          <a
-            href={"https://instagram.com/" + settings.instagram}
-            target="_blank"
-            class="border-b-0"
-            ><img
-              src="/img/instagram.svg"
-              alt="Instagram"
-              class="inline-block w-8"
-            />
-          </a>
+  <nav
+    id="mobile-menu"
+    aria-label="Menu"
+    class="md:hidden border-t-2 border-ink bg-cream"
+    x-show="open"
+    x-cloak
+    x-transition.opacity
+  >
+    <ul class="wrap py-4 flex flex-col">
+      {items.map((item) => (
+        <li class="border-b-[1.5px] border-ink last:border-0">
+          <a href={item.href} @click="open = false" class="block py-3 display text-4xl text-ink no-underline hover:text-grape">{item.text}</a>
         </li>
-      </ul>
-    </div>
-
-    <!--Logo etc-->
-    <div class="align-center">
-      <a href="/" class="text-indigo-500 font-bold text-lg">
-        <span class="sr-only">{settings.title}</span>
-        <div class="w-56 h-28 bg-text logo-mask"></div>
-      </a>
-    </div>
-
-    <div class="flex-grow basis-0 text-end invisible lg:visible">
-      <a
-        href="/#contact"
-        class="inline-block text-primary-500 hover:text-primary-500 focus:outline-none focus:text-primary-500 border-text border-2 uppercase font-bold text-sm py-1 px-2 hover:cursor-pointer"
-        aria-label="subscribe"
-      >
-        Subscribe
-      </a>
-    </div>
+      ))}
+      <li class="pt-4">
+        <a href="/#whats-on" @click="open = false" class="btn-primary">Join in</a>
+      </li>
+    </ul>
   </nav>
-</div>
+</header>

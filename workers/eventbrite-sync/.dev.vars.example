@@ -1,0 +1,4 @@
+# Copy to .dev.vars for `cf dev` (dry runs only), or to a gitignored file for `cf deploy --secrets-file`.
+SANITY_WRITE_TOKEN=
+EVENTBRITE_PRIVATE_TOKEN=
+WEBHOOK_SECRET=

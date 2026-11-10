@@ -8,7 +8,8 @@ export const navType = defineType({
     defineField({
       name: "items",
       type: "array",
-      title: "Navigation items",
+      title: "Navigation Items",
+      description: "Links displayed in the main site navigation bar.",
       of: [{ type: "navigationItem" }],
     }),
   ],

@@ -1,66 +1,80 @@
 ---
-import { urlFor } from "../sanity/lib/urlFor";
+import { srcset } from "../sanity/lib/urlFor";
 import { toHTML } from "@portabletext/to-html";
 import type { PortableTextBlock } from "@portabletext/types";
+import { highlight, leaf } from "../lib/text";
+import { stegaClean } from "@sanity/client/stega";
 
 export type Props = {
   _type: "people";
   _key: string;
-  title: string;
+  eyebrow?: string;
+  title?: string;
+  description?: string;
   people: {
     name: string;
-    role: string;
-    email: string;
-    social: {
-      platform: string;
-      handle: string;
-    }[];
-    profile: {
-      asset: {
-        url: string;
-      };
-    };
-    qual: string[];
-    bio: PortableTextBlock;
+    role?: string;
+    excerpt?: string;
+    slug?: { current: string };
+    profile?: any;
+    bio?: PortableTextBlock[];
   }[];
 };
 
-const { people } = Astro.props;
+const { eyebrow = "The people", title = "A small, *mighty* team", description } = Astro.props;
+// `people[]->` comes back null (not undefined) when the section has no people.
+const people = Astro.props.people ?? [];
+
+const plain = (bio?: PortableTextBlock[]) => {
+  // A truncated excerpt can't keep stega (draft mode) intact, so drop it.
+  const text = bio ? stegaClean(toHTML(bio)).replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim() : "";
+  return text.length > 200 ? text.slice(0, 197).replace(/\s+\S*$/, "") + "…" : text;
+};
 ---
 
-<section class="w-full text-left py-24 bg-light" id="people">
-  <div class="max-w-5xl mx-6 md:mx-12 lg:mx-auto">
-    <h1 class="mb-8 md:mb-20">People</h1>
-    <ul class="space-y-12 divide-y-2 divide-text divide-opacity-20">
-      {
-        people.map((person) => (
-          <li class="flex justify-between space-y-12 md:space-y-0 md:space-x-12 lg:ml-16 flex-col md:flex-row pt-12 first:pt-0">
-            <div class="space-y-4 flex-grow">
-              <img
-                src={urlFor(person.profile).height(400).width(320).url()}
-                alt={person.name}
-                class="mx-auto lg:max-w-xs"
-              />
-            </div>
-            <div class="space-y-4">
-              <div class="space-y-4">
-                <span class="space-x-2 block">
-                  <h2 class="text-text font-bold text-xl inline-block">
-                    {person.name}
-                  </h2>
-                </span>
-                <span class="text-text text-base font-semibold">
-                  {person.role}
-                </span>
+<section id="people" class="border-t-[3px] border-ink">
+  <div class="wrap py-20 md:py-24">
+    <div class="flex items-end justify-between gap-6 flex-wrap mb-11">
+      <div>
+        <div class="eyebrow text-grape mb-3.5">
+          <img src="/img/leaves/leaf-2.svg" alt="" aria-hidden="true" style="transform: rotate(20deg)" />{eyebrow}
+        </div>
+        <h2 class="display text-[clamp(56px,8vw,124px)] leading-[0.82] text-grape" set:html={highlight(title)} />
+      </div>
+      {description && <p class="text-[17px] leading-normal max-w-[21em]">{description}</p>}
+    </div>
+
+    <ul class="grid gap-x-6 gap-y-10 items-start grid-cols-[repeat(auto-fill,minmax(min(100%,230px),1fr))] border-t-[3px] border-ink pt-7">
+      {people.filter(Boolean).map((p, i) => {
+        const l = leaf(i);
+        const href = p.slug?.current ? `/people/${p.slug.current}` : undefined;
+        const Tag = href ? "a" : "div";
+        return (
+          <li>
+            <Tag href={href} class="group block text-ink no-underline hover:text-ink">
+              <div class="relative">
+                <div class="aspect-4/5 overflow-hidden bg-lilac-mid">
+                  {p.profile?.asset && (
+                    <img
+                      {...srcset(p.profile, 4 / 5, [300, 450, 600, 900])}
+                      sizes="(min-width: 1024px) 300px, (min-width: 640px) 45vw, calc(100vw - 40px)"
+                      alt={p.name}
+                      class="w-full h-full object-cover block grayscale contrast-[1.15] mix-blend-multiply transition-[filter] duration-300 group-hover:grayscale-0 group-hover:mix-blend-normal"
+                      loading="lazy"
+                      width="600"
+                      height="750"
+                    />
+                  )}
+                </div>
+                <img src={l.src} alt="" aria-hidden="true" class="absolute top-[-18px] right-2.5 h-[52px] w-auto" style={`transform: rotate(${l.rot}deg)`} />
               </div>
-              <div
-                class="prose text-text text-lg"
-                set:html={toHTML(person.bio)}
-              />
-            </div>
+              <h3 class="display text-[34px] leading-[0.9] mt-[18px] mb-1.5 group-hover:text-grape">{p.name}</h3>
+              {p.role && <div class="font-mono text-xs uppercase tracking-[0.04em] text-grape mb-2.5">{p.role}</div>}
+              <p class="text-[15px] leading-[1.55]">{p.excerpt || plain(p.bio)}</p>
+            </Tag>
           </li>
-        ))
-      }
+        );
+      })}
     </ul>
   </div>
 </section>

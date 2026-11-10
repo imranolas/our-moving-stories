@@ -1,127 +1,101 @@
 ---
-import { loadQuery } from "../sanity/lib/load-query";
-import { formatInternalLink, type NavigationItem } from "../sanity/lib/links";
-import { urlFor } from "../sanity/lib/urlFor";
+import { formatLink, type NavigationItem } from "../sanity/lib/links";
+import { imageSize, urlFor } from "../sanity/lib/urlFor";
+import { highlight } from "../lib/text";
+import type { SiteData } from "../lib/data";
 
-const { data } = await loadQuery({
-  query: `*[_type == "settings" || _type == "footer"] {
-    ...,
-    items[] {
-      ...,
-      navigationItemUrl {
-        ...,
-        internalLink {
-        ...,
-          reference-> {
-            slug
-          },
-        }
-      }
-    }
-  }`,
-  params: {},
-});
+interface Props {
+  site: SiteData;
+}
 
-const { settings, footer } = data.reduce((acc, it) => {
-  if (it._type === "settings") {
-    acc.settings = it;
-  }
-  if (it._type === "footer") {
-    acc.footer = it;
-  }
+const { settings, footer } = Astro.props.site;
+const links = ((footer.items ?? []) as NavigationItem[])
+  .map((item) => ({ text: item.text, href: formatLink(item.navigationItemUrl) }))
+  .filter((l) => l.href);
+const funders: { name?: string; logo?: any }[] = footer.funders ?? [];
 
-  return acc;
-}, {});
+const email = settings.email || "hello@ourmovingstories.com";
+const instagram = settings.instagram || "our.movingstories";
+const heading = footer.contactHeading || "Bring movement to your *community.*";
+const text =
+  footer.contactText ||
+  "We work with community groups, schools and venues across Ealing to bring free movement and art sessions to more people. If you'd like to run something together, we'd love to talk.";
+const newsletterHeading = footer.newsletterHeading || "Stay in the loop";
+const newsletterText = footer.newsletterText || "New dates, projects and community stories, straight to your inbox.";
+const partners =
+  footer.partnersLine ||
+  (funders.length ? `Supported by ${funders.map((f) => f.name).filter(Boolean).join(", ")}` : "");
+const year = new Date().getFullYear();
 ---
 
-<footer
-  class="bottom-0 text-left w-full pt-24 pb-8 px-6 md:px-16 grid grid-cols-2 mx-auto max-w-screen-2xl space-y-8"
->
-  <!-- Newsletter -->
-  <div class="space-y-1 col-span-2">
-    <span class="text-text font-bold mb-2 uppercase text-sm"
-      >Subscribe to our newsletter</span
-    >
-    <div class="max-w-xl">
-      <iframe
-        src="https://embeds.beehiiv.com/88e94e2d-a0b8-434a-8258-58bfb9ae99df?slim=true"
-        data-test-id="beehiiv-embed"
-        height="52"
-        width="100%"
-        style="margin: 0; border-radius: 0px !important; background-color: transparent;"
-      ></iframe>
-    </div>
-  </div>
-
-  <!-- Contact -->
-  <div class="mt-6 col-span-2 sm:col-span-1">
-    <div class="text-base lg:text-lg">
-      <div>
-        <img src="/img/mail.svg" alt="Email" class="inline-block w-8 mr-2" />
-        <a href="mailto:{{settings.email}}" class="">{settings.email}</a>
+<footer id="contact" class="bg-ink text-cream overflow-hidden">
+  <div class="wrap pt-20 md:pt-24 pb-16 md:pb-[72px] grid gap-14 items-center md:grid-cols-2">
+    <div>
+      <div class="eyebrow text-coral-soft mb-[18px]">
+        <img src="/img/leaves/leaf-4.svg" alt="" aria-hidden="true" style="transform: rotate(-30deg)" />{footer.contactEyebrow || "Get in touch"}
       </div>
+      <h2 class="display text-[clamp(48px,5.6vw,92px)] leading-[0.86] mb-6" set:html={highlight(heading)} />
+      <p class="text-lg leading-relaxed text-lilac max-w-[32em] mb-6">{text}</p>
+      <a href={`mailto:${email}`} class="inline-block py-2 font-mono text-lg text-coral-soft hover:text-cream">{email}</a>
+    </div>
 
-      <div>
-        <img
-          src="/img/instagram.svg"
-          alt="Instagram"
-          class="inline-block w-8 mr-2"
-        />
-        <a
-          href="https://instagram.com/{{settings.instagram}}"
-          target="_blank"
-          class="">@{settings.instagram}</a
-        >
+    <div class="relative pt-20 md:pt-14 pb-6 md:px-6">
+      <img src="/img/leaves/wing-left.svg" alt="" aria-hidden="true" class="absolute left-[-8%] md:left-[-12%] top-0 md:top-[-22%] w-[46%] md:w-[58%] h-auto rotate-[-14deg] pointer-events-none" />
+      <img src="/img/leaves/wing-right.svg" alt="" aria-hidden="true" class="absolute right-[-8%] md:right-[-12%] top-0 md:top-[-22%] w-[46%] md:w-[58%] h-auto rotate-14 pointer-events-none" />
+      <div class="relative bg-cream text-ink p-6 md:p-[30px] outline-2 outline-dashed outline-cream outline-offset-8">
+        <div class="eyebrow text-grape mb-2.5">✂ Newsletter</div>
+        <h3 class="display text-[44px] leading-[0.9] mb-2">{newsletterHeading}</h3>
+        <p class="text-base leading-normal mb-5">{newsletterText}</p>
+        <iframe
+          src="https://embeds.beehiiv.com/88e94e2d-a0b8-434a-8258-58bfb9ae99df?slim=true"
+          data-test-id="beehiiv-embed"
+          title="Subscribe to the Our Moving Stories newsletter"
+          height="52"
+          width="100%"
+          frameborder="0"
+          scrolling="no"
+          style="margin: 0; border-radius: 0; background-color: transparent;"
+          loading="lazy"
+        ></iframe>
       </div>
     </div>
   </div>
 
-  <!-- Navigation -->
-  <div class="mt-6 col-span-2 sm:col-span-1">
-    <ul class="space-y-2">
-      {
-        (footer.items as NavigationItem[]).map((item) => (
-          <li class="nav__item">
-            <a
-              class="text-text font-bold border-b-0 py-2"
-              href={formatInternalLink(item.navigationItemUrl)}
-            >
-              {item.text}
-            </a>
-          </li>
-        ))
-      }
-    </ul>
-  </div>
-
-  <!-- Funders -->
-  <div class="mt-16 col-span-2 sm:col-span-1">
-    <p class="text-text font-bold mb-3 uppercase text-sm">Funded by</p>
-    <ul class="flex flex-wrap gap-x-6">
-      {
-        footer.funders.map((funder) => (
-          <li class="inline-block">
-            <img
-              class="inline-block"
-              src={urlFor(funder.logo).height(50).url()}
-              alt={funder.name}
-            />
-          </li>
-        ))
-      }
-    </ul>
-  </div>
-
-  <!-- Company Info -->
-  <div class="col-span-2 mt-24">
-    <div class="text-text text-sm">
-      {settings.companyName}
-      {settings.companyNumber}
+  <div class="wrap pt-6 pb-9 border-t border-mauve-line flex flex-wrap justify-between items-center gap-x-5 gap-y-3 font-mono text-sm text-mauve">
+    <div class="basis-full mt-1 mb-4">
+      <img src="/img/logo-cream.svg" alt="Our Moving Stories" class="w-[140px] h-auto block" width="140" height="102" />
     </div>
-    <div class="text-text text-sm">
-      Copyright ©
-      {settings.title}
-      {new Date().getFullYear()}. All rights reserved.
-    </div>
+
+    {funders.some((f) => f.logo) && (
+      <ul class="basis-full flex flex-wrap items-center gap-x-5 sm:gap-x-7 gap-y-4 mb-3" aria-label="Funders">
+        {funders.filter((f) => f.logo).map((f) => {
+          // Shown 32px tall; width/height from the asset id so the row doesn't shift as logos load.
+          const size = imageSize(f.logo);
+          return (
+            <li>
+              <img
+                src={urlFor(f.logo).height(80).auto("format").url()}
+                alt={f.name || ""}
+                class="h-8 w-auto block"
+                loading="lazy"
+                height="32"
+                width={size ? Math.round((32 * size.width) / size.height) : undefined}
+              />
+            </li>
+          );
+        })}
+      </ul>
+    )}
+
+    {partners && <span>{partners}</span>}
+    <nav aria-label="Footer" class="flex flex-wrap gap-x-5">
+      {links.map((l) => (
+        <a href={l.href} class="inline-block py-3 text-mauve hover:text-coral-soft">{l.text}</a>
+      ))}
+      <a href={`https://instagram.com/${instagram}`} target="_blank" rel="noopener noreferrer" class="inline-block py-3 text-mauve hover:text-coral-soft">Instagram</a>
+    </nav>
+    <span class="basis-full text-mauve-dim">
+      {[settings.companyName || "Our Moving Stories CIC", settings.companyNumber].filter(Boolean).join(" ")} · © {year}
+    </span>
   </div>
 </footer>

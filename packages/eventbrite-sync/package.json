@@ -1,0 +1,11 @@
+{
+  "name": "@our-moving-stories/eventbrite-sync",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "peerDependencies": {
+    "@sanity/client": "^8.15.0"
+  }
+}

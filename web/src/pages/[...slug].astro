@@ -1,56 +1,52 @@
 ---
-import type { SanityDocument } from "@sanity/client";
 import { loadQuery } from "../sanity/lib/load-query";
 import Layout from "../layouts/Layout.astro";
 import Block from "../components/Block.astro";
-
-export async function getStaticPaths() {
-  const { data: pages } = await loadQuery<SanityDocument[]>({
-    query: `*[_type == "page"] {
-      slug
-    }`,
-  });
-
-  return pages.map(({ slug }: { slug: { current: string } }) => {
-    return {
-      params: {
-        slug: slug.current === "index" ? undefined : slug.current,
-      },
-    };
-  });
-}
-
-export const prerender = true;
+import { allEvents } from "../lib/data";
+import { breadcrumb } from "../lib/schema";
 
 const { params } = Astro;
+// The homepage's hero and sections list events: start that query now, alongside the page's own.
+if (!params.slug) allEvents(Astro.locals);
 
-const { data: page } = await loadQuery({
+const { data: page } = await loadQuery<any>({
   query: `*[_type == "page" && slug.current == $slug][0] {
     ...,
-  pageBuilder[] {
-    ...,
-    _type == "people" => {
+    pageBuilder[] {
       ...,
-      people[]->
+      _type == "hero" => {
+        ...,
+        image { ..., asset-> },
+        posterTall { ..., asset-> },
+        video { asset->{ url } },
+        videoSmall { asset->{ url } },
+        videoTall { asset->{ url } }
+      },
+      _type == "people" => {
+        ...,
+        people[]->
+      }
     }
-  }}`,
+  }`,
   params: {
     ...params,
     slug: params.slug || "index",
   },
+  preview: Astro.locals.preview,
 });
 
 if (!page) {
-  Astro.response.status = 404;
+  // Render the 404 page at the requested URL with a real 404 status (a redirect to /404 reads as a move).
+  return Astro.rewrite("/404");
 }
+
+const blocks: any[] = page.pageBuilder ?? [];
+const heroImage = blocks.find((b) => b._type === "hero")?.image?.asset?.url;
+// Pages without a hero (e.g. Testimonials) would otherwise have no <h1>: promote the first text heading.
+const h1Index = blocks.some((b) => b._type === "hero") ? -1 : blocks.findIndex((b) => b._type === "textSection" && b.heading);
+const schema = params.slug ? [breadcrumb([{ name: "Home", path: "/" }, { name: page.title, path: `/${params.slug}` }])] : [];
 ---
 
-<Layout title={page?.title}>
-  <div class="overflow-x-clip">
-    {
-      page.pageBuilder.map((block: any) => (
-        <Block key={block._key} {...block} />
-      ))
-    }
-  </div>
+<Layout title={page.title} fullTitle={page.seoTitle} description={page.description} ogImage={heroImage} schema={schema}>
+  {blocks.map((block, i) => <Block {...block} headingLevel={i === h1Index ? 1 : 2} />)}
 </Layout>

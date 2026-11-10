@@ -1,99 +1,55 @@
 ---
-import { urlFor } from "../sanity/lib/urlFor";
-import { Address } from "./Address";
-import { FormattedTimeRange } from "./FormattedTimeRange";
-import { FormattedDateRange } from "./FormattedDateRange";
-import { Price } from "./Price";
-import type { PortableTextBlock } from "sanity";
-import { loadQuery } from "../sanity/lib/load-query";
+import { allEvents } from "../lib/data";
+import { highlight } from "../lib/text";
+import EventRow from "./EventRow.astro";
+import { splitEvents, type Event } from "../lib/schedule";
 
-export type Event = {
-  name: string;
-  poster: {
-    asset: {};
-  };
-  venue: {
-    name: string;
-    address: {
-      address1: string;
-      address2: string;
-      city: string;
-      region: string;
-      postalCode: string;
-    };
-  };
-  description: PortableTextBlock;
-  startDate: string;
-  endDate: string;
-  isRecurring: boolean;
-  recurrence: {
-    frequency: string;
-    interval: number;
-    endDate: string; // ISO date
-  };
-};
+// Re-exported so pages that import these types from here keep working.
+export type { Event, Session } from "../lib/schedule";
 
 export type Props = {
   _type: "events";
   _key: string;
-  title: string;
-  events: number;
+  eyebrow?: string;
+  title?: string;
+  intro?: string;
+  events?: number;
 };
 
-const { events: noOfEvents = 4, title } = Astro.props;
+const {
+  eyebrow = "What's on",
+  title = "Coming up",
+  intro = "Free sessions and events across Ealing, soonest first. Open one for the full schedule and how to book.",
+  events: limit = 6,
+} = Astro.props;
 
-const { data: events } = await loadQuery({
-  query: `*[_type == "event"] | order(startDate desc) [0..${noOfEvents - 1}] {
-  ...,
-  venue->
-  }`,
-  params: {},
-});
+const { upcoming, past } = splitEvents(await allEvents(Astro.locals));
+const shown = upcoming.slice(0, limit);
 ---
 
-<section class="w-full text-left py-24" id="whats-on">
-  <div class="max-w-5xl mx-8 lg:mx-auto">
-    <h1 class="mb-8 lg:mb-20">{title}</h1>
-    <ul class="grid grid-cols-1 md:grid-cols-2 gap-16 md:gap-12">
-      {
-        (events as Event[]).map((event) => (
-          <div class="group relative">
-            <div class="aspect-h-3 aspect-w-4 overflow-hidden rounded-lg bg-gray-100">
-              <img
-                src={urlFor(event.poster).url()}
-                class="object-cover object-center"
-              />
-            </div>
-            <div class="mt-4 flex items-center justify-between space-x-8 text-base font-medium">
-              <h3>
-                <a href={event.link}>
-                  <span aria-hidden="true" class="absolute inset-0" />
-                  {event.name}
-                </a>
-              </h3>
-              <p>
-                <Price price={event.price} />
-              </p>
-            </div>
-            <p class="text-text text-base font-semibold block">
-              <FormattedDateRange
-                startDate={event.startDate}
-                endDate={event.endDate}
-                recurrence={event.recurrence}
-              />
-            </p>
-            <p class="text-text text-base font-semibold block">
-              <FormattedTimeRange
-                startDate={event.startDate}
-                endDate={event.endDate}
-              />
-            </p>
-            <span class="text-text text-base font-semibold block pt-2">
-              <Address {...event.venue} />
-            </span>
-          </div>
-        ))
-      }
-    </ul>
+<section id="whats-on" class="wrap py-20 md:py-24">
+  <div class="flex items-end justify-between gap-6 flex-wrap mb-9">
+    <div>
+      <div class="eyebrow text-grape mb-3.5">
+        <img src="/img/leaves/leaf-3.svg" alt="" aria-hidden="true" style="transform: rotate(-25deg)" />{eyebrow}
+      </div>
+      <h2 class="display text-[clamp(64px,9vw,140px)] leading-[0.82] text-grape" set:html={highlight(title)} />
+    </div>
+    {intro && <p class="text-[17px] leading-normal max-w-[21em]">{intro}</p>}
+  </div>
+
+  <div class="border-t-[3px] border-ink">
+    {shown.length > 0 ? (
+      shown.map((event) => <EventRow event={event} />)
+    ) : (
+      <p class="py-8 text-lg border-b-[1.5px] border-ink">
+        No dates announced right now. Follow <a href="https://instagram.com/our.movingstories" target="_blank" rel="noopener noreferrer">@our.movingstories</a> or join the newsletter for new sessions.
+      </p>
+    )}
+  </div>
+
+  <div class="flex items-baseline justify-between gap-6 mt-3.5 font-mono text-sm uppercase">
+    {past.length > 0 && <span class="tracking-wider">{past.length} past {past.length === 1 ? "event" : "events"}</span>}
+    <a href="/events" class="ml-auto inline-block py-3 text-ink hover:text-grape">All events →</a>
   </div>
 </section>

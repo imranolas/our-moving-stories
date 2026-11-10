@@ -2,22 +2,16 @@
 import Layout from "../layouts/Layout.astro";
 ---
 
-<Layout title="404: Page not found">
-  <div class="overflow-x-clip">
-    <section class="w-full text-left py-24 bg-light">
-      <div class="max-w-5xl mx-auto">
-        <h1 class="ml-8 lg:mx-0">
-          Whoops! This is not what you were looking for
-        </h1>
-
-        <div
-          class="leading-relaxed space-y-8 mx-8 lg:mx-auto mt-8 lg:mt-16 max-w-4xl text-text text-lg prose"
-        >
-          Somehow you've ended up on a page that doesn't exist. Why not head
-          back to the
-          <a href="/"> homepage </a> instead?
-        </div>
-      </div>
-    </section>
-  </div>
+<Layout title="Page not found" noindex>
+  <section class="wrap pt-16 md:pt-24 pb-24 md:pb-32">
+    <div class="eyebrow text-grape mb-4">
+      <img src="/img/leaves/leaf-1.svg" alt="" aria-hidden="true" style="transform: rotate(30deg)" />404
+    </div>
+    <h1 class="display text-[clamp(64px,11vw,176px)] leading-[0.82] text-grape mb-8">Wrong <span class="text-coral">turn.</span></h1>
+    <p class="text-[21px] leading-[1.45] max-w-[30em] mb-9">This page has moved or never existed. Try what's on, or head back to the homepage.</p>
+    <div class="flex gap-3 flex-wrap">
+      <a href="/#whats-on" class="btn-primary">See what's on</a>
+      <a href="/" class="btn-outline">Homepage</a>
+    </div>
+  </section>
 </Layout>

@@ -1,85 +1,191 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+@import "tailwindcss";
 
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@theme {
+  /* Zine palette */
+  --color-ink: #1e1433;
+  --color-grape: #4b2e8f;
+  --color-coral: #ff6b57;
+  --color-coral-soft: #ff8a78;
+  --color-coral-deep: #c2412e;
+  --color-cream: #f3ede2;
+  --color-lilac: #dcd0f7;
+  --color-lilac-light: #b9a6ee;
+  --color-lilac-mid: #8c74d9;
+  --color-lilac-dash: #9f8bdb;
+  --color-peach: #ffd9cf;
+  --color-sand: #e8ded0;
+  --color-mauve: #a898c9;
+  --color-mauve-dim: #8a79ae;
+  --color-mauve-line: #3a2c5c;
 
-/*Your Custom CSS Goes here*/
+  /* Legacy names, mapped onto the new palette */
+  --color-text: #1e1433;
+  --color-primary: #ff6b57;
+  --color-dark: #1e1433;
+  --color-light: #f3ede2;
 
-h1 {
-  @apply text-4xl font-semibold mb-3 lg:text-5xl;
+  /* Self-hosted through Astro's fonts config (astro.config.mjs), which defines these variables. */
+  --font-display: var(--font-big-shoulders);
+  --font-sans: var(--font-karla);
+  --font-mono: var(--font-dm-mono);
+
+  --container-page: 1360px;
+
+  --animate-oms-spin: oms-spin 20s linear infinite;
+
+  @keyframes oms-spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
 }
 
-h3 {
-  @apply text-2xl font-bold mb-3;
+/*
+  The default border color has changed to `currentcolor` in Tailwind CSS v4,
+  so we've added these compatibility styles to make sure everything still
+  looks the same as it did with Tailwind CSS v3.
+
+  If we ever want to remove these styles, we need to add an explicit border
+  color utility to any element that depends on these defaults.
+*/
+@layer base {
+  *,
+  ::after,
+  ::before,
+  ::backdrop,
+  ::file-selector-button {
+    border-color: var(--color-gray-200, currentcolor);
+  }
+
+  /* Tailwind v4 resets buttons to `cursor: default`; keep the v3 behaviour. */
+  button:not(:disabled),
+  [role="button"]:not(:disabled) {
+    cursor: pointer;
+  }
 }
 
-body {
-  font-size: 18px;
-  font-family: 'Inter', sans-serif;
+@utility wrap {
+  /* Page width + gutters */
+  @apply max-w-page mx-auto px-5 sm:px-7;
 }
 
-/* Syntax Highlighting*/
-
-body :not(pre)>code[class*="language-"],
-body pre[class*="language-"] {
-  @apply bg-gray-800;
+@utility eyebrow {
+  /* Small uppercase label above headings (14px: smaller mono caps are hard to read on phones) */
+  @apply font-mono text-sm uppercase tracking-wider;
+  & img {
+    @apply inline-block h-6 w-auto mr-2.5 align-[-7px];
+  }
 }
 
-.logo-mask {
-  -webkit-mask-image: url(/img/logo-white-trans.png);
-  -webkit-mask-size: contain;
-  -webkit-mask-repeat: no-repeat;
-  -webkit-mask-position: center;
-
-  mask-image: url(/img/logo-white-trans.png);
-  mask-size: contain;
-  mask-repeat: no-repeat;
-  mask-position: center;
+@utility display {
+  /* Condensed display type */
+  @apply font-display font-black uppercase;
+  line-height: 0.84;
 }
 
-a {
-  /* text-decoration: none!important; */
-  @apply border-b-2 border-text;
-
+@utility btn {
+  /* Buttons */
+  @apply inline-block font-mono text-sm uppercase no-underline px-[22px] py-[15px] transition-colors;
 }
 
-.prose a {
-  @apply no-underline;
-  @apply text-text;
+@utility btn-primary {
+  @apply btn bg-grape text-cream;
+  &:hover {
+    @apply bg-ink text-cream;
+  }
+}
+
+@utility btn-outline {
+  @apply btn border-2 border-ink text-ink;
+  &:hover {
+    @apply bg-ink text-cream;
+  }
+}
+
+@utility btn-outline-light {
+  @apply btn border-2 border-cream text-cream;
+  &:hover {
+    @apply bg-cream text-grape;
+  }
+}
+
+@utility btn-coral {
+  @apply btn bg-coral text-ink;
+  &:hover {
+    @apply bg-ink text-cream;
+  }
+}
+
+@utility tag {
+  /* Outlined tag */
+  @apply inline-block font-mono text-[11px] uppercase tracking-[0.04em] border-[1.5px] border-current px-2 py-[3px];
+}
+
+@utility rich {
+  /* Long-form text from Sanity */
+  & p + p {
+    @apply mt-4;
+  }
+  & p + ul {
+    @apply mt-4;
+  }
+  & ul + p {
+    @apply mt-4;
+  }
+  & ul {
+    @apply list-disc pl-5 space-y-1;
+  }
+  & ol {
+    @apply list-decimal pl-5 space-y-1;
+  }
+  & h2 {
+    @apply font-display font-black uppercase leading-[0.9] mt-8 mb-3;
+  }
+  & h3 {
+    @apply font-display font-black uppercase leading-[0.9] mt-8 mb-3;
+  }
+  & h2 {
+    @apply text-4xl;
+  }
+  & h3 {
+    @apply text-3xl;
+  }
+  & a {
+    @apply underline underline-offset-2 decoration-2 decoration-coral;
+  }
 }
 
 @layer utilities {
-  .frame {
-    --n: 16;
-    --d: 16;
-    aspect-ratio: var(--n) / var(--d);
-    overflow: hidden;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+  [x-cloak] {
+    display: none !important;
   }
+}
 
-  .frame > img,
-  .frame > video,
-  .frame > div {
-    inline-size: 100%;
-    block-size: 100%;
-    object-fit: cover;
-    object-position: center;
+@layer base {
+  html {
+    scroll-padding-top: 96px;
   }
-
-  .imposter {
-    position: absolute;
-    inset-block-start: 50%;
-    inset-inline-start: 50%;
-    transform: translate(-50%, -50%);
+  body {
+    @apply bg-cream text-ink font-sans antialiased;
+    font-size: 17px;
   }
+  ::selection {
+    @apply bg-coral text-ink;
+  }
+  a {
+    @apply text-grape;
+  }
+  a:hover {
+    @apply text-ink;
+  }
+  :focus-visible {
+    outline: 2px solid #FF6B57;
+    outline-offset: 3px;
+  }
+}
 
-  .imposter.contain {
-    --margin: 0px;
-    overflow: auto;
-    max-inline-size: calc(100% - (var(--margin) * 2));
-    max-block-size: calc(100% - (var(--margin) * 2));
+@media (prefers-reduced-motion: reduce) {
+  .animate-oms-spin {
+    animation: none;
   }
 }

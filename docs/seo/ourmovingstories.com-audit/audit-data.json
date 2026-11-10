@@ -1,0 +1,178 @@
+{
+  "meta": {
+    "domain": "ourmovingstories.com",
+    "date": "2026-11-09",
+    "targets": {
+      "live": "https://ourmovingstories.com (old Astro 4 build on Netlify, Sanity staging)",
+      "redesign": "http://localhost:4321 (Astro 7 on Cloudflare Workers, Sanity production; audited on astro dev with drafts visible)"
+    },
+    "note": "Category 'score' is the redesign as it stands; 'score_live' is the current live site. The redesign score assumes the step-2a Sanity drafts get published (today 10 of its URLs have no published slug)."
+  },
+  "summary": {
+    "health_score": 56,
+    "health_score_live": 30,
+    "health_score_redesign_projected": 80,
+    "business_type": "Local non-profit, event-based (Our Moving Stories CIC 14473202): free family dance, art and movement sessions at partner venues in Southall/Ealing, booked via Eventbrite",
+    "top_findings": [
+      "Redesign: 0/5 people and 6/13 events have no published slug in Sanity production, so 10 URLs would go to the 404 page after deploy (publish HANDOFF step 2a drafts)",
+      "Redesign: unknown URLs 302 to /404 instead of returning 404",
+      "Redesign: sitemap lists 3 of 22 URLs (no events, people or /sessions)",
+      "Both: no JSON-LD (no Organization, Event or Person markup)",
+      "Live: every unknown URL incl. /robots.txt and /sitemap.xml returns an empty 200; 'Astro description' on every page; site not found for its own brand name"
+    ],
+    "quick_wins": [
+      "Homepage title 'Our Moving Stories: Free Baby & Toddler Dance and Art, Southall' (no '· Our Moving Stories' suffix)",
+      "Fill Sanity page.description for home, testimonials, safeguarding; give those text pages an h1",
+      "Default og:image (1200x630) and og:locale en_GB in Layout.astro",
+      "Link funder/partner logos in the footer and ask for links back",
+      "Website link in the Eventbrite organiser profile, event descriptions and Instagram bio"
+    ]
+  },
+  "categories": [
+    {
+      "name": "Technical SEO",
+      "score": 66,
+      "score_live": 22,
+      "what_works": [
+        "Redesign: real robots.txt with sitemap line, absolute apex canonicals, lang en-GB, all primary content server-rendered",
+        "Redesign: /404 route returns a real 404 status"
+      ],
+      "findings": [
+        {"title": "Unknown URLs 302 to /404 (redesign)", "severity": "Critical", "description": "Astro.redirect('/404') in [...slug].astro, events/[slug].astro, people/[slug].astro; /people and /Events also 302.", "recommendation": "Astro.response.status = 404; return Astro.rewrite('/404'); verify on the built Worker."},
+        {"title": "Soft 404s, no robots.txt or sitemap (live)", "severity": "Critical", "description": "Every unknown path, /robots.txt and /sitemap.xml return 200 text/html with an empty body.", "recommendation": "Resolved by cutover; don't patch Netlify."},
+        {"title": "Sitemap lists 3 of 22 URLs (redesign)", "severity": "High", "description": "sitemap.xml.ts queries only Sanity page docs.", "recommendation": "Replace with the draft-safe version in findings/technical.md; leave out events with no upcoming dates."},
+        {"title": "No security headers, no HTML caching, preview hosts indexable (redesign)", "severity": "High", "description": "No middleware or _headers; workers.dev and the preview Worker would serve indexable duplicates.", "recommendation": "Add src/middleware.ts with security headers, preview noindex, trailing-slash 301 and s-maxage caching."},
+        {"title": "www/http redirects and trailing-slash duplicates", "severity": "Medium", "description": "Live: 2-hop http://www chain. Redesign: /events/ serves 200 with a slash canonical; www not redirected at cutover yet.", "recommendation": "One Cloudflare redirect rule www -> apex; slash 301 in middleware; trailingSlash 'never'."}
+      ]
+    },
+    {
+      "name": "Content Quality",
+      "score": 56,
+      "score_live": 38,
+      "what_works": [
+        "Redesign hero and pillar rows say free, families and Ealing clearly",
+        "Team bios with real credentials; event pages answer when, where, free and how to book"
+      ],
+      "findings": [
+        {"title": "Current-season event pages are thin (redesign)", "severity": "High", "description": "Move and Make 2026/27 is 114 words with empty description; the useful session copy only exists on past 2024/25 pages, two of which are near-duplicates.", "recommendation": "Fill description, audience, info and 'who leads' for current events; noindex past seasons and link them to the current one."},
+        {"title": "No baby/toddler/Southall wording (both)", "severity": "High", "description": "Copy says movement, little ones, Ealing; age wording inconsistent (under-5s, 0-5, All ages).", "recommendation": "Rewrite hero/About in Sanity with the words parents search for; one age phrase everywhere."},
+        {"title": "Live site content is broken", "severity": "High", "description": "Dates render 'Invalid DateTime' and '(3362h 0m)'; What's On lists only ended events; broken {{settings.instagram}} link.", "recommendation": "Resolved by cutover."},
+        {"title": "Trust gaps (redesign)", "severity": "Medium", "description": "Anonymous testimonials; safeguarding policy cites outdated legislation with no review date.", "recommendation": "Attributed testimonials; updated policy with review date and named lead."}
+      ]
+    },
+    {
+      "name": "On-Page SEO",
+      "score": 62,
+      "score_live": 18,
+      "what_works": ["Redesign: one h1 on home, descriptive per-page titles, canonical + OG tags"],
+      "findings": [
+        {"title": "Homepage title wasted", "severity": "High", "description": "Live 'Home'; redesign 'Home · Our Moving Stories'.", "recommendation": "Override fullTitle for home: 'Our Moving Stories: Free Baby & Toddler Dance and Art, Southall'."},
+        {"title": "Default or boilerplate meta descriptions", "severity": "Medium", "description": "Live: 'Astro description' everywhere. Redesign: site default on home/testimonials/safeguarding; 6 events '{name} with Our Moving Stories.'; people 199-273 chars.", "recommendation": "Fill Sanity page.description and event.summary; copy table in findings/content.md."},
+        {"title": "Missing h1 on text pages (redesign)", "severity": "Medium", "description": "/testimonials and /safeguarding-policy have no h1 (TextSection always renders h2). Live has five h1s on home.", "recommendation": "Let TextSection render h1 for the first section of text pages."}
+      ]
+    },
+    {
+      "name": "Schema / Structured Data",
+      "score": 0,
+      "score_live": 0,
+      "what_works": ["Redesign data model (lib/schedule.ts sessions, venues, cancellations) supports full Event markup"],
+      "findings": [
+        {"title": "No JSON-LD on either site", "severity": "Critical", "description": "No Organization, WebSite, Event, Person or BreadcrumbList.", "recommendation": "web/src/lib/schema.ts + Layout schema prop: NGO + WebSite sitewide, Event per future session (EventCancelled, free Offer, Place), ProfilePage/Person, BreadcrumbList. Code in findings/schema.md."},
+        {"title": "Venue data gaps block address markup", "severity": "High", "description": "Open Havelock has no address1 and a disputed postcode (Sanity UB2 4RH vs Eventbrite UB2 4RP); Westcott city 'London ' with trailing space; no logo file.", "recommendation": "Confirm postcode with the venue, fill address1, set city Southall, add a logo file."}
+      ]
+    },
+    {
+      "name": "Performance (CWV)",
+      "score": 66,
+      "score_live": 68,
+      "what_works": ["Live LCP 1.6 s mobile; redesign hero has fixed height (no hero CLS), Beehiiv iframe fixed height, Sanity images sized with auto=format"],
+      "findings": [
+        {"title": "No HTML caching and serial Sanity queries (redesign)", "severity": "High", "description": "Nothing prerendered or cached; Nav, Footer, Hero and page each await Sanity in sequence (4-6 round trips).", "recommendation": "Promise.all / module cache, s-maxage + Cloudflare cache rule purged by the sync."},
+        {"title": "Portrait phones get a 5.1 MB hero video (redesign)", "severity": "High", "description": "hero-tall.mp4 1080x1920, bigger than the 720p wide file; Save-Data ignored on the portrait path; both posters may download.", "recommendation": "Re-cut tall at 540x960 (~1.5-2 MB); honour Save-Data; orientation-specific poster preload."},
+        {"title": "Render-blocking Google Fonts (redesign)", "severity": "High", "description": "3 families, 8 weights, no fallback metrics.", "recommendation": "Self-host variable fonts, preload woff2, metric-adjusted fallbacks."},
+        {"title": "Mobile CLS and 7.1 MB homepage (live)", "severity": "Medium", "description": "CLS 0.151 on / and 0.182 on /testimonials; unresized Sanity originals.", "recommendation": "Resolved by cutover."}
+      ]
+    },
+    {
+      "name": "AI Search Readiness",
+      "score": 60,
+      "score_live": 39,
+      "what_works": ["All AI and search crawlers allowed on both; redesign /sessions has labelled server-rendered controls; booking links work"],
+      "findings": [
+        {"title": "Cloudflare email obfuscation and AI crawl settings (cutover)", "severity": "High", "description": "Live email reaches crawlers as '[email protected]'; the same zone setting will probably rewrite the redesign's mailto. Block AI bots / managed robots.txt could change access.", "recommendation": "Turn off Email Address Obfuscation or use email_off; check AI crawl settings; re-fetch robots.txt after cutover."},
+        {"title": "No citable answer for the core query", "severity": "High", "description": "No passage answers 'free baby and toddler dance classes in Southall'.", "recommendation": "Plain-language hero/About copy, 'What happens at a session?' block, consistent ages."},
+        {"title": "/sessions shows 2024 dates first without JS", "severity": "Medium", "description": "Upcoming filter is client-side only.", "recommendation": "Server-filter upcoming by default; add <time datetime>."}
+      ]
+    },
+    {
+      "name": "Images",
+      "score": 76,
+      "score_live": 38,
+      "what_works": ["Redesign: complete alt coverage, fixed-size auto=format Sanity requests, lazy loading below the fold"],
+      "findings": [
+        {"title": "Missing og:image on 5 redesign pages; none on live", "severity": "High", "description": "/, /events, /sessions, /testimonials, /safeguarding-policy share without an image.", "recommendation": "Default 1200x630 og:image in Layout.astro."},
+        {"title": "Live gallery images have no alt and are unresized originals", "severity": "High", "description": "4 photos up to 2550x3300.", "recommendation": "Resolved by cutover."},
+        {"title": "No srcset; unused public files (redesign)", "severity": "Medium", "description": "Single fixed size per image; ~2.5 MB of unreferenced files in web/public/img.", "recommendation": "srcset/sizes helper; delete unused files."}
+      ]
+    }
+  ],
+  "supplementary_scores": {
+    "local_seo": {"live": 22, "redesign": 34},
+    "sxo": {"live": 21, "redesign": 52},
+    "visual_mobile": {"live": 48, "redesign": 82},
+    "geo": {"live": 34, "redesign": 51},
+    "agentic": {"live": 45, "redesign": 80},
+    "backlinks": "not scored: no verifiable referring domains; Common Crawl has the domain unranked",
+    "google_field_data": "none: no GSC access for this domain, CrUX insufficient traffic, no GA4 property"
+  },
+  "action_plan": {
+    "phases": [
+      {"name": "Phase 1: Before cutover (blockers)", "timeframe": "Week 1", "items": [
+        "Publish HANDOFF step-2a drafts (people + 6 event slugs), re-run seed",
+        "Real 404s via Astro.rewrite",
+        "Replace sitemap.xml.ts (exclude events with no upcoming dates)",
+        "src/middleware.ts: security headers, preview noindex, trailing-slash 301, HTML s-maxage",
+        "Titles, descriptions and h1s (copy table in findings/content.md)",
+        "Default og:image + og:locale",
+        "Confirm Open Havelock postcode; fix venue address data",
+        "Fill current events' description, audience, info, who leads"
+      ]},
+      {"name": "Phase 2: Cutover day", "timeframe": "Cutover", "items": [
+        "PageSpeed + URL spot-check on workers.dev; Visual Editing off in production build",
+        "Single www -> apex 301; Always Use HTTPS; SSL Full (strict)",
+        "Email obfuscation off; check AI crawl settings and managed robots.txt",
+        "Short DNS switch, purge cache",
+        "Search Console domain property, submit sitemap, request indexing; Bing import",
+        "Keep Netlify 48 h for rollback"
+      ]},
+      {"name": "Phase 3: High-impact improvements", "timeframe": "Weeks 2-3", "items": [
+        "JSON-LD (NGO, WebSite, Event, Person, BreadcrumbList)",
+        "Analytics (Cloudflare Web Analytics or GA4)",
+        "Parallel Sanity queries + HTML edge cache",
+        "Hero video tall re-cut and Save-Data handling",
+        "Self-hosted fonts",
+        "_headers, Instagram placeholder height, srcset, eager first thumbs, local Alpine, delete unused files",
+        "Server-filtered /sessions; unique nav labels",
+        "Mobile hero CTA, 14px+ text, 44px tap targets, colour Community Fund logo"
+      ]},
+      {"name": "Phase 4: Content & authority", "timeframe": "Month 2", "items": [
+        "Evergreen programme pages (Move and Make, Story Space)",
+        "Listings: Happity, Hoop, Ealing FIS, NHS.uk, Peabody, libraries",
+        "Links from Eventbrite organiser, Instagram bio, funders, venues; link footer logos",
+        "Google Business Profile (service-area, hidden address)",
+        "Homepage/About copy for baby/toddler/Southall + 'What happens at a session?'",
+        "Three venue pages",
+        "Attributed testimonials; updated safeguarding policy"
+      ]},
+      {"name": "Phase 5: Monitoring & iteration", "timeframe": "Ongoing", "items": [
+        "Weekly GSC Pages, Events and Sitemaps reports for the first month",
+        "Monthly brand and class-query impressions, Eventbrite clicks (UTM), listing referrals",
+        "Drift baseline of the new site after launch"
+      ]}
+    ]
+  },
+  "artifacts": {
+    "findings_dir": "findings/",
+    "screenshots_dir": "screenshots/"
+  }
+}

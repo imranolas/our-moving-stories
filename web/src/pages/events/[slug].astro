@@ -1,0 +1,202 @@
+---
+import { loadQuery } from "../../sanity/lib/load-query";
+import { urlFor, srcset } from "../../sanity/lib/urlFor";
+import { SITE, breadcrumb, eventNodes } from "../../lib/schema";
+import { toHTML } from "@portabletext/to-html";
+import Layout from "../../layouts/Layout.astro";
+import {
+  EVENT_FIELDS,
+  formatAddress,
+  fmtLong,
+  futureSessions,
+  lastSession,
+  mapLink,
+  metaDescription,
+  monthGroups,
+  nextSession,
+  priceLabel,
+  ranLabel,
+  rangeLabel,
+  repeatLabel,
+  timeRange,
+  type Event,
+} from "../../lib/schedule";
+
+const { slug } = Astro.params;
+
+const { data: event } = await loadQuery<Event>({
+  query: `*[_type == "event" && slug.current == $slug][0] { ${EVENT_FIELDS} }`,
+  params: { slug },
+  preview: Astro.locals.preview,
+});
+
+if (!event) {
+  return Astro.rewrite("/404");
+}
+
+const next = nextSession(event);
+const last = lastSession(event);
+const future = futureSessions(event);
+const LIMIT = 10;
+const groupsFirst = monthGroups(future.slice(0, LIMIT), next);
+const groupsRest = future.length > LIMIT ? monthGroups(future.slice(LIMIT), next) : [];
+const repeat = repeatLabel(event);
+const time = next ? timeRange(next.startTime, next.endTime) : (() => {
+  const s = (event.sessions ?? []).find((x) => x.startTime);
+  return s ? timeRange(s.startTime, s.endTime) : "";
+})();
+
+const image = event.photo?.asset ? event.photo : event.poster;
+const imageSet = image?.asset ? srcset(image, 3 / 4, [400, 600, 800, 1040]) : undefined;
+const address = formatAddress(event.venue);
+const where = [event.venue?.name, address].filter(Boolean).join(", ");
+const directions = mapLink(event.venue);
+const isInstagram = !!event.link && /instagram\.com/.test(event.link);
+const cta = next && event.link
+  ? { href: event.link, label: isInstagram ? "Details on Instagram" : /eventbrite/.test(event.link) ? "Book free on Eventbrite" : "Book your place" }
+  : { href: "https://instagram.com/our.movingstories", label: "Follow for new dates" };
+const info = [
+  ...(where ? [{ label: "Where", value: where }] : []),
+  ...((event.info ?? []).filter((i) => i.label && i.value) as { label: string; value: string }[]),
+];
+if (!info.some((i) => /cost|price/i.test(i.label))) info.splice(where ? 1 : 0, 0, { label: "Cost", value: priceLabel(event.price) });
+const description = event.description ? toHTML(event.description as any) : "";
+const summary = event.summary || "";
+const faqs = (event.faqs ?? []).filter((f) => f.question && f.answer);
+
+// Event markup only while the event has dates to come; past-only pages are noindex and get the breadcrumb alone.
+const pageUrl = new URL(Astro.url.pathname, SITE).href;
+const ldImages = image?.asset
+  ? ([[1600, 900], [1200, 900], [1200, 1200]] as const).map(([w, h]) => urlFor(image).width(w).height(h).fit("crop").url())
+  : [];
+const schema = [
+  breadcrumb([{ name: "Home", path: "/" }, { name: "Events", path: "/events" }, { name: event.name, path: Astro.url.pathname }]),
+  ...(next ? eventNodes(event, pageUrl, future, ldImages, metaDescription(event)) : []),
+];
+---
+
+<!-- Events with no upcoming dates stay reachable (and their links followed) but leave search results
+     and the sitemap: a "No upcoming dates" page is a dead end for someone searching for a session. -->
+<Layout
+  title={event.name}
+  description={metaDescription(event)}
+  ogImage={image?.asset ? urlFor(image).width(1200).height(630).fit("crop").url() : undefined}
+  noindex={!next}
+  schema={schema}
+>
+  <section class="wrap pt-7 pb-20 md:pb-[88px]">
+    <a href="/events" class="inline-block py-3 font-mono text-sm uppercase text-ink no-underline mb-6 hover:text-grape">← All events</a>
+
+    <div class="grid gap-x-16 gap-y-12 items-start md:grid-cols-2">
+      <div>
+        <div class="flex gap-2 flex-wrap mb-[22px] font-mono text-xs uppercase tracking-[0.04em]">
+          {event.audience && <span class="border-[1.5px] border-ink px-[9px] py-1">{event.audience}</span>}
+          <span class="border-[1.5px] border-ink px-[9px] py-1">{repeat.short}</span>
+          <span class="bg-grape text-cream px-2.5 py-[5px]">{priceLabel(event.price)}</span>
+        </div>
+        <h1 class="display text-[clamp(56px,8vw,128px)] text-grape mb-6 text-balance">{event.name}</h1>
+        {summary && <p class="text-[21px] leading-[1.45] max-w-[30em] mb-9">{summary}</p>}
+
+        <div class="border-t-[3px] border-ink border-b-[1.5px] pt-5 pb-6 mb-7">
+          {next ? (
+            <>
+              <div class="eyebrow text-grape mb-2">Next date</div>
+              <div class="display text-[clamp(44px,5vw,72px)] leading-[0.88] text-coral">{fmtLong(next.date)}</div>
+              <div class="text-lg mt-2.5">{time}{event.venue?.name ? ` · ${event.venue.name}` : ""}</div>
+              {next.note && <div class="font-mono text-[13px] mt-1.5">{next.note}</div>}
+            </>
+          ) : (
+            <>
+              <div class="eyebrow text-grape mb-2">{last ? "Past event" : "No dates yet"}</div>
+              <div class="display text-[clamp(40px,4.4vw,60px)] leading-[0.9]">{last ? ranLabel(event) : "Dates to be announced"}</div>
+              <div class="text-lg mt-2.5">New dates are announced on Instagram and in the newsletter.</div>
+            </>
+          )}
+        </div>
+
+        <div class="flex gap-3 flex-wrap">
+          <a href={cta.href} target="_blank" rel="noopener noreferrer" class="btn-primary">{cta.label} ↗</a>
+          {directions && <a href={directions} target="_blank" rel="noopener noreferrer" class="btn-outline">Directions ↗</a>}
+        </div>
+      </div>
+
+      {imageSet && (
+        <div class="relative pt-[18px] pr-[18px] max-w-[540px]">
+          <div class="absolute top-0 right-0 w-[88%] h-[92%] bg-coral rotate-2"></div>
+          <div class="relative aspect-3/4 overflow-hidden bg-sand rotate-[-1.5deg]">
+            <img {...imageSet} sizes="(min-width: 768px) 522px, calc(100vw - 58px)" alt={event.name} class="w-full h-full object-cover block" width="520" height="693" fetchpriority="high" />
+          </div>
+        </div>
+      )}
+    </div>
+  </section>
+
+  <section class="bg-grape text-cream">
+    <div class="wrap pt-20 pb-[88px] grid gap-x-16 gap-y-14 items-start md:grid-cols-2">
+      <div>
+        <div class="eyebrow text-coral-soft mb-[18px]">About this event</div>
+        {description && <div class="rich text-[19px] leading-relaxed mb-9 [&_a]:text-cream [&_a:hover]:text-coral-soft" set:html={description} />}
+        <div class="border-t-2 border-cream">
+          {info.map((row) => (
+            <div class="grid grid-cols-[110px_minmax(0,1fr)] sm:grid-cols-[130px_minmax(0,1fr)] gap-4 py-3.5 border-b-[1.5px] border-dashed border-lilac-dash text-base leading-normal">
+              <span class="font-mono text-xs uppercase tracking-[0.04em] text-coral-soft pt-[3px]">{row.label}</span>
+              <span>{row.value}</span>
+            </div>
+          ))}
+        </div>
+        {faqs.length > 0 && (
+          <>
+            <h2 class="eyebrow text-coral-soft mt-14 mb-[18px]">Questions</h2>
+            <dl class="border-t-2 border-cream">
+              {faqs.map((f) => (
+                <div class="py-4 border-b-[1.5px] border-dashed border-lilac-dash">
+                  <dt class="font-bold text-lg leading-snug mb-1.5">{f.question}</dt>
+                  <dd class="text-base leading-relaxed whitespace-pre-line">{f.answer}</dd>
+                </div>
+              ))}
+            </dl>
+          </>
+        )}
+      </div>
+
+      <div x-data="{ all: false }">
+        <div class="eyebrow text-coral-soft mb-[18px]">Schedule</div>
+        <div class="display text-[clamp(36px,4vw,56px)] leading-[0.9] mb-2">{repeat.long}</div>
+        <div class="font-mono text-sm text-lilac mb-[30px]">{[time, rangeLabel(event)].filter(Boolean).join(" · ")}</div>
+
+        {future.length > 0 ? (
+          <>
+            {[groupsFirst, groupsRest].map((groups, gi) => (
+              <div class="flex flex-col gap-[22px]" x-show={gi === 1 ? "all" : undefined} x-cloak={gi === 1 ? true : undefined} style={gi === 1 ? "margin-top: 22px" : undefined}>
+                {groups.map((m) => (
+                  <div>
+                    <div class="font-mono text-xs uppercase tracking-wider pb-2 border-b-[1.5px] border-lilac-dash mb-2.5">{m.label}</div>
+                    <div class="flex flex-wrap gap-2">
+                      {m.dates.map((d) =>
+                        d.state === "next" ? (
+                          <span class="font-mono text-[13px] px-[11px] py-2 bg-coral text-ink border-[1.5px] border-coral">{d.label} · next</span>
+                        ) : d.state === "off" ? (
+                          <span title={d.note} class="font-mono text-[13px] px-[11px] py-2 border-[1.5px] border-dashed border-lilac-mid text-lilac-light line-through"><span class="sr-only">Cancelled: </span>{d.label}</span>
+                        ) : (
+                          <span class="font-mono text-[13px] px-[11px] py-2 border-[1.5px] border-lilac">{d.label}</span>
+                        )
+                      )}
+                    </div>
+                    {m.note && <div class="text-sm text-lilac-light mt-2">{m.note}</div>}
+                  </div>
+                ))}
+              </div>
+            ))}
+            {groupsRest.length > 0 && (
+              <button type="button" @click="all = !all" class="mt-6 btn-outline-light py-[11px] px-4 text-[13px]">
+                <span x-text={`all ? 'Show fewer dates' : 'Show all ${future.length} dates'`}>Show all {future.length} dates</span>
+              </button>
+            )}
+          </>
+        ) : (
+          <p class="text-lg text-lilac">No dates scheduled at the moment.</p>
+        )}
+      </div>
+    </div>
+  </section>
+</Layout>

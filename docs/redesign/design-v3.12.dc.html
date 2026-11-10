@@ -1,0 +1,1961 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <script src="./support.js"></script>
+  </head>
+  <body>
+    <x-dc>
+      <helmet>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link
+          href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;800;900&family=Karla:wght@400;500;700&family=DM+Mono:wght@400;500&display=swap"
+          rel="stylesheet"
+        />
+        <style>
+          * {
+            box-sizing: border-box;
+          }
+          body {
+            margin: 0;
+            background: #f3ede2;
+          }
+          a {
+            color: #4b2e8f;
+          }
+          a:hover {
+            color: #1e1433;
+          }
+          ::selection {
+            background: #ff6b57;
+            color: #1e1433;
+          }
+          @keyframes omsSpin {
+            to {
+              transform: rotate(360deg);
+            }
+          }
+        </style>
+      </helmet>
+
+      <div
+        data-screen-label="Our Moving Stories — zine"
+        style="
+          background: #f3ede2;
+          color: #1e1433;
+          font-family: &quot;Karla&quot;, sans-serif;
+        "
+      >
+        <header
+          style="
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: #f3ede2;
+            border-bottom: 2px solid #1e1433;
+          "
+        >
+          <div
+            style="
+              max-width: 1360px;
+              margin: 0 auto;
+              padding: 0 28px;
+              height: 80px;
+              display: flex;
+              align-items: center;
+              justify-content: space-between;
+              gap: 24px;
+            "
+          >
+            <a
+              href="#top"
+              style="
+                display: flex;
+                align-items: center;
+                height: 80px;
+                text-decoration: none;
+              "
+              ><img
+                src="./img/logo-purple.svg"
+                alt="Our Moving Stories"
+                style="height: 62px; width: auto; display: block"
+            /></a>
+            <nav
+              style="
+                display: flex;
+                align-items: center;
+                gap: 24px;
+                font-family: &quot;DM Mono&quot;, monospace;
+                font-size: 13px;
+                text-transform: uppercase;
+              "
+            >
+              <a
+                href="#about"
+                style="color: #1e1433; text-decoration: none"
+                style-hover="color: #4B2E8F;"
+                >About</a
+              >
+              <a
+                href="#whats-on"
+                style="color: #1e1433; text-decoration: none"
+                style-hover="color: #4B2E8F;"
+                >What's On</a
+              >
+              <a
+                href="#people"
+                style="color: #1e1433; text-decoration: none"
+                style-hover="color: #4B2E8F;"
+                >People</a
+              >
+              <a
+                href="#whats-on"
+                style="
+                  color: #f3ede2;
+                  background: #4b2e8f;
+                  padding: 8px 14px;
+                  text-decoration: none;
+                  white-space: nowrap;
+                "
+                style-hover="background: #1E1433; color: #F3EDE2;"
+                >Join in</a
+              >
+            </nav>
+          </div>
+        </header>
+
+        <sc-if value="{{ isHome }}" hint-placeholder-val="{{ true }}">
+          <div data-screen-label="Home">
+            <section
+              id="top"
+              style="
+                position: relative;
+                height: calc(100svh - 80px);
+                min-height: 560px;
+                max-height: 1080px;
+                overflow: hidden;
+                background: #1e1433;
+                color: #f3ede2;
+              "
+            >
+              <video
+                ref="{{ videoRef }}"
+                muted
+                loop
+                playsinline
+                preload="metadata"
+                aria-label="Montage from our sessions: the garden at Open Havelock, a mural being spray painted, dancers at the graffiti wall, drumming and group dance, toddlers with scarves, painting and making with little ones, and a girl standing in the paper leaf wings"
+                style="
+                  position: absolute;
+                  inset: 0;
+                  width: 100%;
+                  height: 100%;
+                  object-fit: cover;
+                  display: block;
+                "
+              ></video>
+              <div
+                aria-hidden="true"
+                style="
+                  position: absolute;
+                  inset: 0;
+                  background:
+                    linear-gradient(
+                      to top,
+                      rgba(30, 20, 51, 0.9) 0%,
+                      rgba(30, 20, 51, 0.68) 32%,
+                      rgba(30, 20, 51, 0) 64%
+                    ),
+                    linear-gradient(
+                      to right,
+                      rgba(30, 20, 51, 0.56) 0%,
+                      rgba(30, 20, 51, 0) 60%
+                    );
+                "
+              ></div>
+              <div
+                style="
+                  position: absolute;
+                  top: 12px;
+                  right: 8px;
+                  z-index: 2;
+                  width: clamp(240px, 30vw, 400px);
+                  aspect-ratio: 3/2;
+                  pointer-events: none;
+                "
+              >
+                <img
+                  src="./img/leaves/wing-left.svg"
+                  alt=""
+                  aria-hidden="true"
+                  style="
+                    position: absolute;
+                    left: 0;
+                    top: 0;
+                    width: 52%;
+                    height: auto;
+                    transform: rotate(-8deg);
+                    transform-origin: 92% 88%;
+                  "
+                />
+                <img
+                  src="./img/leaves/wing-right.svg"
+                  alt=""
+                  aria-hidden="true"
+                  style="
+                    position: absolute;
+                    right: 0;
+                    top: 0;
+                    width: 52%;
+                    height: auto;
+                    transform: rotate(8deg);
+                    transform-origin: 8% 88%;
+                  "
+                />
+                <div
+                  style="
+                    position: absolute;
+                    left: 50%;
+                    top: 56%;
+                    width: 42%;
+                    aspect-ratio: 1/1;
+                    border-radius: 999px;
+                    background: #f3ede2;
+                    border: 2px solid #1e1433;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    transform: translate(-50%, -50%) rotate(-8deg);
+                  "
+                >
+                  <div
+                    style="
+                      position: absolute;
+                      inset: 5px;
+                      animation: omsSpin 20s linear infinite;
+                    "
+                  >
+                    <svg viewBox="0 0 100 100" width="100%" height="100%">
+                      <defs>
+                        <path
+                          id="omsCirc"
+                          d="M50,50 m-38,0 a38,38 0 1,1 76,0 a38,38 0 1,1 -76,0"
+                        ></path>
+                      </defs>
+                      <text
+                        style="
+                          font-family: &quot;DM Mono&quot;, monospace;
+                          font-size: 9.6px;
+                          letter-spacing: 1.3px;
+                          text-transform: uppercase;
+                        "
+                        fill="#1E1433"
+                      >
+                        <textPath href="#omsCirc">
+                          All ages · All abilities · Free ·
+                        </textPath>
+                      </text>
+                    </svg>
+                  </div>
+                  <span
+                    style="
+                      font-family:
+                        &quot;Big Shoulders Display&quot;, sans-serif;
+                      font-weight: 900;
+                      font-size: clamp(24px, 3vw, 38px);
+                      color: #4b2e8f;
+                      text-transform: uppercase;
+                    "
+                    >Free</span
+                  >
+                </div>
+              </div>
+              <div
+                style="
+                  position: relative;
+                  z-index: 1;
+                  height: 100%;
+                  max-width: 1360px;
+                  margin: 0 auto;
+                  padding: 32px 28px 32px;
+                  display: flex;
+                  flex-direction: column;
+                  justify-content: flex-end;
+                "
+              >
+                <div
+                  style="
+                    font-family: &quot;DM Mono&quot;, monospace;
+                    font-size: 12px;
+                    text-transform: uppercase;
+                    letter-spacing: 0.05em;
+                    margin-bottom: 18px;
+                    color: #f3ede2;
+                  "
+                >
+                  Free movement, art &amp; community events · Across Ealing
+                </div>
+                <h1
+                  style="
+                    margin: 0;
+                    font-family: &quot;Big Shoulders Display&quot;, sans-serif;
+                    font-weight: 900;
+                    text-transform: uppercase;
+                    color: #f3ede2;
+                    line-height: 0.84;
+                    text-shadow: 0 2px 24px rgba(30, 20, 51, 0.35);
+                  "
+                >
+                  <span
+                    style="display: block; font-size: clamp(40px, 6.2vw, 100px)"
+                    >Everyone has a story</span
+                  >
+                  <span
+                    style="display: block; font-size: clamp(40px, 6.2vw, 100px)"
+                    >to tell through</span
+                  >
+                  <span
+                    style="
+                      display: inline-block;
+                      font-size: clamp(76px, 15vw, 232px);
+                      line-height: 0.8;
+                      margin-top: 0.03em;
+                      color: #ff6b57;
+                      letter-spacing: -0.005em;
+                    "
+                    >Movement.<svg
+                      aria-hidden="true"
+                      viewBox="200 574 466 80"
+                      preserveAspectRatio="none"
+                      style="
+                        display: block;
+                        width: 94%;
+                        height: 0.12em;
+                        margin: 0.03em 0 0 3%;
+                        overflow: visible;
+                      "
+                    >
+                      <path
+                        d="M203.449 626.485C203.449 626.485 222.534 651.302 222.534 651.302C285.515 626.485 509.738 598.589 662.547 607.713C662.547 600.629 642.881 587.582 642.881 587.582C615.398 577.572 264.493 601.162 203.449 626.485Z"
+                        fill="#F3EDE2"
+                      ></path></svg
+                  ></span>
+                </h1>
+                <div
+                  style="
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    gap: 12px;
+                    flex-wrap: wrap;
+                    margin-top: 26px;
+                  "
+                >
+                  <a
+                    href="https://instagram.com/our.movingstories"
+                    target="_blank"
+                    style="
+                      font-family: &quot;DM Mono&quot;, monospace;
+                      font-size: 12px;
+                      text-transform: uppercase;
+                      letter-spacing: 0.04em;
+                      color: #f3ede2;
+                    "
+                    style-hover="color: #FF8A78;"
+                    >Filmed at our @our.movingstories ↗</a
+                  >
+                  <button
+                    onClick="{{ toggleVideo }}"
+                    aria-label="{{ videoAria }}"
+                    style="
+                      font-family: &quot;DM Mono&quot;, monospace;
+                      font-size: 12px;
+                      text-transform: uppercase;
+                      letter-spacing: 0.04em;
+                      background: transparent;
+                      color: #f3ede2;
+                      padding: 8px 12px;
+                      border: 2px solid #f3ede2;
+                      cursor: pointer;
+                    "
+                    style-hover="background: #F3EDE2; color: #1E1433;"
+                  >
+                    {{ videoLabel }}
+                  </button>
+                </div>
+              </div>
+            </section>
+
+            <section
+              style="max-width: 1360px; margin: 0 auto; padding: 48px 28px 72px"
+            >
+              <div
+                style="
+                  display: grid;
+                  grid-template-columns: repeat(
+                    auto-fit,
+                    minmax(min(100%, 300px), 1fr)
+                  );
+                  gap: 24px 48px;
+                  align-items: end;
+                "
+              >
+                <p
+                  style="
+                    margin: 0;
+                    font-size: 21px;
+                    line-height: 1.45;
+                    text-wrap: pretty;
+                  "
+                >
+                  Free movement and art across Ealing, run with and for local
+                  people. Weekly sessions for little ones and their grown-ups,
+                  and community events everyone is welcome at.
+                </p>
+                <div style="display: flex; gap: 12px; flex-wrap: wrap">
+                  <a
+                    href="#whats-on"
+                    style="
+                      font-family: &quot;DM Mono&quot;, monospace;
+                      font-size: 14px;
+                      text-transform: uppercase;
+                      color: #f3ede2;
+                      background: #4b2e8f;
+                      padding: 15px 22px;
+                      text-decoration: none;
+                    "
+                    style-hover="background: #1E1433; color: #F3EDE2;"
+                    >See what's on</a
+                  >
+                  <a
+                    href="#contact"
+                    style="
+                      font-family: &quot;DM Mono&quot;, monospace;
+                      font-size: 14px;
+                      text-transform: uppercase;
+                      color: #1e1433;
+                      padding: 15px 22px;
+                      border: 2px solid #1e1433;
+                      text-decoration: none;
+                    "
+                    style-hover="background: #1E1433; color: #F3EDE2;"
+                    >Newsletter</a
+                  >
+                </div>
+                <sc-if
+                  value="{{ hasNextUp }}"
+                  hint-placeholder-val="{{ true }}"
+                >
+                  <a
+                    href="{{ nextUp.href }}"
+                    style="
+                      display: block;
+                      border-top: 2px solid #1e1433;
+                      padding-top: 14px;
+                      color: #1e1433;
+                      text-decoration: none;
+                    "
+                    style-hover="color: #4B2E8F;"
+                  >
+                    <div
+                      style="
+                        font-family: &quot;DM Mono&quot;, monospace;
+                        font-size: 12px;
+                        text-transform: uppercase;
+                        letter-spacing: 0.05em;
+                        color: #4b2e8f;
+                        margin-bottom: 6px;
+                      "
+                    >
+                      Next up · {{ nextUp.date }}
+                    </div>
+                    <div
+                      style="
+                        font-family:
+                          &quot;Big Shoulders Display&quot;, sans-serif;
+                        font-weight: 800;
+                        font-size: 28px;
+                        text-transform: uppercase;
+                        line-height: 1;
+                      "
+                    >
+                      {{ nextUp.title }} →
+                    </div>
+                    <div style="font-size: 15px; margin-top: 4px">
+                      {{ nextUp.time }} · {{ nextUp.venue }}
+                    </div>
+                  </a>
+                </sc-if>
+              </div>
+            </section>
+
+            <section id="about" style="background: #4b2e8f; color: #f3ede2">
+              <div
+                style="max-width: 1360px; margin: 0 auto; padding: 96px 28px"
+              >
+                <div
+                  style="
+                    display: grid;
+                    grid-template-columns: repeat(
+                      auto-fit,
+                      minmax(min(100%, 400px), 1fr)
+                    );
+                    gap: 48px 64px;
+                    margin-bottom: 80px;
+                    align-items: start;
+                  "
+                >
+                  <div>
+                    <div
+                      style="
+                        font-family: &quot;DM Mono&quot;, monospace;
+                        font-size: 12px;
+                        text-transform: uppercase;
+                        letter-spacing: 0.05em;
+                        color: #ff8a78;
+                        margin-bottom: 18px;
+                      "
+                    >
+                      <img
+                        src="./img/leaves/leaf-1.svg"
+                        alt=""
+                        aria-hidden="true"
+                        style="
+                          height: 24px;
+                          width: auto;
+                          vertical-align: -7px;
+                          margin-right: 10px;
+                          transform: rotate(30deg);
+                        "
+                      />About
+                    </div>
+                    <h2
+                      style="
+                        margin: 0;
+                        font-family:
+                          &quot;Big Shoulders Display&quot;, sans-serif;
+                        font-weight: 900;
+                        font-size: clamp(64px, 8.6vw, 128px);
+                        line-height: 0.84;
+                        text-transform: uppercase;
+                      "
+                    >
+                      Made by people,
+                      <span style="color: #ff6b57">for people.</span
+                      ><img
+                        src="./img/leaves/spray.svg"
+                        alt=""
+                        aria-hidden="true"
+                        style="
+                          height: 0.55em;
+                          width: auto;
+                          margin-left: 0.12em;
+                          vertical-align: 0.05em;
+                          transform: rotate(-6deg);
+                        "
+                      />
+                    </h2>
+                  </div>
+                  <div
+                    style="
+                      display: flex;
+                      flex-direction: column;
+                      justify-content: flex-end;
+                      gap: 18px;
+                      font-size: 19px;
+                      line-height: 1.6;
+                      align-self: end;
+                    "
+                  >
+                    <p style="margin: 0">
+                      We're a community interest company based in Southall,
+                      running events across Ealing in partnership with Peabody
+                      and Ealing Council. We run weekly movement and art
+                      sessions, and bring neighbours together through parties,
+                      workshops and community-run events.
+                    </p>
+                    <p style="margin: 0; color: #dcd0f7">
+                      Sessions are led by experienced practitioners in
+                      accessible spaces. Timings are flexible, refreshments are
+                      on, and nobody needs experience. Everyone has a story to
+                      share through movement.
+                    </p>
+                  </div>
+                </div>
+                <div style="border-top: 2px solid #f3ede2">
+                  <div
+                    style="
+                      display: flex;
+                      justify-content: space-between;
+                      align-items: center;
+                      gap: 24px;
+                      flex-wrap: wrap;
+                      padding: 22px 0;
+                      border-bottom: 1.5px dashed #9f8bdb;
+                    "
+                  >
+                    <span
+                      style="
+                        font-family:
+                          &quot;Big Shoulders Display&quot;, sans-serif;
+                        font-weight: 900;
+                        font-size: clamp(40px, 5.4vw, 80px);
+                        line-height: 0.9;
+                        text-transform: uppercase;
+                      "
+                      >Always free</span
+                    >
+                    <span
+                      style="
+                        font-size: 17px;
+                        line-height: 1.45;
+                        color: #dcd0f7;
+                        width: min(100%, 290px);
+                      "
+                      >Every session and event, funded for the community.</span
+                    >
+                  </div>
+                  <div
+                    style="
+                      display: flex;
+                      justify-content: space-between;
+                      align-items: center;
+                      gap: 24px;
+                      flex-wrap: wrap;
+                      padding: 22px 0;
+                      border-bottom: 1.5px dashed #9f8bdb;
+                    "
+                  >
+                    <span
+                      style="
+                        font-family:
+                          &quot;Big Shoulders Display&quot;, sans-serif;
+                        font-weight: 900;
+                        font-size: clamp(40px, 5.4vw, 80px);
+                        line-height: 0.9;
+                        text-transform: uppercase;
+                        color: #ff6b57;
+                      "
+                      >Little ones &amp; grown-ups</span
+                    >
+                    <span
+                      style="
+                        font-size: 17px;
+                        line-height: 1.45;
+                        color: #dcd0f7;
+                        width: min(100%, 290px);
+                      "
+                      >Weekly movement and art for under-5s with their parents
+                      and carers.</span
+                    >
+                  </div>
+                  <div
+                    style="
+                      display: flex;
+                      justify-content: space-between;
+                      align-items: center;
+                      gap: 24px;
+                      flex-wrap: wrap;
+                      padding: 22px 0;
+                    "
+                  >
+                    <span
+                      style="
+                        font-family:
+                          &quot;Big Shoulders Display&quot;, sans-serif;
+                        font-weight: 900;
+                        font-size: clamp(40px, 5.4vw, 80px);
+                        line-height: 0.9;
+                        text-transform: uppercase;
+                      "
+                      >Everyone welcome</span
+                    >
+                    <span
+                      style="
+                        font-size: 17px;
+                        line-height: 1.45;
+                        color: #dcd0f7;
+                        width: min(100%, 290px);
+                      "
+                      >Parties, workshops and community-run events for all ages
+                      and abilities.</span
+                    >
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <section
+              id="whats-on"
+              style="max-width: 1360px; margin: 0 auto; padding: 96px 28px"
+            >
+              <div
+                style="
+                  display: flex;
+                  align-items: flex-end;
+                  justify-content: space-between;
+                  gap: 24px;
+                  flex-wrap: wrap;
+                  margin-bottom: 36px;
+                "
+              >
+                <div>
+                  <div
+                    style="
+                      font-family: &quot;DM Mono&quot;, monospace;
+                      font-size: 12px;
+                      text-transform: uppercase;
+                      letter-spacing: 0.05em;
+                      color: #4b2e8f;
+                      margin-bottom: 14px;
+                    "
+                  >
+                    <img
+                      src="./img/leaves/leaf-3.svg"
+                      alt=""
+                      aria-hidden="true"
+                      style="
+                        height: 24px;
+                        width: auto;
+                        vertical-align: -7px;
+                        margin-right: 10px;
+                        transform: rotate(-25deg);
+                      "
+                    />What's on
+                  </div>
+                  <h2
+                    style="
+                      margin: 0;
+                      font-family:
+                        &quot;Big Shoulders Display&quot;, sans-serif;
+                      font-weight: 900;
+                      font-size: clamp(64px, 9vw, 140px);
+                      line-height: 0.82;
+                      text-transform: uppercase;
+                      color: #4b2e8f;
+                    "
+                  >
+                    Coming up
+                  </h2>
+                </div>
+                <p
+                  style="
+                    margin: 0;
+                    font-size: 17px;
+                    line-height: 1.5;
+                    max-width: 21em;
+                  "
+                >
+                  Free sessions and events across Ealing, soonest first. Open
+                  one for the full schedule and how to book.
+                </p>
+              </div>
+              <div style="border-top: 3px solid #1e1433">
+                <sc-for list="{{ events }}" as="ev" hint-placeholder-count="3">
+                  <a
+                    href="{{ ev.href }}"
+                    style="
+                      display: grid;
+                      grid-template-columns: 104px 176px minmax(0, 1fr) auto;
+                      gap: 28px;
+                      align-items: center;
+                      padding: 20px 0;
+                      border-bottom: 1.5px solid #1e1433;
+                      color: #1e1433;
+                      text-decoration: none;
+                      transition:
+                        background 0.15s,
+                        padding 0.15s;
+                    "
+                    style-hover="background: #FFD9CF; padding-left: 16px; padding-right: 16px; color: #1E1433;"
+                  >
+                    <div
+                      style="
+                        width: 104px;
+                        aspect-ratio: 3/4;
+                        overflow: hidden;
+                        background: #e8ded0;
+                        transform: rotate(-1.5deg);
+                      "
+                    >
+                      <img
+                        src="{{ ev.img }}"
+                        alt="{{ ev.title }}"
+                        style="
+                          width: 100%;
+                          height: 100%;
+                          object-fit: cover;
+                          display: block;
+                        "
+                      />
+                    </div>
+                    <div>
+                      <div
+                        style="
+                          font-family: &quot;DM Mono&quot;, monospace;
+                          font-size: 11px;
+                          text-transform: uppercase;
+                          letter-spacing: 0.05em;
+                          margin-bottom: 6px;
+                        "
+                      >
+                        Next date
+                      </div>
+                      <div
+                        style="
+                          font-family:
+                            &quot;Big Shoulders Display&quot;, sans-serif;
+                          font-weight: 900;
+                          font-size: 36px;
+                          line-height: 0.9;
+                          text-transform: uppercase;
+                          color: #4b2e8f;
+                        "
+                      >
+                        {{ ev.nextShort }}
+                      </div>
+                      <div
+                        style="
+                          font-family: &quot;DM Mono&quot;, monospace;
+                          font-size: 12px;
+                          text-transform: uppercase;
+                          margin-top: 6px;
+                        "
+                      >
+                        {{ ev.repeat }}
+                      </div>
+                    </div>
+                    <div>
+                      <div
+                        style="
+                          font-size: 23px;
+                          font-weight: 700;
+                          line-height: 1.15;
+                          margin-bottom: 6px;
+                        "
+                      >
+                        {{ ev.title }}
+                      </div>
+                      <div
+                        style="
+                          font-family: &quot;DM Mono&quot;, monospace;
+                          font-size: 13px;
+                          line-height: 1.6;
+                        "
+                      >
+                        {{ ev.time }} · {{ ev.venue }}
+                      </div>
+                      <div
+                        style="
+                          display: inline-block;
+                          margin-top: 8px;
+                          font-family: &quot;DM Mono&quot;, monospace;
+                          font-size: 11px;
+                          text-transform: uppercase;
+                          letter-spacing: 0.04em;
+                          border: 1.5px solid #1e1433;
+                          padding: 3px 8px;
+                        "
+                      >
+                        {{ ev.audience }}
+                      </div>
+                    </div>
+                    <span
+                      style="
+                        font-family: &quot;DM Mono&quot;, monospace;
+                        font-size: 13px;
+                        text-transform: uppercase;
+                        white-space: nowrap;
+                        padding: 10px 14px;
+                        background: #ff6b57;
+                        color: #1e1433;
+                      "
+                      >Details →</span
+                    >
+                  </a>
+                </sc-for>
+              </div>
+              <sc-if value="{{ hasPast }}" hint-placeholder-val="{{ true }}">
+                <div
+                  style="
+                    display: flex;
+                    gap: 10px 22px;
+                    flex-wrap: wrap;
+                    align-items: baseline;
+                    margin-top: 26px;
+                    font-family: &quot;DM Mono&quot;, monospace;
+                    font-size: 13px;
+                  "
+                >
+                  <span
+                    style="text-transform: uppercase; letter-spacing: 0.05em"
+                    >Recently:</span
+                  >
+                  <sc-for
+                    list="{{ pastEvents }}"
+                    as="pe"
+                    hint-placeholder-count="2"
+                  >
+                    <a
+                      href="{{ pe.href }}"
+                      style="color: #4b2e8f"
+                      style-hover="color: #1E1433;"
+                      >{{ pe.title }} ({{ pe.last }})</a
+                    >
+                  </sc-for>
+                </div>
+              </sc-if>
+            </section>
+
+            <section id="people" style="border-top: 3px solid #1e1433">
+              <div
+                style="max-width: 1360px; margin: 0 auto; padding: 96px 28px"
+              >
+                <div
+                  style="
+                    display: flex;
+                    align-items: flex-end;
+                    justify-content: space-between;
+                    gap: 24px;
+                    flex-wrap: wrap;
+                    margin-bottom: 44px;
+                  "
+                >
+                  <div>
+                    <div
+                      style="
+                        font-family: &quot;DM Mono&quot;, monospace;
+                        font-size: 12px;
+                        text-transform: uppercase;
+                        letter-spacing: 0.05em;
+                        color: #4b2e8f;
+                        margin-bottom: 14px;
+                      "
+                    >
+                      <img
+                        src="./img/leaves/leaf-2.svg"
+                        alt=""
+                        aria-hidden="true"
+                        style="
+                          height: 24px;
+                          width: auto;
+                          vertical-align: -7px;
+                          margin-right: 10px;
+                          transform: rotate(20deg);
+                        "
+                      />The people
+                    </div>
+                    <h2
+                      style="
+                        margin: 0;
+                        font-family:
+                          &quot;Big Shoulders Display&quot;, sans-serif;
+                        font-weight: 900;
+                        font-size: clamp(56px, 8vw, 124px);
+                        line-height: 0.82;
+                        text-transform: uppercase;
+                        color: #4b2e8f;
+                      "
+                    >
+                      A small, <span style="color: #ff6b57">mighty</span> team
+                    </h2>
+                  </div>
+                  <p
+                    style="
+                      margin: 0;
+                      font-size: 17px;
+                      line-height: 1.5;
+                      max-width: 21em;
+                    "
+                  >
+                    Dancers, artists and early-years practitioners who live and
+                    work locally.
+                  </p>
+                </div>
+                <div
+                  style="
+                    display: grid;
+                    grid-template-columns: repeat(
+                      auto-fill,
+                      minmax(min(100%, 230px), 1fr)
+                    );
+                    gap: 40px 24px;
+                    align-items: start;
+                    border-top: 3px solid #1e1433;
+                    padding-top: 28px;
+                  "
+                >
+                  <sc-for list="{{ people }}" as="p" hint-placeholder-count="4">
+                    <div>
+                      <div style="position: relative">
+                        <div
+                          style="
+                            aspect-ratio: 4/5;
+                            overflow: hidden;
+                            background: #8c74d9;
+                          "
+                        >
+                          <img
+                            src="{{ p.img }}"
+                            alt="{{ p.name }}"
+                            style="
+                              width: 100%;
+                              height: 100%;
+                              object-fit: cover;
+                              display: block;
+                              filter: grayscale(1) contrast(1.15);
+                              mix-blend-mode: multiply;
+                            "
+                          />
+                        </div>
+                        <img
+                          src="{{ p.leaf }}"
+                          alt=""
+                          aria-hidden="true"
+                          style="position: absolute; top: -18px; right: 10px; height: 52px; width: auto; transform: rotate({{ p.leafRot }}deg);"
+                        />
+                      </div>
+                      <h3
+                        style="
+                          margin: 18px 0 6px;
+                          font-family:
+                            &quot;Big Shoulders Display&quot;, sans-serif;
+                          font-weight: 900;
+                          font-size: 34px;
+                          line-height: 0.9;
+                          text-transform: uppercase;
+                          color: #1e1433;
+                        "
+                      >
+                        {{ p.name }}
+                      </h3>
+                      <div
+                        style="
+                          font-family: &quot;DM Mono&quot;, monospace;
+                          font-size: 12px;
+                          text-transform: uppercase;
+                          letter-spacing: 0.04em;
+                          color: #4b2e8f;
+                          margin-bottom: 10px;
+                        "
+                      >
+                        {{ p.role }}
+                      </div>
+                      <p style="margin: 0; font-size: 15px; line-height: 1.55">
+                        {{ p.bio }}
+                      </p>
+                    </div>
+                  </sc-for>
+                </div>
+              </div>
+            </section>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ isDetail }}" hint-placeholder-val="{{ false }}">
+          <div data-screen-label="Event detail">
+            <section
+              style="max-width: 1360px; margin: 0 auto; padding: 28px 28px 88px"
+            >
+              <a
+                href="#whats-on"
+                style="
+                  display: inline-block;
+                  font-family: &quot;DM Mono&quot;, monospace;
+                  font-size: 13px;
+                  text-transform: uppercase;
+                  color: #1e1433;
+                  text-decoration: none;
+                  margin-bottom: 36px;
+                "
+                style-hover="color: #4B2E8F;"
+                >← All events</a
+              >
+
+              <div
+                style="
+                  display: grid;
+                  grid-template-columns: repeat(
+                    auto-fit,
+                    minmax(min(100%, 420px), 1fr)
+                  );
+                  gap: 48px 64px;
+                  align-items: start;
+                "
+              >
+                <div>
+                  <div
+                    style="
+                      display: flex;
+                      gap: 8px;
+                      flex-wrap: wrap;
+                      margin-bottom: 22px;
+                      font-family: &quot;DM Mono&quot;, monospace;
+                      font-size: 12px;
+                      text-transform: uppercase;
+                      letter-spacing: 0.04em;
+                    "
+                  >
+                    <span style="border: 1.5px solid #1e1433; padding: 4px 9px"
+                      >{{ d.audience }}</span
+                    >
+                    <span style="border: 1.5px solid #1e1433; padding: 4px 9px"
+                      >{{ d.repeat }}</span
+                    >
+                    <span
+                      style="
+                        background: #4b2e8f;
+                        color: #f3ede2;
+                        padding: 5px 10px;
+                      "
+                      >Free</span
+                    >
+                  </div>
+                  <h1
+                    style="
+                      margin: 0 0 24px;
+                      font-family:
+                        &quot;Big Shoulders Display&quot;, sans-serif;
+                      font-weight: 900;
+                      font-size: clamp(56px, 8vw, 128px);
+                      line-height: 0.84;
+                      text-transform: uppercase;
+                      color: #4b2e8f;
+                      text-wrap: balance;
+                    "
+                  >
+                    {{ d.title }}
+                  </h1>
+                  <p
+                    style="
+                      margin: 0 0 36px;
+                      font-size: 21px;
+                      line-height: 1.45;
+                      max-width: 30em;
+                    "
+                  >
+                    {{ d.summary }}
+                  </p>
+
+                  <div
+                    style="
+                      border-top: 3px solid #1e1433;
+                      border-bottom: 1.5px solid #1e1433;
+                      padding: 20px 0 24px;
+                      margin-bottom: 28px;
+                    "
+                  >
+                    <sc-if
+                      value="{{ d.hasUpcoming }}"
+                      hint-placeholder-val="{{ true }}"
+                    >
+                      <div
+                        style="
+                          font-family: &quot;DM Mono&quot;, monospace;
+                          font-size: 12px;
+                          text-transform: uppercase;
+                          letter-spacing: 0.05em;
+                          color: #4b2e8f;
+                          margin-bottom: 8px;
+                        "
+                      >
+                        Next date
+                      </div>
+                      <div
+                        style="
+                          font-family:
+                            &quot;Big Shoulders Display&quot;, sans-serif;
+                          font-weight: 900;
+                          font-size: clamp(44px, 5vw, 72px);
+                          line-height: 0.88;
+                          text-transform: uppercase;
+                          color: #ff6b57;
+                        "
+                      >
+                        {{ d.nextLong }}
+                      </div>
+                      <div style="font-size: 18px; margin-top: 10px">
+                        {{ d.time }} · {{ d.venue }}
+                      </div>
+                    </sc-if>
+                    <sc-if
+                      value="{{ d.noUpcoming }}"
+                      hint-placeholder-val="{{ false }}"
+                    >
+                      <div
+                        style="
+                          font-family: &quot;DM Mono&quot;, monospace;
+                          font-size: 12px;
+                          text-transform: uppercase;
+                          letter-spacing: 0.05em;
+                          color: #4b2e8f;
+                          margin-bottom: 8px;
+                        "
+                      >
+                        No upcoming dates
+                      </div>
+                      <div
+                        style="
+                          font-family:
+                            &quot;Big Shoulders Display&quot;, sans-serif;
+                          font-weight: 900;
+                          font-size: clamp(40px, 4.4vw, 60px);
+                          line-height: 0.9;
+                          text-transform: uppercase;
+                        "
+                      >
+                        Last held {{ d.lastLong }}
+                      </div>
+                      <div style="font-size: 18px; margin-top: 10px">
+                        New dates are announced on Instagram and in the
+                        newsletter.
+                      </div>
+                    </sc-if>
+                  </div>
+
+                  <div style="display: flex; gap: 12px; flex-wrap: wrap">
+                    <a
+                      href="{{ d.ctaHref }}"
+                      target="_blank"
+                      style="
+                        font-family: &quot;DM Mono&quot;, monospace;
+                        font-size: 14px;
+                        text-transform: uppercase;
+                        color: #f3ede2;
+                        background: #4b2e8f;
+                        padding: 15px 22px;
+                        text-decoration: none;
+                      "
+                      style-hover="background: #1E1433; color: #F3EDE2;"
+                      >{{ d.ctaLabel }} ↗</a
+                    >
+                    <a
+                      href="{{ d.mapHref }}"
+                      target="_blank"
+                      style="
+                        font-family: &quot;DM Mono&quot;, monospace;
+                        font-size: 14px;
+                        text-transform: uppercase;
+                        color: #1e1433;
+                        padding: 15px 22px;
+                        border: 2px solid #1e1433;
+                        text-decoration: none;
+                      "
+                      style-hover="background: #1E1433; color: #F3EDE2;"
+                      >Directions ↗</a
+                    >
+                  </div>
+                </div>
+
+                <div style="position: relative; padding: 18px 18px 0 0">
+                  <div
+                    style="
+                      position: absolute;
+                      top: 0;
+                      right: 0;
+                      width: 88%;
+                      height: 92%;
+                      background: #ff6b57;
+                      transform: rotate(2deg);
+                    "
+                  ></div>
+                  <div
+                    style="
+                      position: relative;
+                      aspect-ratio: 3/4;
+                      overflow: hidden;
+                      background: #e8ded0;
+                      transform: rotate(-1.5deg);
+                      max-width: 520px;
+                    "
+                  >
+                    <img
+                      src="{{ d.img }}"
+                      alt="{{ d.title }}"
+                      style="
+                        width: 100%;
+                        height: 100%;
+                        object-fit: cover;
+                        display: block;
+                      "
+                    />
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <section style="background: #4b2e8f; color: #f3ede2">
+              <div
+                style="
+                  max-width: 1360px;
+                  margin: 0 auto;
+                  padding: 80px 28px 88px;
+                  display: grid;
+                  grid-template-columns: repeat(
+                    auto-fit,
+                    minmax(min(100%, 400px), 1fr)
+                  );
+                  gap: 56px 64px;
+                  align-items: start;
+                "
+              >
+                <div>
+                  <div
+                    style="
+                      font-family: &quot;DM Mono&quot;, monospace;
+                      font-size: 12px;
+                      text-transform: uppercase;
+                      letter-spacing: 0.05em;
+                      color: #ff8a78;
+                      margin-bottom: 18px;
+                    "
+                  >
+                    About this event
+                  </div>
+                  <div
+                    style="
+                      display: flex;
+                      flex-direction: column;
+                      gap: 16px;
+                      font-size: 19px;
+                      line-height: 1.6;
+                      margin-bottom: 36px;
+                    "
+                  >
+                    <sc-for
+                      list="{{ d.paras }}"
+                      as="para"
+                      hint-placeholder-count="2"
+                    >
+                      <p style="margin: 0">{{ para.text }}</p>
+                    </sc-for>
+                  </div>
+                  <div style="border-top: 2px solid #f3ede2">
+                    <sc-for
+                      list="{{ d.info }}"
+                      as="inf"
+                      hint-placeholder-count="4"
+                    >
+                      <div
+                        style="
+                          display: grid;
+                          grid-template-columns: 130px minmax(0, 1fr);
+                          gap: 16px;
+                          padding: 14px 0;
+                          border-bottom: 1.5px dashed #9f8bdb;
+                          font-size: 16px;
+                          line-height: 1.5;
+                        "
+                      >
+                        <span
+                          style="
+                            font-family: &quot;DM Mono&quot;, monospace;
+                            font-size: 12px;
+                            text-transform: uppercase;
+                            letter-spacing: 0.04em;
+                            color: #ff8a78;
+                            padding-top: 3px;
+                          "
+                          >{{ inf.k }}</span
+                        >
+                        <span>{{ inf.v }}</span>
+                      </div>
+                    </sc-for>
+                  </div>
+                </div>
+
+                <div>
+                  <div
+                    style="
+                      font-family: &quot;DM Mono&quot;, monospace;
+                      font-size: 12px;
+                      text-transform: uppercase;
+                      letter-spacing: 0.05em;
+                      color: #ff8a78;
+                      margin-bottom: 18px;
+                    "
+                  >
+                    Schedule
+                  </div>
+                  <div
+                    style="
+                      font-family:
+                        &quot;Big Shoulders Display&quot;, sans-serif;
+                      font-weight: 900;
+                      font-size: clamp(36px, 4vw, 56px);
+                      line-height: 0.9;
+                      text-transform: uppercase;
+                      margin-bottom: 8px;
+                    "
+                  >
+                    {{ d.repeatLong }}
+                  </div>
+                  <div
+                    style="
+                      font-family: &quot;DM Mono&quot;, monospace;
+                      font-size: 14px;
+                      color: #dcd0f7;
+                      margin-bottom: 30px;
+                    "
+                  >
+                    {{ d.time }} · {{ d.range }}
+                  </div>
+                  <sc-if
+                    value="{{ d.hasMonths }}"
+                    hint-placeholder-val="{{ true }}"
+                  >
+                    <div
+                      style="display: flex; flex-direction: column; gap: 22px"
+                    >
+                      <sc-for
+                        list="{{ d.months }}"
+                        as="mo"
+                        hint-placeholder-count="3"
+                      >
+                        <div>
+                          <div
+                            style="
+                              font-family: &quot;DM Mono&quot;, monospace;
+                              font-size: 12px;
+                              text-transform: uppercase;
+                              letter-spacing: 0.05em;
+                              padding-bottom: 8px;
+                              border-bottom: 1.5px solid #9f8bdb;
+                              margin-bottom: 10px;
+                            "
+                          >
+                            {{ mo.label }}
+                          </div>
+                          <div style="display: flex; flex-wrap: wrap; gap: 8px">
+                            <sc-for
+                              list="{{ mo.dates }}"
+                              as="dt"
+                              hint-placeholder-count="4"
+                            >
+                              <sc-if
+                                value="{{ dt.isNext }}"
+                                hint-placeholder-val="{{ false }}"
+                              >
+                                <span
+                                  style="
+                                    font-family: &quot;DM Mono&quot;, monospace;
+                                    font-size: 13px;
+                                    padding: 8px 11px;
+                                    background: #ff6b57;
+                                    color: #1e1433;
+                                    border: 1.5px solid #ff6b57;
+                                  "
+                                  >{{ dt.label }} · next</span
+                                >
+                              </sc-if>
+                              <sc-if
+                                value="{{ dt.isOn }}"
+                                hint-placeholder-val="{{ true }}"
+                              >
+                                <span
+                                  style="
+                                    font-family: &quot;DM Mono&quot;, monospace;
+                                    font-size: 13px;
+                                    padding: 8px 11px;
+                                    border: 1.5px solid #dcd0f7;
+                                  "
+                                  >{{ dt.label }}</span
+                                >
+                              </sc-if>
+                              <sc-if
+                                value="{{ dt.isOff }}"
+                                hint-placeholder-val="{{ false }}"
+                              >
+                                <span
+                                  title="{{ dt.note }}"
+                                  style="
+                                    font-family: &quot;DM Mono&quot;, monospace;
+                                    font-size: 13px;
+                                    padding: 8px 11px;
+                                    border: 1.5px dashed #8c74d9;
+                                    color: #b9a6ee;
+                                    text-decoration: line-through;
+                                  "
+                                  >{{ dt.label }}</span
+                                >
+                              </sc-if>
+                            </sc-for>
+                          </div>
+                          <sc-if
+                            value="{{ mo.hasNote }}"
+                            hint-placeholder-val="{{ false }}"
+                          >
+                            <div
+                              style="
+                                font-size: 14px;
+                                color: #b9a6ee;
+                                margin-top: 8px;
+                              "
+                            >
+                              {{ mo.note }}
+                            </div>
+                          </sc-if>
+                        </div>
+                      </sc-for>
+                    </div>
+                    <sc-if
+                      value="{{ d.hasMore }}"
+                      hint-placeholder-val="{{ false }}"
+                    >
+                      <button
+                        onClick="{{ toggleAll }}"
+                        style="
+                          margin-top: 24px;
+                          font-family: &quot;DM Mono&quot;, monospace;
+                          font-size: 13px;
+                          text-transform: uppercase;
+                          background: transparent;
+                          color: #f3ede2;
+                          border: 2px solid #f3ede2;
+                          padding: 11px 16px;
+                          cursor: pointer;
+                        "
+                        style-hover="background: #F3EDE2; color: #4B2E8F;"
+                      >
+                        {{ d.moreLabel }}
+                      </button>
+                    </sc-if>
+                  </sc-if>
+                </div>
+              </div>
+            </section>
+          </div>
+        </sc-if>
+
+        <section
+          id="contact"
+          style="background: #1e1433; color: #f3ede2; overflow: hidden"
+        >
+          <div
+            style="
+              max-width: 1360px;
+              margin: 0 auto;
+              padding: 96px 28px 72px;
+              display: grid;
+              grid-template-columns: repeat(
+                auto-fit,
+                minmax(min(100%, 380px), 1fr)
+              );
+              gap: 56px;
+              align-items: center;
+            "
+          >
+            <div>
+              <div
+                style="
+                  font-family: &quot;DM Mono&quot;, monospace;
+                  font-size: 12px;
+                  text-transform: uppercase;
+                  letter-spacing: 0.05em;
+                  color: #ff8a78;
+                  margin-bottom: 18px;
+                "
+              >
+                <img
+                  src="./img/leaves/leaf-4.svg"
+                  alt=""
+                  aria-hidden="true"
+                  style="
+                    height: 24px;
+                    width: auto;
+                    vertical-align: -7px;
+                    margin-right: 10px;
+                    transform: rotate(-30deg);
+                  "
+                />Get in touch
+              </div>
+              <h2
+                style="
+                  margin: 0 0 24px;
+                  font-family: &quot;Big Shoulders Display&quot;, sans-serif;
+                  font-weight: 900;
+                  font-size: clamp(48px, 5.6vw, 92px);
+                  line-height: 0.86;
+                  text-transform: uppercase;
+                "
+              >
+                Bring movement to your
+                <span style="color: #ff6b57">community.</span>
+              </h2>
+              <p
+                style="
+                  font-size: 18px;
+                  line-height: 1.6;
+                  color: #dcd0f7;
+                  max-width: 32em;
+                  margin: 0 0 24px;
+                "
+              >
+                We work with community groups, schools and venues across Ealing
+                to bring free movement and art sessions to more people. If you'd
+                like to run something together, we'd love to talk.
+              </p>
+              <a
+                href="mailto:hello@ourmovingstories.com"
+                style="
+                  font-family: &quot;DM Mono&quot;, monospace;
+                  font-size: 18px;
+                  color: #ff8a78;
+                "
+                style-hover="color: #F3EDE2;"
+                >hello@ourmovingstories.com</a
+              >
+            </div>
+            <div style="position: relative; padding: 24px 0">
+              <img
+                src="./img/leaves/wing-left.svg"
+                alt=""
+                aria-hidden="true"
+                style="
+                  position: absolute;
+                  left: -16%;
+                  top: -12%;
+                  width: 62%;
+                  height: auto;
+                  transform: rotate(-14deg);
+                "
+              />
+              <img
+                src="./img/leaves/wing-right.svg"
+                alt=""
+                aria-hidden="true"
+                style="
+                  position: absolute;
+                  right: -16%;
+                  top: -12%;
+                  width: 62%;
+                  height: auto;
+                  transform: rotate(14deg);
+                "
+              />
+              <div
+                style="
+                  position: relative;
+                  background: #f3ede2;
+                  color: #1e1433;
+                  padding: 30px;
+                  outline: 2px dashed #f3ede2;
+                  outline-offset: 8px;
+                "
+              >
+                <div
+                  style="
+                    font-family: &quot;DM Mono&quot;, monospace;
+                    font-size: 12px;
+                    text-transform: uppercase;
+                    letter-spacing: 0.05em;
+                    color: #4b2e8f;
+                    margin-bottom: 10px;
+                  "
+                >
+                  ✂ Newsletter
+                </div>
+                <h3
+                  style="
+                    margin: 0 0 8px;
+                    font-family: &quot;Big Shoulders Display&quot;, sans-serif;
+                    font-weight: 900;
+                    font-size: 44px;
+                    line-height: 0.9;
+                    text-transform: uppercase;
+                  "
+                >
+                  Stay in the loop
+                </h3>
+                <p style="margin: 0 0 20px; font-size: 16px; line-height: 1.5">
+                  New dates, projects and community stories, straight to your
+                  inbox.
+                </p>
+                <div style="display: flex; gap: 0; flex-wrap: wrap">
+                  <input
+                    type="email"
+                    placeholder="you@email.com"
+                    style="
+                      flex: 1 1 200px;
+                      padding: 14px;
+                      border: 2px solid #1e1433;
+                      background: #fff;
+                      color: #1e1433;
+                      font-size: 15px;
+                      font-family: &quot;DM Mono&quot;, monospace;
+                      outline: none;
+                    "
+                  />
+                  <button
+                    style="
+                      flex: 0 0 auto;
+                      padding: 14px 22px;
+                      border: 2px solid #1e1433;
+                      background: #4b2e8f;
+                      color: #f3ede2;
+                      font-family: &quot;DM Mono&quot;, monospace;
+                      font-size: 14px;
+                      text-transform: uppercase;
+                      cursor: pointer;
+                    "
+                    style-hover="background: #FF6B57; color: #1E1433;"
+                  >
+                    Subscribe
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div
+            style="
+              max-width: 1360px;
+              margin: 0 auto;
+              padding: 24px 28px 36px;
+              border-top: 1px solid #3a2c5c;
+              display: flex;
+              justify-content: space-between;
+              align-items: center;
+              gap: 12px 20px;
+              flex-wrap: wrap;
+              font-family: &quot;DM Mono&quot;, monospace;
+              font-size: 12px;
+              color: #a898c9;
+            "
+          >
+            <div style="flex-basis: 100%; margin: 4px 0 16px">
+              <img
+                src="./img/logo-cream.svg"
+                alt="Our Moving Stories"
+                style="width: 140px; height: auto; display: block"
+              />
+            </div>
+            <span
+              >In partnership with Peabody &amp; Ealing Council · Supported by
+              National Lottery &amp; London Sport</span
+            >
+            <div style="display: flex; gap: 20px">
+              <a
+                href="https://ourmovingstories.com/safeguarding-policy"
+                target="_blank"
+                style="color: #a898c9"
+                style-hover="color: #FF8A78;"
+                >Safeguarding</a
+              >
+              <a
+                href="https://ourmovingstories.com/testimonials"
+                target="_blank"
+                style="color: #a898c9"
+                style-hover="color: #FF8A78;"
+                >Testimonials</a
+              >
+              <a
+                href="https://instagram.com/our.movingstories"
+                target="_blank"
+                style="color: #a898c9"
+                style-hover="color: #FF8A78;"
+                >Instagram</a
+              >
+            </div>
+            <span style="flex-basis: 100%; color: #8a79ae"
+              >Our Moving Stories CIC 14473202 · © 2026</span
+            >
+          </div>
+        </section>
+      </div>
+    </x-dc>
+    <script type="text/x-dc" data-dc-script>
+      class Component extends DCLogic {
+        state = { hash: (typeof location !== 'undefined' ? location.hash : ''), showAll: false, videoPaused: (typeof window !== 'undefined' && window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) };
+        videoRef = (el) => { this.video = el; if (el) { const tall = window.matchMedia && window.matchMedia('(max-aspect-ratio: 4/5)').matches; const conn = navigator.connection; const small = (window.innerWidth * (window.devicePixelRatio || 1)) <= 1400 || !!(conn && (conn.saveData || /(^|-)(2g|3g)$/.test(conn.effectiveType || ''))); const src = tall ? './video/hero5-tall.mp4' : (small ? './video/hero12-wide-720.mp4' : './video/hero12-wide.mp4'); if (el.dataset.src !== src) { el.dataset.src = src; el.poster = tall ? './video/hero5-tall-poster.jpg' : './video/hero12-wide-poster.jpg'; el.src = src; } el.muted = true; el.defaultMuted = true; el.loop = true; el.playsInline = true; el.setAttribute('playsinline', ''); } if (el && !this.state.videoPaused) { const p = el.play(); if (p && p.catch) p.catch(() => this.setState({ videoPaused: true })); } };
+
+        componentDidMount() {
+          this.onHash = () => {
+            const h = location.hash;
+            this.setState({ hash: h, showAll: false }, () => this.scrollFor(h, 0));
+          };
+          window.addEventListener('hashchange', this.onHash);
+          if (window.matchMedia) { this.mq = window.matchMedia('(max-aspect-ratio: 4/5)'); this.onMq = () => this.videoRef(this.video); this.mq.addEventListener && this.mq.addEventListener('change', this.onMq); }
+        }
+        componentWillUnmount() { if (this.mq && this.mq.removeEventListener) this.mq.removeEventListener('change', this.onMq); window.removeEventListener('hashchange', this.onHash); clearTimeout(this.scrollT); }
+        toggleVideo = () => {
+          const v = this.video; if (!v) return;
+          if (v.paused) { const p = v.play(); if (p && p.catch) p.catch(() => {}); this.setState({ videoPaused: false }); }
+          else { v.pause(); this.setState({ videoPaused: true }); }
+        };
+        scrollFor(h, tries) {
+          clearTimeout(this.scrollT);
+          this.scrollT = setTimeout(() => {
+            if (!h || h === '#top' || h.indexOf('#/events/') === 0) { window.scrollTo(0, 0); return; }
+            const el = document.getElementById(h.slice(1));
+            if (el) window.scrollTo(0, el.getBoundingClientRect().top + window.scrollY - 60);
+            else if (tries < 10) this.scrollFor(h, tries + 1);
+          }, 50);
+        }
+
+        data() {
+          const S = "https://cdn.sanity.io/images/othhiu7y/staging/";
+          const poster = (id, w, h) => S + id + "?w=" + w + "&h=" + h + "&fit=crop&auto=format";
+          const crop = (id, rect, w, h) => S + id + "?rect=" + rect + "&w=" + w + "&h=" + h + "&fit=crop&auto=format";
+          const P1 = "551d02f8c81ff58a2ea6c4e791cf6ff185165e06-2550x3300.jpg";
+          const P2 = "7af72f838b7f75d202e9033fa38baacb65bc75fb-1749x2481.jpg";
+          const P3 = "f2d5e96c054706c25ea255d1ce290ff834296a26-2481x3508.jpg";
+          const P4 = "93e9eb1aba9bf04bfb4bc0e2a225a51b74548607-2481x3508.png";
+          const SARAH = "6c96f3f72602552540f85e7e9c806bd874bcb2f8-683x853.jpg";
+          const GAB = "7097226e8165b659df8bcd48b00af062b38732f4-679x1024.jpg";
+          const NADIA = "ba1abfe42fd2c0468e696abfd094736a495f2bed-596x924.jpg";
+          const JEN = "2a36b513eb6da4791cd2f2d71ee3d7954fc4c1d1-296x313.jpg";
+          const ORG = "https://www.eventbrite.co.uk/o/our-moving-stories-cic-90479281303";
+          const IG = "https://instagram.com/our.movingstories";
+          const HAVELOCK = { venue: "Open Havelock, Southall", address: "Willowbrook Road, Southall UB2 4RP" };
+          const WESTCOTT = { venue: "Westcott Park, Acton", address: "Westcott Park Community Centre, 13 Ferguson Drive, Acton W3 6YP" };
+
+          // Event list. schedule: { weekly: { day: 0-6 (Sun-Sat), from, to, start, end, off: { 'YYYY-MM-DD': 'reason' } } } or { dates: [{ date, start, end }] }
+          const events = [
+            { slug: "move-and-make-havelock", title: "Move and Make @ Open Havelock", audience: "Under-5s + grown-ups", ...HAVELOCK, img: "./img/photos/mandala-backs.jpg", thumb: "./img/photos/mandala-backs.jpg",
+              link: { type: "eventbrite", url: ORG },
+              summary: "A creative space for parents, carers and their children aged 0–5 to explore movement and art together.",
+              paras: ["Each week we move, play and make together: songs and movement games, then messy art and making, from rangoli and diya crafts at Diwali to a winter tree brought to life by our participants. Come for the whole session or as long as suits your little one.", "No experience needed, and grown-ups join in too. Sessions are free thanks to The National Lottery Community Fund and National Lottery players."],
+              info: [{ k: "Who", v: "Children aged 0–5 with a parent or carer" }, { k: "Cost", v: "Free" }, { k: "Access", v: "Ground-floor space, buggy friendly" }, { k: "Facilities", v: "Baby changing, tea and coffee" }],
+              schedule: { weekly: { day: 3, from: "2026-09-16", to: "2027-07-14", start: "09:30", end: "11:30",
+                off: { "2026-10-28": "Half term", "2026-12-23": "Christmas break", "2026-12-30": "Christmas break", "2027-02-17": "Half term", "2027-03-31": "Easter break", "2027-04-07": "Easter break", "2027-05-26": "Half term" } } } },
+            { slug: "story-space", title: "Story Space @ Open Havelock", audience: "Ages 2–6 + grown-ups", ...HAVELOCK, img: "./img/photos/story-time.jpg", thumb: "./img/photos/story-time.jpg",
+              link: { type: "eventbrite", url: ORG },
+              summary: "Nurturing a love of books and reading by exploring stories and their themes through creative tasks, for children aged 2–6 with their parents and caregivers.",
+              paras: ["Each week we share a story together, then explore its themes through making, play and imagination. At our very first Story Space we read Binny’s Diwali, and the children made flowers and treats out of playdough and craft materials.", "Sessions are free thanks to The National Lottery Community Fund and National Lottery players."],
+              info: [{ k: "Who", v: "Children aged 2–6 with a parent or caregiver" }, { k: "Cost", v: "Free" }, { k: "Access", v: "Ground-floor space, buggy friendly" }],
+              schedule: { weekly: { day: 4, from: "2026-11-05", to: "2027-07-15", start: "15:30", end: "17:30",
+                off: { "2026-12-24": "Christmas break", "2026-12-31": "Christmas break", "2027-02-18": "Half term", "2027-04-01": "Easter break", "2027-04-08": "Easter break", "2027-05-27": "Half term" } } } },
+            { slug: "move-and-make-westcott", title: "Move & Make @ Westcott Park", audience: "All ages", ...WESTCOTT, img: poster(P4, 800, 1067), thumb: poster(P4, 240, 320),
+              link: { type: "eventbrite", url: "https://www.eventbrite.com/e/move-make-westcott-park-tickets-1259571876389" },
+              summary: "A creative space for all ages and abilities. Movement and art activities in a fun, nurturing environment.",
+              paras: ["Join us at Westcott Park Community Centre to move your bodies and get creative together.", "Timings are always flexible. We work within the needs of the people in the space with us."],
+              info: [{ k: "Who", v: "All ages and abilities" }, { k: "Cost", v: "Free" }, { k: "Access", v: "Accessible ground-floor space, free parking" }, { k: "Facilities", v: "Baby changing, tea, coffee and refreshments" }],
+              schedule: { weekly: { day: 1, from: "2026-11-02", to: "2027-03-29", start: "12:00", end: "14:00",
+                off: { "2026-12-21": "Christmas break", "2026-12-28": "Christmas break", "2027-02-15": "Half term" } } } },
+            { slug: "winter-party-westcott", title: "Winter Party @ Westcott Park", audience: "Everyone", ...WESTCOTT, img: "./img/photos/winter-crafts.jpg", thumb: "./img/photos/winter-crafts.jpg",
+              link: { type: "instagram", url: IG },
+              summary: "A free community party with arts and crafts, movement, messy play, food and drink.",
+              paras: ["Bring the whole family, your neighbours and your friends. Drop in any time during the afternoon."],
+              info: [{ k: "Who", v: "Everyone" }, { k: "Cost", v: "Free" }, { k: "Access", v: "Accessible ground-floor space, free parking" }, { k: "Food", v: "Food and drink provided" }],
+              schedule: { dates: [{ date: "2026-12-12", start: "13:00", end: "16:00" }] } },
+            { slug: "creativity-connection", title: "Creativity & Connection", audience: "Everyone", ...HAVELOCK, img: "./img/photos/bubbles-courtyard.jpg", thumb: "./img/photos/bubbles-courtyard.jpg",
+              link: { type: "eventbrite", url: "https://www.eventbrite.com/e/creativity-connection-tickets-1986147223812" },
+              summary: "Bringing our community together through creativity.",
+              paras: ["Saturday afternoons of dancing, crafts and making new friends, open to everyone on and around the Havelock estate.", "Each event brings guest artists to share their practice with our community, from Bollywood and Bhangra dance fitness with Bally to urban art with Banbears."],
+              info: [{ k: "Who", v: "Everyone" }, { k: "Cost", v: "Free" }, { k: "Access", v: "Ground-floor space" }, { k: "Supported by", v: "Ealing Council and Peabody Community Foundation" }],
+              schedule: { weekly: { day: 6, from: "2026-04-25", to: "2026-09-12", start: "15:00", end: "17:00", off: {} } } }
+          ];
+          return {
+            events,
+            heroA: "./img/photos/mandala-smiles.jpg",
+            heroB: "./img/photos/mandala-backs.jpg",
+            people: [
+              { leaf: "./img/leaves/leaf-3.svg", leafRot: 24, name: "Sarah Sulemanji", role: "Founder", img: crop(SARAH, "1,0,682,853", 600, 750), bio: "Dance artist and educator trained at the Martha Graham School, NYC. Blends improvisation with Graham technique; welcomes all ages and abilities to the joy of dance." },
+              { leaf: "./img/leaves/leaf-1.svg", leafRot: -18, name: "Gabriela Bolton", role: "Artist", img: crop(GAB, "0,110,679,849", 600, 750), bio: "London-based artist, teacher and facilitator with a background in photography, fine art and acting. Passionate about creative individuality and expression." },
+              { leaf: "./img/leaves/leaf-5.svg", leafRot: 30, name: "Nadia Butt", role: "Facilitator", img: crop(NADIA, "0,90,596,745", 600, 750), bio: "Multi-disciplinary artist focused on community wellbeing: events, outreach and fundraising. BA(Hons) in Dance Science." },
+              { leaf: "./img/leaves/leaf-6.svg", leafRot: -26, name: "Jennifer Benson", role: "Early Years", img: crop(JEN, "23,0,250,313", 600, 750), bio: "Level 3 childcare professional with 15+ years' experience, specialising in Early Years. Joined through Move and Make with her daughter." }
+            ],
+          };
+        }
+
+        renderVals() {
+          const D = this.data();
+          const now = new Date();
+          const DAYS = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+          const parse = s => { const [y, m, d] = s.split('-').map(Number); return new Date(y, m - 1, d); };
+          const iso = d => d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+          const at = (d, t) => { const [h, m] = t.split(':').map(Number); const x = new Date(d); x.setHours(h, m, 0, 0); return x; };
+          const fmt = (d, o) => d.toLocaleDateString('en-GB', o);
+          const t12 = t => { const [h, m] = t.split(':').map(Number); return { s: ((h + 11) % 12 + 1) + (m ? ':' + String(m).padStart(2, '0') : ''), p: h < 12 ? 'AM' : 'PM' }; };
+          const timeRange = (a, b) => { const x = t12(a), y = t12(b); return x.p === y.p ? x.s + '–' + y.s + ' ' + y.p : x.s + ' ' + x.p + '–' + y.s + ' ' + y.p; };
+
+          const build = ev => {
+            const sc = ev.schedule; let occ = [], repeat, repeatLong, range, time;
+            if (sc.weekly) {
+              const w = sc.weekly;
+              for (let d = parse(w.from); d <= parse(w.to); d = new Date(d.getFullYear(), d.getMonth(), d.getDate() + 7)) {
+                occ.push({ date: d, start: w.start, end: w.end, off: w.off[iso(d)] || null });
+              }
+              repeat = "Every " + DAYS[w.day].slice(0, 3);
+              repeatLong = "Every " + DAYS[w.day];
+              range = fmt(parse(w.from), { day: 'numeric', month: 'short', year: 'numeric' }) + ' – ' + fmt(parse(w.to), { day: 'numeric', month: 'short', year: 'numeric' });
+              time = timeRange(w.start, w.end);
+            } else {
+              occ = sc.dates.map(x => ({ date: parse(x.date), start: x.start, end: x.end, off: null }));
+              repeat = occ.length > 1 ? occ.length + " dates" : "One-off";
+              repeatLong = occ.length > 1 ? occ.length + " dates" : "One day only";
+              range = occ.length > 1 ? fmt(occ[0].date, { day: 'numeric', month: 'short' }) + ' – ' + fmt(occ[occ.length - 1].date, { day: 'numeric', month: 'short', year: 'numeric' }) : fmt(occ[0].date, { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+              time = timeRange(occ[0].start, occ[0].end);
+            }
+            const future = occ.filter(o => at(o.date, o.end) > now);
+            const upcoming = future.filter(o => !o.off);
+            const held = occ.filter(o => !o.off && at(o.date, o.end) <= now);
+            const next = upcoming[0] || null;
+            const last = held[held.length - 1] || null;
+            return { ev, occ, future, next, last, repeat, repeatLong, range, time, href: '#/events/' + ev.slug };
+          };
+          const all = D.events.map(build);
+          const upcomingList = all.filter(b => b.next).sort((a, b) => a.next.date - b.next.date);
+          const pastList = all.filter(b => !b.next && b.last);
+
+          const events = upcomingList.map(b => ({
+            title: b.ev.title, audience: b.ev.audience, venue: b.ev.venue, img: b.ev.thumb, href: b.href,
+            nextShort: fmt(b.next.date, { weekday: 'short', day: 'numeric', month: 'short' }), repeat: b.repeat, time: timeRange(b.next.start, b.next.end)
+          }));
+          const first = upcomingList[0];
+          const nextUp = first ? { title: first.ev.title, href: first.href, venue: first.ev.venue, time: timeRange(first.next.start, first.next.end), date: fmt(first.next.date, { weekday: 'short', day: 'numeric', month: 'short' }) } : {};
+
+          const h = this.state.hash || '';
+          const slug = h.indexOf('#/events/') === 0 ? h.slice(9) : null;
+          const cur = slug ? all.find(b => b.ev.slug === slug) : null;
+          let d = {};
+          if (cur) {
+            const LIMIT = 10;
+            const list = this.state.showAll ? cur.future : cur.future.slice(0, LIMIT);
+            const months = [];
+            list.forEach(o => {
+              const key = fmt(o.date, { month: 'long', year: 'numeric' });
+              let m = months[months.length - 1];
+              if (!m || m.label !== key) { m = { label: key, dates: [], notes: [] }; months.push(m); }
+              const isNext = cur.next && o === cur.next;
+              m.dates.push({ label: fmt(o.date, { weekday: 'short', day: 'numeric' }), isNext, isOff: !!o.off, isOn: !o.off && !isNext, note: o.off || '' });
+              if (o.off) m.notes.push(fmt(o.date, { day: 'numeric', month: 'short' }) + ': no session (' + o.off.toLowerCase() + ')');
+            });
+            months.forEach(m => { m.hasNote = m.notes.length > 0; m.note = m.notes.join(' · '); });
+            const ig = cur.ev.link.type === 'instagram';
+            d = {
+              title: cur.ev.title, audience: cur.ev.audience, summary: cur.ev.summary, img: cur.ev.img, venue: cur.ev.venue,
+              paras: cur.ev.paras.map(t => ({ text: t })),
+              info: [{ k: "Where", v: cur.ev.address }].concat(cur.ev.info),
+              repeat: cur.repeat, repeatLong: cur.repeatLong, range: cur.range,
+              time: cur.next ? timeRange(cur.next.start, cur.next.end) : cur.time,
+              hasUpcoming: !!cur.next, noUpcoming: !cur.next,
+              nextLong: cur.next ? fmt(cur.next.date, { weekday: 'long', day: 'numeric', month: 'long' }) : '',
+              lastLong: cur.last ? fmt(cur.last.date, { day: 'numeric', month: 'long', year: 'numeric' }) : '',
+              ctaHref: cur.next ? cur.ev.link.url : 'https://instagram.com/our.movingstories',
+              ctaLabel: cur.next ? (ig ? 'Details on Instagram' : 'Book free on Eventbrite') : 'Follow for new dates',
+              mapHref: 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(cur.ev.address),
+              months, hasMonths: months.length > 0,
+              hasMore: cur.future.length > LIMIT,
+              moreLabel: this.state.showAll ? 'Show fewer dates' : 'Show all ' + cur.future.length + ' dates'
+            };
+          }
+
+          return {
+            isHome: !cur, isDetail: !!cur, d,
+            videoRef: this.videoRef, toggleVideo: this.toggleVideo,
+            videoLabel: this.state.videoPaused ? '▶ Play' : '❚❚ Pause',
+            videoAria: this.state.videoPaused ? 'Play the video' : 'Pause the video',
+            toggleAll: () => this.setState(s => ({ showAll: !s.showAll })),
+            events, hasNextUp: !!first, nextUp,
+            pastEvents: pastList.map(b => ({ title: b.ev.title, href: b.href, last: 'last held ' + fmt(b.last.date, { day: 'numeric', month: 'short' }) })),
+            hasPast: pastList.length > 0,
+            heroA: D.heroA, heroB: D.heroB, people: D.people
+          };
+        }
+      }
+    </script>
+  </body>
+</html>
