@@ -189,10 +189,12 @@ Observability tab (or `npx wrangler tail <worker>`).
      back: remove `domains`, redeploy, and recreate them: `A ourmovingstories.com 75.2.60.5` and
      `CNAME www ourmovingstories.netlify.app`, both proxied. The Google Workspace MX records were untouched.
    - Still to do: stop builds / disconnect the repo in Netlify, so merges to `master` don't build there.
-9. Turn on analytics (SEO action plan 3.2). Cloudflare dashboard → Web Analytics → Add a site →
-   `ourmovingstories.com`, and copy the token from its JS snippet. Put `PUBLIC_CF_WEB_ANALYTICS_TOKEN=<token>`
-   in the root `.env` and add it as a GitHub repository variable, then redeploy. Layout.astro adds the
-   beacon only when it's set, and never in draft mode. It sets no cookies, so no consent banner is needed.
+9. ✅ Done 10 Nov 2026. Analytics (SEO action plan 3.2): Cloudflare Web Analytics site
+   `317ea4db9e694a94a534956c4f6f6977` (zone `ourmovingstories.com`). Its token is the GitHub variable
+   `PUBLIC_CF_WEB_ANALYTICS_TOKEN`; Layout.astro adds the beacon only when it's set at build time, and never
+   in draft mode. Cloudflare's automatic injection is off (it didn't reach Worker responses, and would count
+   draft mode). No cookies, so no consent banner. Leave the token out of local `.env` files so local visits
+   aren't counted; a manual `cf deploy` without it ships pages with no beacon, so deploy through CI.
 
 ## Design system
 
