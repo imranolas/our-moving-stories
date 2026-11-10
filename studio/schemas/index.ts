@@ -5,7 +5,6 @@ import { pageType } from "./page";
 import { peopleSection } from "./peopleSection";
 import { personType } from "./person";
 import { portableText } from "./portableText";
-import { promotionType } from "./promotion";
 import { settingsType } from "./settings";
 import { textSectionType } from "./text";
 import { upcomingSessionsSectionType } from "./upcomingSessionsSection";
@@ -23,7 +22,6 @@ export const schemaTypes = [
   peopleSection,
   personType,
   portableText,
-  promotionType,
   settingsType,
   textSectionType,
   upcomingSessionsSectionType,

@@ -1,4 +1,4 @@
-# Builds and checks every PR and push; deploys pushes to master with the Cloudflare CLI (cf):
+# Builds, checks and dry-run-deploys every PR; deploys every push to master with the Cloudflare CLI (cf):
 #   site Worker "our-moving-stories" (ourmovingstories.com) + Eventbrite sync Worker.
 # There's no separate preview deployment: draft mode for Studio's Presentation tool runs on the live site,
 # per request (web/src/sanity/lib/draft-mode.ts).
@@ -13,7 +13,7 @@ name: Deploy
 on:
   pull_request:
   push:
-    branches: [master, develop]
+    branches: [master]
 
 concurrency:
   group: deploy-${{ github.ref }}

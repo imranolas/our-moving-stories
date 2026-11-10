@@ -1,17 +1,14 @@
 {
   "name": "@our-moving-stories/root",
   "version": "1.0.0",
+  "dependencies": {},
+  "engines": {
+    "node": ">=22.23.4"
+  },
   "workspaces": [
     "web",
     "studio",
     "packages/*",
     "workers/*"
-  ],
-  "engines": {
-    "node": ">=22.23.4"
-  },
-  "devDependencies": {
-    "nx": "24.0.5"
-  },
-  "dependencies": {}
+  ]
 }
