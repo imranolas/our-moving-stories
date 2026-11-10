@@ -1,16 +1,26 @@
 import { handle } from "@astrojs/cloudflare/handler";
 
 /**
- * The site's Worker entrypoint (cloudflare.config.ts): Astro's handler, plus byte ranges for /video/*.
+ * The site's Worker entrypoint (cloudflare.config.ts): Astro's handler, plus a redirect from www and plain
+ * http to https://ourmovingstories.com, and byte ranges for /video/*.
  * Cloudflare's static assets ignore `Range` and always send the whole file with 200, and Safari (so every
  * iPhone) won't play a video without 206 Partial Content. `assets.runWorkerFirst` routes /video/* here.
  */
 type Env = Parameters<typeof handle>[1];
 type Context = Parameters<typeof handle>[2];
 
+/** The site's one address. www and plain http redirect to it in a single hop (Layout's canonical matches). */
+const SITE_HOST = "ourmovingstories.com";
+
 export default {
   fetch(request: Request, env: Env, context: Context) {
-    if (new URL(request.url).pathname.startsWith("/video/")) return serveWithRanges(request, env);
+    const url = new URL(request.url);
+    if (url.hostname === `www.${SITE_HOST}` || (url.hostname === SITE_HOST && url.protocol === "http:")) {
+      url.hostname = SITE_HOST;
+      url.protocol = "https:";
+      return Response.redirect(url.toString(), 301);
+    }
+    if (url.pathname.startsWith("/video/")) return serveWithRanges(request, env);
     return handle(request, env, context);
   },
 };

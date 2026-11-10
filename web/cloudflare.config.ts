@@ -25,7 +25,7 @@ export default defineConfig({
     env: {
       SANITY_READ_TOKEN: bindings.secret(),
     },
-    // Add at DNS cutover, when ourmovingstories.com should move off Netlify:
-    // domains: ["ourmovingstories.com", "www.ourmovingstories.com"],
+    // www redirects to the bare domain (src/worker.ts). Cut over from Netlify on 10 Nov 2026.
+    domains: ["ourmovingstories.com", "www.ourmovingstories.com"],
   },
 });

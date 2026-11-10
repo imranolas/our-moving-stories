@@ -162,18 +162,20 @@ Observability tab (or `npx wrangler tail <worker>`).
    - Run `npx cf deploy --secrets-file .dev.vars.production` from that folder.
    - Check that `https://our-moving-stories-eventbrite-sync.<subdomain>.workers.dev/eventbrite/<secret>`
      shows a dry-run log.
-4. Deploy the site with its secret.
+4. ✅ Done 10 Nov 2026. Deploy the site with its secret.
    - Create a Sanity token with the Viewer role for draft mode (sanity.io/manage → project → API → Tokens)
      and put `SANITY_READ_TOKEN=<token>` in `web/.dev.vars.production` (gitignored).
    - From `web/` (env from the root `.env`): `npx cf build && npx cf deploy --prebuilt --secrets-file .dev.vars.production`.
-   - Check the workers.dev URL. The site works without the secret; only draft mode needs it.
-5. Point Studio at the site and redeploy it.
+   - Check the workers.dev URL. The site works without the secret; only draft mode needs it. (Since step 8
+     the site's workers.dev address is off: with `domains` set, `cf deploy` disables it by default.)
+5. Point Studio at the site and redeploy it (step 8 is done, so the site URL is `https://ourmovingstories.com`).
    - Add the site as a CORS origin with credentials:
-     `cd studio && npx sanity cors add https://our-moving-stories.<subdomain>.workers.dev --credentials`
-     (and `https://ourmovingstories.com` at cutover; `http://localhost:4321` for local Presentation).
-   - `SANITY_STUDIO_PREVIEW_URL=<site URL> npx sanity deploy` from `studio/`, then open Presentation and
-     check that click-to-edit works. Redeploy with `https://ourmovingstories.com` after step 8.
-6. Set up GitHub.
+     `cd studio && npx sanity cors add https://ourmovingstories.com --credentials`
+     (and `http://localhost:4321` for local Presentation).
+   - `SANITY_STUDIO_PREVIEW_URL=https://ourmovingstories.com npx sanity deploy` from `studio/` (it replaces
+     https://ourmovingstories.sanity.studio; `studioHost` in `sanity.cli.ts`), then open Presentation and
+     check that click-to-edit works. The root `.env` has `localhost:4321`, which only works locally.
+6. ✅ Done 10 Nov 2026. Set up GitHub.
    - Repository secrets: `CLOUDFLARE_API_TOKEN` (Workers Scripts edit), `CLOUDFLARE_ACCOUNT_ID`.
    - Repository variables: `SANITY_STUDIO_PROJECT_ID`, `SANITY_STUDIO_DATASET` = `production`.
 7. Add the Eventbrite webhook. It needs an organisation Admin (Imran is one since November 2026):
@@ -182,12 +184,13 @@ Observability tab (or `npx wrangler tail <worker>`).
    - Actions: `event.created`, `event.published`, `event.updated`, `event.unpublished`, for all events.
    - Done 2026-11-10 through the API (`POST /v3/organizations/2281976374053/webhooks/`): webhook 15946660.
      If `WEBHOOK_SECRET` changes, update the webhook's URL too.
-8. Cut the domain over. `ourmovingstories.com` is already on Cloudflare DNS, proxied to Netlify.
-   - Uncomment `domains` in `web/cloudflare.config.ts`.
-   - Cloudflare won't attach a Worker custom domain over existing records, so remove the Netlify
-     records for `@` and `www` first.
-   - `npx cf deploy`.
-   - Then disconnect the repo from Netlify.
+8. ✅ Done 10 Nov 2026 (10:30 UTC). Cut the domain over.
+   - `domains` in `web/cloudflare.config.ts` attaches `ourmovingstories.com` and `www` as Worker custom
+     domains; `src/worker.ts` 301s `www` and plain `http` to `https://ourmovingstories.com` in one hop.
+   - The Netlify records were deleted first (Cloudflare won't attach a custom domain over them). To roll
+     back: remove `domains`, redeploy, and recreate them: `A ourmovingstories.com 75.2.60.5` and
+     `CNAME www ourmovingstories.netlify.app`, both proxied. The Google Workspace MX records were untouched.
+   - Still to do: stop builds / disconnect the repo in Netlify, so merges to `master` don't build there.
 9. Turn on analytics (SEO action plan 3.2). Cloudflare dashboard → Web Analytics → Add a site →
    `ourmovingstories.com`, and copy the token from its JS snippet. Put `PUBLIC_CF_WEB_ANALYTICS_TOKEN=<token>`
    in the root `.env` and add it as a GitHub repository variable, then redeploy. Layout.astro adds the
