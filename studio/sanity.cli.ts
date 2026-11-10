@@ -8,4 +8,7 @@ export default defineCliConfig({
     projectId: process.env.SANITY_STUDIO_PROJECT_ID,
     dataset: process.env.SANITY_STUDIO_DATASET,
   },
+  // `sanity deploy` replaces the existing hosted Studio, https://ourmovingstories.sanity.studio (the site's
+  // STUDIO_URL in web/src/sanity/lib/studio.ts).
+  studioHost: "ourmovingstories",
 });
