@@ -53,7 +53,11 @@ const analyticsToken = import.meta.env.PUBLIC_CF_WEB_ANALYTICS_TOKEN as string |
     <meta name="description" content={description} />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="theme-color" content="#F3EDE2" />
+    <!-- The leaf spray on a grape tile. .ico for browsers without SVG favicons; see public/site.webmanifest. -->
+    <link rel="icon" href="/favicon.ico" sizes="32x32" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
     <link rel="sitemap" href="/sitemap.xml" />
     {noindex ? <meta name="robots" content="noindex, follow" /> : <link rel="canonical" href={canonicalUrl.href} />}
     <meta name="generator" content={Astro.generator} />
