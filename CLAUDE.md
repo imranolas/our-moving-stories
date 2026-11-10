@@ -16,6 +16,9 @@ passes `preview: Astro.locals.preview`, and Sanity strings carry invisible stega
 mark elements whose attributes a `<script>` changes at runtime with `data-preview-keep="<attributes to
 watch>"` (see Hero.astro).
 
-A site redesign is in progress. Read `docs/redesign/HANDOFF.md` before changing anything:
-it covers the design system, code map, schema changes, the Sanity dataset plan
-(work in `production`; never write to `staging`) and the remaining steps.
+The site is live at https://ourmovingstories.com (Cloudflare, since 10 Nov 2026). Flow: branch off
+`master`, open a PR (CI builds, checks and dry-run-deploys), merge to `master` (CI deploys both
+Workers). Studio isn't deployed by CI: `SANITY_STUDIO_PREVIEW_URL=https://ourmovingstories.com npx sanity
+deploy` in `studio/`. `README.md` is the overview; read `docs/redesign/HANDOFF.md` before larger changes:
+it covers the design system, code map, schema, the Eventbrite sync, the Sanity dataset plan (work in
+`production`; never write to `staging`) and what's left.
