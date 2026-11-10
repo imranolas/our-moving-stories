@@ -1,4 +1,4 @@
-import { defineConfig, envField } from "astro/config";
+import { defineConfig, envField, fontProviders } from "astro/config";
 
 import sanity from "@sanity/astro";
 import react from "@astrojs/react";
@@ -28,6 +28,46 @@ export default defineConfig({
       SANITY_READ_TOKEN: envField.string({ context: "server", access: "secret", optional: true }),
     },
   },
+
+  // Self-hosted from /_astro/fonts, with size-adjusted fallbacks so the swap doesn't reflow the big headlines.
+  // Layout.astro renders them with <Font>; tailwind.css maps --font-display/sans/mono onto these variables.
+  // Only the weights in use: display 800 (font-extrabold) and 900 (display/font-black), Karla 400 and 700,
+  // DM Mono 400. Karla and DM Mono are downloaded from Google Fonts at build time.
+  fonts: [
+    {
+      // Google's font list now has this only as "Big Shoulders" (with an optical-size axis), so the provider
+      // can't find it. This is the file Google's CSS API still serves for "Big Shoulders Display" (latin,
+      // variable weight; SIL Open Font License), kept as it was so the headlines don't change.
+      provider: fontProviders.local(),
+      name: "Big Shoulders Display",
+      cssVariable: "--font-big-shoulders",
+      fallbacks: ["Impact", "sans-serif"],
+      options: {
+        variants: [
+          { weight: "800 900", style: "normal", src: ["./src/assets/fonts/big-shoulders-display-latin.woff2"] },
+        ],
+      },
+    },
+    {
+      provider: fontProviders.google(),
+      name: "Karla",
+      cssVariable: "--font-karla",
+      weights: ["400 700"],
+      // No italic files, as before: the odd <em> from Sanity uses the browser's slanted roman.
+      styles: ["normal"],
+      subsets: ["latin"],
+      fallbacks: ["system-ui", "sans-serif"],
+    },
+    {
+      provider: fontProviders.google(),
+      name: "DM Mono",
+      cssVariable: "--font-dm-mono",
+      weights: [400],
+      styles: ["normal"],
+      subsets: ["latin"],
+      fallbacks: ["ui-monospace", "monospace"],
+    },
+  ],
 
   vite: {
     plugins: [tailwindcss()],

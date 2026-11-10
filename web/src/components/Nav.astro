@@ -1,23 +1,12 @@
 ---
-import { loadQuery } from "../sanity/lib/load-query";
 import { formatLink, type NavigationItem } from "../sanity/lib/links";
+import type { SiteData } from "../lib/data";
 
-const { data } = await loadQuery<any[]>({
-  query: `*[_type == "settings" || _type == "nav"] {
-    ...,
-    items[] {
-      ...,
-      navigationItemUrl {
-        ...,
-        internalLink { ..., reference-> { slug } }
-      }
-    }
-  }`,
-  preview: Astro.locals.preview,
-});
+interface Props {
+  site: SiteData;
+}
 
-const settings = data.find((d) => d._type === "settings") ?? {};
-const navigation = data.find((d) => d._type === "nav") ?? { items: [] };
+const { settings, nav: navigation } = Astro.props.site;
 const items = ((navigation.items ?? []) as NavigationItem[])
   .map((item) => ({ text: item.text, href: formatLink(item.navigationItemUrl) }))
   .filter((i) => i.href);
@@ -29,16 +18,16 @@ const items = ((navigation.items ?? []) as NavigationItem[])
       <img src="/img/logo-purple.svg" alt="" class="h-11 md:h-[62px] w-auto block" width="96" height="70" />
     </a>
 
-    <nav aria-label="Main navigation" class="hidden md:flex items-center gap-6 font-mono text-[13px] uppercase">
+    <nav aria-label="Main" class="hidden md:flex items-center gap-6 font-mono text-sm uppercase">
       {items.map((item) => (
-        <a href={item.href} class="text-ink no-underline hover:text-grape">{item.text}</a>
+        <a href={item.href} class="py-3 text-ink no-underline hover:text-grape">{item.text}</a>
       ))}
-      <a href="/#whats-on" class="no-underline whitespace-nowrap bg-grape text-cream px-3.5 py-2 hover:bg-ink hover:text-cream">Join in</a>
+      <a href="/#whats-on" class="no-underline whitespace-nowrap bg-grape text-cream px-4 py-3 hover:bg-ink hover:text-cream">Join in</a>
     </nav>
 
     <button
       type="button"
-      class="md:hidden font-mono text-xs uppercase border-2 border-ink px-3 py-2 text-ink"
+      class="md:hidden min-h-11 font-mono text-sm uppercase border-2 border-ink px-4 py-2 text-ink"
       @click="open = !open"
       :aria-expanded="open"
       aria-controls="mobile-menu"
@@ -49,7 +38,7 @@ const items = ((navigation.items ?? []) as NavigationItem[])
 
   <nav
     id="mobile-menu"
-    aria-label="Main navigation"
+    aria-label="Menu"
     class="md:hidden border-t-2 border-ink bg-cream"
     x-show="open"
     x-cloak

@@ -1,7 +1,6 @@
 import { eventType } from "./events";
 import { eventsSectionType } from "./eventSection";
 import { heroType } from "./hero";
-import { instagramSection } from "./instagramSection";
 import { pageType } from "./page";
 import { peopleSection } from "./peopleSection";
 import { personType } from "./person";
@@ -20,7 +19,6 @@ export const schemaTypes = [
   eventsSectionType,
   eventType,
   heroType,
-  instagramSection,
   pageType,
   peopleSection,
   personType,

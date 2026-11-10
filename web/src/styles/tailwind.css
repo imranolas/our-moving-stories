@@ -24,9 +24,10 @@
   --color-dark: #1e1433;
   --color-light: #f3ede2;
 
-  --font-display: "Big Shoulders Display", Impact, sans-serif;
-  --font-sans: Karla, system-ui, sans-serif;
-  --font-mono: "DM Mono", ui-monospace, monospace;
+  /* Self-hosted through Astro's fonts config (astro.config.mjs), which defines these variables. */
+  --font-display: var(--font-big-shoulders);
+  --font-sans: var(--font-karla);
+  --font-mono: var(--font-dm-mono);
 
   --container-page: 1360px;
 
@@ -69,8 +70,8 @@
 }
 
 @utility eyebrow {
-  /* Small uppercase label above headings */
-  @apply font-mono text-xs uppercase tracking-wider;
+  /* Small uppercase label above headings (14px: smaller mono caps are hard to read on phones) */
+  @apply font-mono text-sm uppercase tracking-wider;
   & img {
     @apply inline-block h-6 w-auto mr-2.5 align-[-7px];
   }

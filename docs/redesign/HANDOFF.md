@@ -188,6 +188,10 @@ Observability tab (or `npx wrangler tail <worker>`).
      records for `@` and `www` first.
    - `npx cf deploy`.
    - Then disconnect the repo from Netlify.
+9. Turn on analytics (SEO action plan 3.2). Cloudflare dashboard → Web Analytics → Add a site →
+   `ourmovingstories.com`, and copy the token from its JS snippet. Put `PUBLIC_CF_WEB_ANALYTICS_TOKEN=<token>`
+   in the root `.env` and add it as a GitHub repository variable, then redeploy. Layout.astro adds the
+   beacon only when it's set, and never in draft mode. It sets no cookies, so no consent banner is needed.
 
 ## Design system
 
@@ -205,8 +209,13 @@ Defined in the `@theme` block of `web/src/styles/tailwind.css` (Tailwind 4 is CS
 | `sand` | #E8DED0 | image placeholders |
 | `mauve` (+ `-dim`, `-line`) | #A898C9 / #8A79AE / #3A2C5C | footer small print |
 
-Fonts (Google Fonts, linked in `Layout.astro`): Big Shoulders Display 900 (`font-display`, uppercase,
-line-height ~0.84), Karla (`font-sans`, body), DM Mono (`font-mono`, labels/buttons, uppercase).
+Fonts, self-hosted through Astro's `fonts` config (`astro.config.mjs`) and rendered by `<Font>` in
+`Layout.astro`: Big Shoulders Display 800/900 (`font-display`, uppercase, line-height ~0.84), Karla 400/700
+(`font-sans`, body), DM Mono 400 (`font-mono`, labels/buttons, uppercase). Karla and DM Mono download from
+Google at build time. Big Shoulders Display is a file in `src/assets/fonts/`, because Google's font list
+now only has it as "Big Shoulders", which the provider can't match. Add a weight to the config before using
+it in a class, or the browser fakes it. Small mono labels (`.eyebrow`, nav, footer, buttons) are 14px; keep
+anything tappable at least 44px tall.
 Legacy colour names (`text`, `primary`, `dark`, `light`) are remapped to the new palette.
 
 Component classes (Tailwind `@utility` blocks, so they work with variants and `@apply`): `.wrap`
@@ -229,23 +238,32 @@ rather than "*Movement & Arts.*", which keeps the coral word at full size.
   date/time formatting (London time for "today"), next/last session, "Every Wed" detection,
   month-grouped schedule with cancellations, address/map helpers.
 - `lib/text.ts`: asterisk highlighting, HTML escaping, leaf decorations.
-- `layouts/Layout.astro`: fonts, meta, skip link, Nav + Footer, Alpine (CDN) for small interactions.
+- `lib/data.ts`: `siteData()` (settings + nav + footer) and `allEvents()`, each fetched once per request
+  and shared through `Astro.locals`. Use them rather than querying events or settings again in a component.
+- `lib/schema.ts`: JSON-LD builders (organisation, website, breadcrumbs, one Event per future session,
+  profile pages). Pages pass their nodes to Layout's `schema` prop. The markup must match what the page
+  shows (dates, free price, cancellations), so change both together.
+- `sanity/lib/urlFor.ts`: `urlFor`, plus `srcset()` for responsive Sanity images and `imageSize()`.
+- `layouts/Layout.astro`: fonts, meta, JSON-LD, skip link, Nav + Footer (from `siteData`), Alpine (bundled
+  from npm) for small interactions, optional Cloudflare Web Analytics beacon.
 - `components/Nav.astro`: sticky cream header, Sanity nav items + "Join in", mobile menu (Alpine).
 - `components/Hero.astro`: full-bleed video hero, "Free" badge with spinning ring and paper wings (at least
   220px wide so the ring text stays readable on phones; its text scales with the badge via `cqi`),
-  intro strip with buttons and "Next up". Video choice happens client-side: portrait file when the
-  viewport is ≤4:5, 720p when width×DPR ≤ 1400 or Save-Data/2G/3G, else 1080p; reduced motion = paused.
+  "Book a free session" button (only when something is coming up), intro strip with buttons and
+  "Next up". The poster is a `<picture>` under the video (one poster per screen shape, WebP first; it's
+  the LCP image). Video choice happens client-side: portrait file when the viewport is ≤4:5, 720p when
+  width×DPR ≤ 1400 or on 3G, else 1080p. Reduced motion and Save-Data/2G download no video until Play.
   Media precedence: uploaded Sanity video → hero image (non-home pages) → bundled montage
   (`/video/hero-*.mp4`, homepage only).
 - `components/TextSection.astro`: cream/purple/dark themes, split or stacked layout, "highlights" rows.
 - `components/EventsSection.astro` + `EventRow.astro`: "Coming up" list, then a count of past events (not
   links; they live on /events). Past events are labelled with when they ran (`ranLabel`: "20 Dec 2025",
   "Apr – Sept 2026"), not "last held".
-- `components/UpcomingSessionsSection.astro`, `PeopleSection.astro`, `InstagramSection.astro`,
+- `components/UpcomingSessionsSection.astro`, `PeopleSection.astro`,
   `Footer.astro` (dark contact block, Beehiiv iframe in the newsletter card, funder logos, legal line).
+- `components/Block.astro` maps page-builder blocks to components and skips types it doesn't know.
 - Pages: `[...slug].astro` (Sanity pages), `events/index.astro`, `events/[slug].astro`,
   `sessions/index.astro` (Alpine filters), `people/[slug].astro`, `404.astro`.
-- `components/Address.tsx`, `Price.tsx` are now unused wrappers around `lib/schedule.ts` (safe to delete).
 
 ## Schema changes (studio/schemas)
 
@@ -257,7 +275,9 @@ rather than "*Movement & Arts.*", which keeps the coral word at full size.
   `faqs[]` ({question, answer}; from Eventbrite on synced events, shown under the key details), and
   `poster.eventbriteId` (hidden: which Eventbrite image the poster is).
 - `eventsSection`: `eyebrow`, `intro`. `upcomingSessionsSection`, `peopleSection`: `eyebrow`.
-  `instagramSection`: `eyebrow`, `title`.
+- Removed: `instagramSection` (the page-builder Instagram feed) and `settings.beholdFeedUrl`. The feed
+  host (`feed.ourmovingstories.com`) no longer resolves. `seed-redesign.ts` deletes the leftover data;
+  `settings.instagram` (the handle) stays for the footer link and the organisation's `sameAs`.
 - `footer`: `contactEyebrow`, `contactHeading`, `contactText`, `newsletterHeading`, `newsletterText`,
   `partnersLine`.
 
@@ -274,7 +294,9 @@ rather than "*Movement & Arts.*", which keeps the coral word at full size.
 - **Drafts only show in draft mode.** `bun run dev` and production both render published content; Studio's
   Presentation tool turns draft mode on per browser. Check a production build before deploying: from
   `web/`, with the root `.env` loaded, `npx cf build && npx astro preview --port 4329` (`npx astro preview
-  stop` when done). This caught a homepage crash on 9 Nov 2026: published events with no `sessions` came
+  stop` when done; if another preview is already running, add `--ignore-lock` and stop it with Ctrl-C). The
+  preview keeps the edge cache on disk in `.cloudflare/state` between runs, so after a rebuild use a new
+  port (the cache is keyed by URL) or wait 5 minutes, or you'll be looking at the old build's pages. This caught a homepage crash on 9 Nov 2026: published events with no `sessions` came
   back as `null`. (`PUBLIC_SANITY_VISUAL_EDITING_ENABLED` in the root `.env` is no longer used.)
 - **Stega in draft mode.** Every Sanity string then ends in invisible zero-width characters that power
   click-to-edit. Comparing, parsing or putting such a string in an attribute breaks. The default filter
@@ -286,10 +308,16 @@ rather than "*Movement & Arts.*", which keeps the coral word at full size.
   so default parameters and destructuring defaults don't apply. Use `?? []`.
 - Unknown slugs use `Astro.rewrite("/404")` (real 404 at the requested URL), never `Astro.redirect("/404")`.
   Events with no upcoming sessions render with `noindex, follow` and are left out of `sitemap.xml`.
-- `src/middleware.ts` adds security headers, 301s trailing slashes, works out draft mode, and sends
-  `X-Robots-Tag: noindex` in draft mode and from `*.workers.dev` hosts. If HTML caching is added later
-  (SEO action plan 3.3), it must skip requests with the `oms-draft-mode` cookie. SEO audit and remaining
-  actions: `docs/seo/ourmovingstories.com-audit/`.
+- `src/middleware.ts` adds security headers, 301s trailing slashes, works out draft mode, starts the
+  `siteData` query, and sends `X-Robots-Tag: noindex` in draft mode and from `*.workers.dev` hosts.
+- **Published pages are edge-cached for 5 minutes** (Workers Cache API in `src/middleware.ts`, `X-Cache:
+  HIT/MISS`). Studio and Eventbrite changes therefore take up to 5 minutes to show on the live site; draft
+  mode is never cached, so editors see changes there straight away. Not cached: draft mode, non-GET,
+  query strings, `/api/*`, non-200 responses, `astro dev`. The cache is per Cloudflare location and nothing
+  purges it; lower `EDGE_TTL` if 5 minutes is too long.
+- Static files: `web/public/_headers` gives `/img/*` and `/video/*` a week's browser cache (the build adds
+  `immutable` for hashed `/_astro/*`). Rename a file in those folders if a replacement must show sooner.
+- SEO audit and remaining actions: `docs/seo/ourmovingstories.com-audit/`.
 
 ## Dependency upgrade (9 Nov 2026)
 
@@ -311,10 +339,12 @@ TypeScript stays on 6.x because `astro check` doesn't support TypeScript 7 yet. 
 ## Hero video
 
 Files in `web/public/video/`: `hero-wide.mp4` (1080p, 30 fps, ~10 MB), `hero-wide-720.mp4` (~4.7 MB),
-`hero-wide-poster.jpg`, `hero-tall.mp4` (phone cut of the same final edit, 22.8s loop; exported at 1080×1920 and re-encoded to
-720×1280 at ~1.6 Mbps, ~4.6 MB, since every portrait phone downloads it: `ffmpeg -i <export> -map 0:v:0
--vf scale=720:1280:flags=lanczos -c:v libx264 -preset slow -crf 23 -maxrate 1600k -bufsize 3200k
--pix_fmt yuv420p -movflags +faststart -an hero-tall.mp4`), `hero-tall-poster.jpg` (720×1280, its first frame).
+`hero-wide-poster.jpg`, `hero-tall.mp4` (phone cut of the same final edit, 22.8s loop; exported at
+1080×1920, then 540×960 at ~0.7 Mbps, ~1.9 MB, since every portrait phone downloads it: `ffmpeg -i <export>
+-map 0:v:0 -vf scale=540:960:flags=lanczos -c:v libx264 -preset slower -tune film -crf 25 -maxrate 700k
+-bufsize 1400k -pix_fmt yuv420p -movflags +faststart -an hero-tall.mp4`; the 9 Nov 2026 file was made from
+the earlier 720×1280 encode), `hero-tall-poster.jpg` (720×1280, its first frame). Each poster has a `.webp`
+copy (`cwebp -q 78 -m 6`), which Hero.astro serves first; regenerate it when you replace a poster.
 The wide cut is the "Cut 3 polish 30p" timeline in DaVinci Resolve project `oms-banner`
 (masters in `~/Downloads/Our Moving Stories 2/_masters/`, ProRes 422 HQ). Grading: per-clip skin-tone
 white balance on node 1 + shared `MCP/oms-finish.cube` LUT; iPhone HLG clips need the project's

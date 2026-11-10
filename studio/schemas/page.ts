@@ -68,10 +68,6 @@ export const pageType = defineType({
           name: "upcomingSessions",
           type: "upcomingSessionsSection",
         }),
-        defineArrayMember({
-          name: "instagram",
-          type: "instagramSection",
-        }),
       ],
     }),
   ],

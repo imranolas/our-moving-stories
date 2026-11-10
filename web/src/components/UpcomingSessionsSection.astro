@@ -1,7 +1,7 @@
 ---
-import { loadQuery } from "../sanity/lib/load-query";
+import { allEvents } from "../lib/data";
 import { highlight } from "../lib/text";
-import { EVENT_FIELDS, eventHref, fmtShort, parseDate, timeRange, todayISO, type Event } from "../lib/schedule";
+import { eventHref, fmtShort, parseDate, timeRange, todayISO } from "../lib/schedule";
 
 export type Props = {
   _type: "upcomingSessions";
@@ -13,10 +13,9 @@ export type Props = {
 
 const { eyebrow = "Diary", title = "Upcoming sessions", limit = 8 } = Astro.props;
 
-const { data } = await loadQuery<Event[]>({ query: `*[_type == "event"]{ ${EVENT_FIELDS} }`, preview: Astro.locals.preview });
 const today = todayISO();
 
-const rows = (data ?? [])
+const rows = (await allEvents(Astro.locals))
   .flatMap((e) =>
     (e.sessions ?? [])
       .filter((s) => !s.cancelled && s.date >= today)
@@ -44,15 +43,15 @@ function relative(date: string) {
         {rows.map((r) => (
           <li>
             <a href={eventHref(r.event)} class="grid grid-cols-[minmax(0,1fr)] sm:grid-cols-[180px_170px_minmax(0,1fr)_auto] gap-x-6 gap-y-1 items-baseline py-4 border-b-[1.5px] border-ink text-ink no-underline hover:bg-peach hover:px-4 transition-all duration-150">
-              <span class="display text-[28px] leading-none text-grape">{relative(r.date)}</span>
-              <span class="font-mono text-[13px] uppercase">{timeRange(r.startTime, r.endTime)}</span>
+              <time datetime={r.startTime ? `${r.date}T${r.startTime}` : r.date} class="display text-[28px] leading-none text-grape">{relative(r.date)}</time>
+              <span class="font-mono text-sm uppercase">{timeRange(r.startTime, r.endTime)}</span>
               <span class="text-[19px] font-bold leading-tight">{r.event.name}{r.note && <span class="block font-normal text-[15px] text-ink/70">{r.note}</span>}</span>
-              <span class="font-mono text-[13px]">{r.event.venue?.name}</span>
+              <span class="font-mono text-sm">{r.event.venue?.name}</span>
             </a>
           </li>
         ))}
       </ul>
-      <a href="/sessions" class="inline-block mt-[26px] font-mono text-[13px] uppercase text-ink hover:text-grape">All sessions →</a>
+      <a href="/sessions" class="inline-block mt-3.5 py-3 font-mono text-sm uppercase text-ink hover:text-grape">All sessions →</a>
     </div>
   </section>
 )}

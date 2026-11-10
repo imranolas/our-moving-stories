@@ -10,6 +10,7 @@
  * - Homepage "About" text: label, coral heading, purple theme, the three highlight rows.
  * - Homepage events / sessions / people headings.
  * - Removes the homepage "Get in touch" text block (the new footer covers it).
+ * - Removes the homepage Instagram block and the settings' Behold feed URL (the feed was dropped).
  * - Footer: contact and newsletter copy, partners line.
  * - Nav: fixes "Whats on" and puts the links in the design's order.
  * - Events: adds "Who it's for" tags and summaries where missing.
@@ -32,7 +33,7 @@ async function run() {
 
   const anchor = (b: any) => b?.anchorId?.current;
   const blocks = (home.pageBuilder ?? [])
-    .filter((b: any) => !(b._type === "textSection" && anchor(b) === "contact"))
+    .filter((b: any) => !(b._type === "textSection" && anchor(b) === "contact") && b._type !== "instagram")
     .map((b: any) => {
       switch (b._type) {
         case "hero": {
@@ -89,6 +90,9 @@ async function run() {
 
   const tx = client.transaction();
   tx.patch(home._id, (p) => p.set({ pageBuilder: JSON.parse(JSON.stringify(blocks)) }));
+
+  const settings = await client.fetch(`*[_type == "settings" && !(_id in path("drafts.**")) && defined(beholdFeedUrl)][0]{ _id }`);
+  if (settings) tx.patch(settings._id, (p) => p.unset(["beholdFeedUrl"]));
 
   const footer = await client.fetch(`*[_type == "footer" && !(_id in path("drafts.**"))][0]{ _id }`);
   if (footer) {

@@ -1,6 +1,7 @@
 ---
 import { loadQuery } from "../../sanity/lib/load-query";
-import { urlFor } from "../../sanity/lib/urlFor";
+import { urlFor, srcset } from "../../sanity/lib/urlFor";
+import { SITE, breadcrumb, eventNodes } from "../../lib/schema";
 import { toHTML } from "@portabletext/to-html";
 import Layout from "../../layouts/Layout.astro";
 import {
@@ -46,7 +47,7 @@ const time = next ? timeRange(next.startTime, next.endTime) : (() => {
 })();
 
 const image = event.photo?.asset ? event.photo : event.poster;
-const imageUrl = image?.asset ? urlFor(image).width(1040).height(1387).fit("crop").auto("format").url() : undefined;
+const imageSet = image?.asset ? srcset(image, 3 / 4, [400, 600, 800, 1040]) : undefined;
 const address = formatAddress(event.venue);
 const where = [event.venue?.name, address].filter(Boolean).join(", ");
 const directions = mapLink(event.venue);
@@ -62,6 +63,16 @@ if (!info.some((i) => /cost|price/i.test(i.label))) info.splice(where ? 1 : 0, 0
 const description = event.description ? toHTML(event.description as any) : "";
 const summary = event.summary || "";
 const faqs = (event.faqs ?? []).filter((f) => f.question && f.answer);
+
+// Event markup only while the event has dates to come; past-only pages are noindex and get the breadcrumb alone.
+const pageUrl = new URL(Astro.url.pathname, SITE).href;
+const ldImages = image?.asset
+  ? ([[1600, 900], [1200, 900], [1200, 1200]] as const).map(([w, h]) => urlFor(image).width(w).height(h).fit("crop").url())
+  : [];
+const schema = [
+  breadcrumb([{ name: "Home", path: "/" }, { name: "Events", path: "/events" }, { name: event.name, path: Astro.url.pathname }]),
+  ...(next ? eventNodes(event, pageUrl, future, ldImages, metaDescription(event)) : []),
+];
 ---
 
 <!-- Events with no upcoming dates stay reachable (and their links followed) but leave search results
@@ -71,9 +82,10 @@ const faqs = (event.faqs ?? []).filter((f) => f.question && f.answer);
   description={metaDescription(event)}
   ogImage={image?.asset ? urlFor(image).width(1200).height(630).fit("crop").url() : undefined}
   noindex={!next}
+  schema={schema}
 >
   <section class="wrap pt-7 pb-20 md:pb-[88px]">
-    <a href="/events" class="inline-block font-mono text-[13px] uppercase text-ink no-underline mb-9 hover:text-grape">← All events</a>
+    <a href="/events" class="inline-block py-3 font-mono text-sm uppercase text-ink no-underline mb-6 hover:text-grape">← All events</a>
 
     <div class="grid gap-x-16 gap-y-12 items-start md:grid-cols-2">
       <div>
@@ -108,11 +120,11 @@ const faqs = (event.faqs ?? []).filter((f) => f.question && f.answer);
         </div>
       </div>
 
-      {imageUrl && (
+      {imageSet && (
         <div class="relative pt-[18px] pr-[18px] max-w-[540px]">
           <div class="absolute top-0 right-0 w-[88%] h-[92%] bg-coral rotate-2"></div>
           <div class="relative aspect-3/4 overflow-hidden bg-sand rotate-[-1.5deg]">
-            <img src={imageUrl} alt={event.name} class="w-full h-full object-cover block" width="520" height="693" />
+            <img {...imageSet} sizes="(min-width: 768px) 522px, calc(100vw - 58px)" alt={event.name} class="w-full h-full object-cover block" width="520" height="693" fetchpriority="high" />
           </div>
         </div>
       )}

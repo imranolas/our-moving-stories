@@ -1,14 +1,13 @@
 ---
-import { loadQuery } from "../../sanity/lib/load-query";
+import { allEvents } from "../../lib/data";
 import { stegaClean } from "@sanity/client/stega";
 import Layout from "../../layouts/Layout.astro";
-import { EVENT_FIELDS, eventHref, parseDate, timeRange, todayISO, type Event } from "../../lib/schedule";
+import { breadcrumb } from "../../lib/schema";
+import { eventHref, parseDate, timeRange, todayISO } from "../../lib/schedule";
 
-
-const { data } = await loadQuery<Event[]>({ query: `*[_type == "event"]{ ${EVENT_FIELDS} }`, preview: Astro.locals.preview });
 const today = todayISO();
 
-const rows = (data ?? [])
+const rows = (await allEvents(Astro.locals))
   .flatMap((e) =>
     (e.sessions ?? []).map((s) => ({
       date: s.date,
@@ -22,6 +21,11 @@ const rows = (data ?? [])
     }))
   )
   .sort((a, b) => a.date.localeCompare(b.date) || a.start.localeCompare(b.start));
+// Upcoming sessions first (soonest first), then past ones (most recent first), and past rows hidden in the
+// HTML itself: crawlers and anyone without JavaScript see what's coming up, not 2024. Alpine's filters
+// take over from there.
+const upcomingRows = rows.filter((r) => r.date >= today);
+const pastRows = rows.filter((r) => r.date < today).reverse();
 
 const eventNames = [...new Set(rows.map((r) => r.event))].sort();
 const venueNames = [...new Set(rows.map((r) => r.venue).filter(Boolean))].sort();
@@ -32,13 +36,15 @@ const yearLabel = (s: string) => parseDate(s).getFullYear();
 <Layout
   title="Session timetable"
   description="Dates, times and venues for every free Our Moving Stories session in Southall and Acton. Filter by event, venue or date, then book free on Eventbrite."
+  schema={[breadcrumb([{ name: "Home", path: "/" }, { name: "Sessions", path: "/sessions" }])]}
 >
   <section
     class="wrap pt-14 md:pt-20 pb-20 md:pb-24"
     x-data={`{
       period: 'upcoming', event: '', venue: '', today: '${today}', visible: 0,
-      weekEnd() { const d = new Date(); d.setDate(d.getDate() + (7 - d.getDay())); return d.toISOString().slice(0, 10); },
-      monthEnd() { const d = new Date(); return new Date(d.getFullYear(), d.getMonth() + 1, 0).toISOString().slice(0, 10); },
+      iso(d) { return [d.getFullYear(), String(d.getMonth() + 1).padStart(2, '0'), String(d.getDate()).padStart(2, '0')].join('-'); },
+      weekEnd() { const d = new Date(); d.setDate(d.getDate() + ((7 - d.getDay()) % 7)); return this.iso(d); },
+      monthEnd() { const d = new Date(); return this.iso(new Date(d.getFullYear(), d.getMonth() + 1, 0)); },
       show(el) {
         const { date, cancelled, event, venue } = el.dataset;
         if (this.event && event !== this.event) return false;
@@ -59,37 +65,37 @@ const yearLabel = (s: string) => parseDate(s).getFullYear();
     </div>
     <h1 class="display text-[clamp(64px,10vw,160px)] leading-[0.82] text-grape mb-10">All <span class="text-coral">sessions</span></h1>
 
-    <div class="flex flex-wrap gap-2 font-mono text-[13px] uppercase mb-4" role="group" aria-label="When">
+    <div class="flex flex-wrap gap-2 font-mono text-sm uppercase mb-4" role="group" aria-label="When">
       {[["upcoming", "All upcoming"], ["week", "This week"], ["month", "This month"], ["past", "Past"]].map(([key, label]) => (
-        <button type="button" @click={`period = '${key}'`} :aria-pressed={`period === '${key}'`} :class={`period === '${key}' ? 'bg-ink text-cream' : 'text-ink'`} class="border-2 border-ink px-4 py-2.5">{label}</button>
+        <button type="button" @click={`period = '${key}'`} :aria-pressed={`period === '${key}'`} :class={`period === '${key}' ? 'bg-ink text-cream' : 'text-ink'`} class="min-h-11 border-2 border-ink px-4 py-2">{label}</button>
       ))}
     </div>
     <div class="flex flex-wrap gap-3 mb-8">
       <label class="sr-only" for="f-event">Event</label>
-      <select id="f-event" x-model="event" class="font-mono text-[13px] uppercase bg-cream border-2 border-ink px-3 py-2.5 text-ink">
+      <select id="f-event" x-model="event" class="max-w-full min-h-11 font-mono text-sm uppercase bg-cream border-2 border-ink px-3 py-2 text-ink">
         <option value="">All events</option>
         {eventNames.map((n) => <option value={stegaClean(n)}>{n}</option>)}
       </select>
       <label class="sr-only" for="f-venue">Venue</label>
-      <select id="f-venue" x-model="venue" class="font-mono text-[13px] uppercase bg-cream border-2 border-ink px-3 py-2.5 text-ink">
+      <select id="f-venue" x-model="venue" class="max-w-full min-h-11 font-mono text-sm uppercase bg-cream border-2 border-ink px-3 py-2 text-ink">
         <option value="">All venues</option>
         {venueNames.map((n) => <option value={stegaClean(n)}>{n}</option>)}
       </select>
     </div>
 
     <ul x-ref="list" class="border-t-[3px] border-ink">
-      {rows.map((r) => (
-        <li data-date={r.date} data-cancelled={String(r.cancelled)} data-event={stegaClean(r.event)} data-venue={stegaClean(r.venue)} x-show="show($el)">
+      {[...upcomingRows, ...pastRows].map((r) => (
+        <li data-date={r.date} data-cancelled={String(r.cancelled)} data-event={stegaClean(r.event)} data-venue={stegaClean(r.venue)} x-show="show($el)" style={r.date < today ? "display: none" : undefined}>
           <a href={r.href} class:list={["grid grid-cols-[minmax(0,1fr)] sm:grid-cols-[190px_170px_minmax(0,1fr)_auto] gap-x-6 gap-y-1 items-baseline py-4 border-b-[1.5px] border-ink text-ink no-underline hover:bg-peach hover:px-4 transition-all duration-150", r.cancelled && "opacity-60"]}>
             <span class:list={["display text-[28px] leading-none text-grape", r.cancelled && "line-through"]}>
-              {dayLabel(r.date)} <span class="font-mono text-xs font-normal text-ink/60 align-middle">{yearLabel(r.date)}</span>
+              <time datetime={r.start ? `${r.date}T${r.start}` : r.date}>{dayLabel(r.date)} <span class="font-mono text-xs font-normal text-ink/60 align-middle">{yearLabel(r.date)}</span></time>
             </span>
-            <span class="font-mono text-[13px] uppercase">{r.time}</span>
+            <span class="font-mono text-sm uppercase">{r.time}</span>
             <span class="text-[19px] font-bold leading-tight">
               {r.event}
               {r.cancelled ? <span class="block font-mono text-xs uppercase text-coral-deep mt-1">Cancelled{r.note ? ` · ${r.note}` : ""}</span> : r.note && <span class="block font-normal text-[15px] text-ink/70">{r.note}</span>}
             </span>
-            <span class="font-mono text-[13px]">{r.venue}</span>
+            <span class="font-mono text-sm">{r.venue}</span>
           </a>
         </li>
       ))}

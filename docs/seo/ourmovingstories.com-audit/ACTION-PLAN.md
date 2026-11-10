@@ -30,6 +30,56 @@ Code for Phase 1 is done and checked on a production build (`astro preview`, Vis
 - **1.7:** confirm the Open Havelock postcode with the venue.
 - **1.8:** fill in the current events' content.
 
+**Phase 3, code done the same day** and checked on a production build: every page, the edge cache, the
+JSON-LD, phone and desktop screenshots, no horizontal scroll at 390px.
+- **3.1 Done:** `src/lib/schema.ts`.
+  - Every page carries `NGO` + `WebSite`; there are breadcrumbs on every page but the homepage.
+  - Event pages carry one `Event` per future session (Move and Make: 11, plus an `EventSeries`). Past-only
+    events get the breadcrumb only.
+  - People pages carry `ProfilePage` + `Person`. The logo is `/img/logo-512.png`.
+  - **Before launch:** fix 1.7, because Open Havelock's markup has no street and may have the wrong
+    postcode.
+  - **After cutover:** run the Rich Results Test on 2 event pages.
+- **3.2 Code ready:** the Cloudflare Web Analytics beacon goes in once `PUBLIC_CF_WEB_ANALYTICS_TOKEN` is
+  set. The token comes from the dashboard (HANDOFF → First deploy, step 9).
+- **3.3 Done:**
+  - Settings, nav, footer and events are fetched once per request, alongside the page query. On the
+    homepage that's 3 Sanity queries in parallel instead of 6, mostly one after another.
+  - Published HTML is edge-cached for 5 minutes (`X-Cache` header).
+  - No purge from the sync: with a 5-minute lifetime, purging across all locations would need an API
+    token and buy little.
+- **3.4 Done:**
+  - The tall video is 540×960 at 1.9 MB (was 4.6 MB).
+  - Save-Data, 2G and reduced motion download no video until Play is pressed.
+  - The poster is a `<picture>`, so each screen shape gets one poster, with WebP first (the wide one drops
+    from 392 KB to 223 KB).
+  - The 1080p threshold is unchanged.
+- **3.5 Done:** fonts are self-hosted with size-adjusted fallbacks and 2 preloads, and nothing is fetched
+  from Google any more.
+- **3.6 Done:**
+  - `_headers` gives `/img` and `/video` a week's cache.
+  - The Instagram grid has its space reserved.
+  - Sanity images have `srcset`/`sizes`.
+  - The first 3 thumbnails on `/events` load eagerly, and the event and profile images get
+    `fetchpriority`.
+  - Funder logos use `auto=format` and have width/height.
+  - Alpine is bundled.
+  - Unused components were deleted. `public/img` was already clean.
+  - Not done: optimising the wing SVGs.
+- **3.7 Done:**
+  - `/sessions` lists upcoming dates first and hides past rows in the HTML.
+  - Dates are marked up with `<time datetime>`.
+  - The nav labels are now "Main" and "Menu".
+  - Fixed along the way: "This month" dropped the last day of the month during BST.
+- **3.8 Done, except the logo:**
+  - A "Book a free session" button sits in the hero's first screen.
+  - Labels, nav and footer text are 14px, and tap targets are at least 44px.
+  - **Yours:** upload the colour Community Fund logo in Studio (Footer → funders).
+- **Found on the way:**
+  - `feed.ourmovingstories.com` doesn't resolve, so the Instagram grid never loaded. The feed is now
+    removed from the site and Studio. Re-running `seed-redesign.ts` (1.1) deletes the leftover data.
+  - The draft-mode island's 7.7 KB stylesheet loads on every published page.
+
 ## Phase 1: Before cutover (blockers), week 1
 
 | # | Action | Where | Why | Check |

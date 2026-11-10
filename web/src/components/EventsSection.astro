@@ -1,8 +1,8 @@
 ---
-import { loadQuery } from "../sanity/lib/load-query";
+import { allEvents } from "../lib/data";
 import { highlight } from "../lib/text";
 import EventRow from "./EventRow.astro";
-import { EVENT_FIELDS, splitEvents, type Event } from "../lib/schedule";
+import { splitEvents, type Event } from "../lib/schedule";
 
 // Re-exported so pages that import these types from here keep working.
 export type { Event, Session } from "../lib/schedule";
@@ -23,8 +23,7 @@ const {
   events: limit = 6,
 } = Astro.props;
 
-const { data } = await loadQuery<Event[]>({ query: `*[_type == "event"]{ ${EVENT_FIELDS} }`, preview: Astro.locals.preview });
-const { upcoming, past } = splitEvents(data ?? []);
+const { upcoming, past } = splitEvents(await allEvents(Astro.locals));
 const shown = upcoming.slice(0, limit);
 ---
 

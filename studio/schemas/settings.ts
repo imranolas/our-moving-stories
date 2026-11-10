@@ -49,13 +49,6 @@ export const settingsType = defineType({
     }),
 
     defineField({
-      name: "beholdFeedUrl",
-      type: "url",
-      title: "Behold Feed URL",
-      description: "API endpoint for the Behold Instagram feed widget.",
-    }),
-
-    defineField({
       name: "gaId",
       type: "string",
       title: "Google Analytics ID",

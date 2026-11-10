@@ -1,9 +1,12 @@
 ---
+import { Font } from "astro:assets";
 import Nav from "../components/Nav.astro";
 import Footer from "../components/Footer.astro";
 import "../styles/tailwind.css";
 import { stegaClean } from "@sanity/client/stega";
 import SanityVisualEditing from "../components/SanityVisualEditing";
+import { siteData } from "../lib/data";
+import { SITE, ldJson, organizationNode, websiteNode, type Json } from "../lib/schema";
 
 interface Props {
   title: string;
@@ -13,11 +16,12 @@ interface Props {
   ogImage?: string;
   /** Keep the page out of search results. It stays reachable and its links are still followed. */
   noindex?: boolean;
+  /** The page's own JSON-LD nodes (src/lib/schema.ts), added to the organisation and website nodes. */
+  schema?: Json[];
   /** @deprecated The header is always solid now; kept so older callers still compile. */
   transparentNav?: boolean;
 }
 
-const SITE = "https://ourmovingstories.com";
 const props = Astro.props;
 // In draft mode Sanity strings carry invisible stega markers; keep them out of <head>.
 const title = stegaClean(props.title);
@@ -32,6 +36,14 @@ const fullTitle =
   (title && title !== "Our Moving Stories" ? `${title} · Our Moving Stories` : "Our Moving Stories");
 // 1200×630 crop of the hero poster, used wherever a page has no image of its own.
 const ogImageUrl = new URL(ogImage || "/img/og-default.jpg", SITE).href;
+
+// Settings, nav and footer: one query, started by the middleware before the page rendered.
+const site = await siteData(Astro.locals);
+const graph = { "@context": "https://schema.org", "@graph": [organizationNode(site.settings), websiteNode(), ...(props.schema ?? [])] };
+
+// Cloudflare Web Analytics (no cookies, so no consent banner). Set the site token from the dashboard in the
+// build environment to turn it on; see docs/redesign/HANDOFF.md → Analytics. Never counted in draft mode.
+const analyticsToken = import.meta.env.PUBLIC_CF_WEB_ANALYTICS_TOKEN as string | undefined;
 ---
 
 <!doctype html>
@@ -46,12 +58,9 @@ const ogImageUrl = new URL(ogImage || "/img/og-default.jpg", SITE).href;
     {noindex ? <meta name="robots" content="noindex, follow" /> : <link rel="canonical" href={canonicalUrl.href} />}
     <meta name="generator" content={Astro.generator} />
 
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;800;900&family=Karla:wght@400;500;700&family=DM+Mono:wght@400;500&display=swap"
-      rel="stylesheet"
-    />
+    <Font cssVariable="--font-big-shoulders" preload />
+    <Font cssVariable="--font-karla" preload />
+    <Font cssVariable="--font-dm-mono" />
 
     <!-- Open Graph -->
     <meta property="og:type" content="website" />
@@ -68,16 +77,27 @@ const ogImageUrl = new URL(ogImage || "/img/og-default.jpg", SITE).href;
     <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={ogImageUrl} />
 
-    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.15.11/dist/cdn.min.js"></script>
+    <script type="application/ld+json" set:html={ldJson(graph)} />
     <title>{fullTitle}</title>
   </head>
   <body>
     <a href="#main" class="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-200 bg-ink text-cream px-4 py-2 font-mono text-sm uppercase">Skip to content</a>
-    <Nav />
+    <Nav site={site} />
     <main id="main">
       <slot />
     </main>
-    <Footer />
+    <Footer site={site} />
     {Astro.locals.preview && <SanityVisualEditing client:only="react" />}
+    {analyticsToken && !Astro.locals.preview && (
+      <script is:inline defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon={JSON.stringify({ token: analyticsToken })}></script>
+    )}
   </body>
 </html>
+
+<script>
+  // Alpine, bundled with the site (it used to load from a CDN). Module scripts run after the HTML is parsed,
+  // like the old `defer` tag, so x-cloak and the components behave the same.
+  import Alpine from "alpinejs";
+  (window as any).Alpine = Alpine;
+  Alpine.start();
+</script>

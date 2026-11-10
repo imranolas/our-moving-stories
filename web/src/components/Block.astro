@@ -6,9 +6,6 @@ import TextSection, {
 import PeopleSection, {
   type Props as PeopleSectionProps,
 } from "./PeopleSection.astro";
-import InstagramSection, {
-  type Props as InstagramSectionProps,
-} from "./InstagramSection.astro";
 import EventsSection, {
   type Props as EventsSectionProps,
 } from "./EventsSection.astro";
@@ -21,8 +18,7 @@ type Props =
   | TextSectionProps
   | PeopleSectionProps
   | EventsSectionProps
-  | UpcomingSessionsSectionProps
-  | InstagramSectionProps;
+  | UpcomingSessionsSectionProps;
 
 const typeMap: Record<string, any> = {
   hero: Hero,
@@ -30,11 +26,11 @@ const typeMap: Record<string, any> = {
   people: PeopleSection,
   events: EventsSection,
   upcomingSessions: UpcomingSessionsSection,
-  instagram: InstagramSection,
 };
 
-const Element = typeMap[Astro.props._type] || "div";
+// Block types the site doesn't render (such as the old "instagram" block) are skipped.
+const Element = typeMap[Astro.props._type];
 const props = Astro.props;
 ---
 
-<Element {...(props as any)} />
+{Element && <Element {...(props as any)} />}

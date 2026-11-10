@@ -1,25 +1,14 @@
 ---
-import { loadQuery } from "../sanity/lib/load-query";
 import { formatLink, type NavigationItem } from "../sanity/lib/links";
-import { urlFor } from "../sanity/lib/urlFor";
+import { imageSize, urlFor } from "../sanity/lib/urlFor";
 import { highlight } from "../lib/text";
+import type { SiteData } from "../lib/data";
 
-const { data } = await loadQuery<any[]>({
-  query: `*[_type == "settings" || _type == "footer"] {
-    ...,
-    items[] {
-      ...,
-      navigationItemUrl {
-        ...,
-        internalLink { ..., reference-> { slug } }
-      }
-    }
-  }`,
-  preview: Astro.locals.preview,
-});
+interface Props {
+  site: SiteData;
+}
 
-const settings = data.find((d) => d._type === "settings") ?? {};
-const footer = data.find((d) => d._type === "footer") ?? {};
+const { settings, footer } = Astro.props.site;
 const links = ((footer.items ?? []) as NavigationItem[])
   .map((item) => ({ text: item.text, href: formatLink(item.navigationItemUrl) }))
   .filter((l) => l.href);
@@ -47,7 +36,7 @@ const year = new Date().getFullYear();
       </div>
       <h2 class="display text-[clamp(48px,5.6vw,92px)] leading-[0.86] mb-6" set:html={highlight(heading)} />
       <p class="text-lg leading-relaxed text-lilac max-w-[32em] mb-6">{text}</p>
-      <a href={`mailto:${email}`} class="font-mono text-lg text-coral-soft hover:text-cream">{email}</a>
+      <a href={`mailto:${email}`} class="inline-block py-2 font-mono text-lg text-coral-soft hover:text-cream">{email}</a>
     </div>
 
     <div class="relative pt-20 md:pt-14 pb-6 md:px-6">
@@ -72,27 +61,38 @@ const year = new Date().getFullYear();
     </div>
   </div>
 
-  <div class="wrap pt-6 pb-9 border-t border-mauve-line flex flex-wrap justify-between items-center gap-x-5 gap-y-3 font-mono text-xs text-mauve">
+  <div class="wrap pt-6 pb-9 border-t border-mauve-line flex flex-wrap justify-between items-center gap-x-5 gap-y-3 font-mono text-sm text-mauve">
     <div class="basis-full mt-1 mb-4">
       <img src="/img/logo-cream.svg" alt="Our Moving Stories" class="w-[140px] h-auto block" width="140" height="102" />
     </div>
 
     {funders.some((f) => f.logo) && (
       <ul class="basis-full flex flex-wrap items-center gap-x-5 sm:gap-x-7 gap-y-4 mb-3" aria-label="Funders">
-        {funders.filter((f) => f.logo).map((f) => (
-          <li>
-            <img src={urlFor(f.logo).height(80).url()} alt={f.name || ""} class="h-8 w-auto block" loading="lazy" />
-          </li>
-        ))}
+        {funders.filter((f) => f.logo).map((f) => {
+          // Shown 32px tall; width/height from the asset id so the row doesn't shift as logos load.
+          const size = imageSize(f.logo);
+          return (
+            <li>
+              <img
+                src={urlFor(f.logo).height(80).auto("format").url()}
+                alt={f.name || ""}
+                class="h-8 w-auto block"
+                loading="lazy"
+                height="32"
+                width={size ? Math.round((32 * size.width) / size.height) : undefined}
+              />
+            </li>
+          );
+        })}
       </ul>
     )}
 
     {partners && <span>{partners}</span>}
-    <nav aria-label="Footer" class="flex flex-wrap gap-5">
+    <nav aria-label="Footer" class="flex flex-wrap gap-x-5">
       {links.map((l) => (
-        <a href={l.href} class="text-mauve hover:text-coral-soft">{l.text}</a>
+        <a href={l.href} class="inline-block py-3 text-mauve hover:text-coral-soft">{l.text}</a>
       ))}
-      <a href={`https://instagram.com/${instagram}`} target="_blank" rel="noopener noreferrer" class="text-mauve hover:text-coral-soft">Instagram</a>
+      <a href={`https://instagram.com/${instagram}`} target="_blank" rel="noopener noreferrer" class="inline-block py-3 text-mauve hover:text-coral-soft">Instagram</a>
     </nav>
     <span class="basis-full text-mauve-dim">
       {[settings.companyName || "Our Moving Stories CIC", settings.companyNumber].filter(Boolean).join(" ")} · © {year}

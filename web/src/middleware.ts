@@ -2,20 +2,29 @@ import { defineMiddleware } from "astro:middleware";
 import { SANITY_READ_TOKEN } from "astro:env/server";
 import { getPreview } from "./sanity/lib/draft-mode";
 import { STUDIO_ORIGINS } from "./sanity/lib/studio";
+import { siteData } from "./lib/data";
 
 /**
  * Runs for every on-request page (static files in public/ are served by Workers Assets and skip it).
  * - 301s "/events/" to "/events" so each page has one URL (Layout.astro's canonical drops the slash too).
  * - Works out draft mode (Astro.locals.preview) from the signed cookie; see src/sanity/lib/draft-mode.ts.
+ * - Starts the settings/nav/footer query (src/lib/data.ts) so it runs alongside the page's own query.
+ * - Caches published pages at the edge for 5 minutes (EDGE_TTL below).
  * - Adds security headers. Only Sanity Studio may frame the site (Presentation tool).
  * - Keeps draft-mode pages and *.workers.dev hosts out of search engines and caches.
- *
- * HTML caching (Cache-Control / edge cache) is deliberately not set here yet: see
- * docs/seo/ourmovingstories.com-audit/ACTION-PLAN.md item 3.3. Any cache added later must skip requests
- * that carry the draft-mode cookie.
  */
 // Studios opened from the sanity.io dashboard sit inside a www.sanity.io frame.
 const FRAME_ANCESTORS = ["'self'", ...STUDIO_ORIGINS, "https://www.sanity.io"].join(" ");
+
+/**
+ * Edge cache for published HTML and the sitemap, through the Workers Cache API: Cloudflare doesn't cache
+ * what a Worker returns by itself. A hit skips rendering and every Sanity query, which keeps responses fast
+ * when crawlers arrive in bursts. Changes from Studio or the Eventbrite sync show up within EDGE_TTL
+ * seconds; nothing purges it. The cache is per Cloudflare location, and off in `astro dev`.
+ * Never cached: draft mode (signed cookie; those responses are `private, no-store`), anything but GET,
+ * URLs with a query string, /api/*, and responses that aren't 200 or that set a cookie.
+ */
+const EDGE_TTL = 300;
 
 export const onRequest = defineMiddleware(async (context, next) => {
   const url = new URL(context.request.url);
@@ -26,6 +35,22 @@ export const onRequest = defineMiddleware(async (context, next) => {
   }
 
   context.locals.preview = await getPreview(context.cookies, SANITY_READ_TOKEN);
+  const isApi = url.pathname.startsWith("/api/");
+
+  const cache =
+    !import.meta.env.DEV && context.request.method === "GET" && !context.locals.preview && !url.search && !isApi
+      ? (globalThis as { caches?: { default?: Cache } }).caches?.default
+      : undefined;
+  if (cache) {
+    const hit = await cache.match(context.request.url);
+    if (hit) {
+      const response = new Response(hit.body, hit);
+      response.headers.set("X-Cache", "HIT");
+      return response;
+    }
+  }
+
+  if (!isApi && !url.pathname.endsWith(".xml")) siteData(context.locals);
 
   const response = await next();
   const headers = new Headers(response.headers);
@@ -45,5 +70,19 @@ export const onRequest = defineMiddleware(async (context, next) => {
     headers.set("Strict-Transport-Security", "max-age=31536000");
   }
 
-  return new Response(response.body, { status: response.status, statusText: response.statusText, headers });
+  const store =
+    !!cache && response.status === 200 && !headers.has("Set-Cookie") && /text\/html|xml/.test(headers.get("Content-Type") ?? "");
+  if (store) {
+    // Browsers always revalidate; only the edge keeps a copy.
+    headers.set("Cache-Control", `public, max-age=0, s-maxage=${EDGE_TTL}`);
+    headers.set("X-Cache", "MISS");
+  }
+  const out = new Response(response.body, { status: response.status, statusText: response.statusText, headers });
+  if (store) {
+    const put = cache.put(context.request.url, out.clone()).catch(() => {});
+    const cf = (context.locals as { cfContext?: { waitUntil(promise: Promise<unknown>): void } }).cfContext;
+    if (cf) cf.waitUntil(put);
+    else await put;
+  }
+  return out;
 });

@@ -1,0 +1,9 @@
+# Workers Assets response headers (the build adds the immutable rule for hashed /_astro/* files itself).
+# Files here keep their names when they change, so they get a week, not "immutable": rename a file if a
+# replacement has to reach returning visitors sooner.
+/img/*
+  Cache-Control: public, max-age=604800, stale-while-revalidate=86400
+/video/*
+  Cache-Control: public, max-age=604800, stale-while-revalidate=86400
+/favicon.svg
+  Cache-Control: public, max-age=604800

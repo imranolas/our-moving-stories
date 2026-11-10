@@ -1,9 +1,9 @@
 ---
 import { urlFor } from "../sanity/lib/urlFor";
-import { loadQuery } from "../sanity/lib/load-query";
+import { allEvents } from "../lib/data";
 import { highlight, splitHighlight } from "../lib/text";
 import { stegaClean } from "@sanity/client/stega";
-import { EVENT_FIELDS, eventHref, fmtShort, nextSession, splitEvents, timeRange, type Event } from "../lib/schedule";
+import { eventHref, fmtShort, nextSession, splitEvents, timeRange } from "../lib/schedule";
 
 type SanityFile = { asset?: { url?: string } };
 
@@ -52,16 +52,19 @@ const sources = {
   small: videoSmall?.asset?.url || (uploadedVideo ? uploadedVideo : "/video/hero-wide-720.mp4"),
   tall: videoTall?.asset?.url || (uploadedVideo ? "" : "/video/hero-tall.mp4"),
 };
-const posterWide = image?.asset
-  ? urlFor(image).width(1920).height(1080).auto("format").url()
+// Posters: a WebP copy sits next to each bundled JPEG; Sanity serves AVIF/WebP itself (auto("format")).
+type Poster = { src: string; webp?: string };
+const posterWide: Poster | undefined = image?.asset
+  ? { src: urlFor(image).width(1920).height(1080).auto("format").url() }
   : useVideo && !uploadedVideo
-    ? "/video/hero-wide-poster.jpg"
+    ? { src: "/video/hero-wide-poster.jpg", webp: "/video/hero-wide-poster.webp" }
     : undefined;
-const posterNarrow = posterTall?.asset
-  ? urlFor(posterTall).width(1080).height(1920).auto("format").url()
+const posterNarrow: Poster | undefined = posterTall?.asset
+  ? { src: urlFor(posterTall).width(1080).height(1920).auto("format").url() }
   : !uploadedVideo
-    ? "/video/hero-tall-poster.jpg"
+    ? { src: "/video/hero-tall-poster.jpg", webp: "/video/hero-tall-poster.webp" }
     : posterWide;
+const firstPoster = posterWide ?? posterNarrow;
 const objectPosition = image?.hotspot
   ? `${(image.hotspot.x * 100).toFixed(1)}% ${(image.hotspot.y * 100).toFixed(1)}%`
   : "center";
@@ -78,15 +81,12 @@ const { lead, accent } = splitHighlight(title);
 // text than that allows wraps instead. Short accents like "Movement." keep the full clamp size.
 const accentSize = accent && `max(40px, min(clamp(64px, 15vw, 232px), 100cqi / ${stegaClean(accent).length * 0.5}))`;
 
-// "Next up" uses the soonest session across all events.
+// The soonest session across all events: "Next up", and whether there's anything to book.
+const first = splitEvents(await allEvents(Astro.locals)).upcoming[0];
+const firstSession = first && nextSession(first);
 let nextUp: { title: string; href: string; date: string; time: string; venue?: string } | null = null;
-if (showNextUp) {
-  const { data: events } = await loadQuery<Event[]>({ query: `*[_type == "event"]{ ${EVENT_FIELDS} }`, preview: Astro.locals.preview });
-  const first = splitEvents(events ?? []).upcoming[0];
-  const s = first && nextSession(first);
-  if (first && s) {
-    nextUp = { title: first.name, href: eventHref(first), date: fmtShort(s.date), time: timeRange(s.startTime, s.endTime), venue: first.venue?.name };
-  }
+if (showNextUp && first && firstSession) {
+  nextUp = { title: first.name, href: eventHref(first), date: fmtShort(firstSession.date), time: timeRange(firstSession.startTime, firstSession.endTime), venue: first.venue?.name };
 }
 
 const SWASH = "M203.449 626.485C203.449 626.485 222.534 651.302 222.534 651.302C285.515 626.485 509.738 598.589 662.547 607.713C662.547 600.629 642.881 587.582 642.881 587.582C615.398 577.572 264.493 601.162 203.449 626.485Z";
@@ -95,15 +95,24 @@ const SWASH = "M203.449 626.485C203.449 626.485 222.534 651.302 222.534 651.302C
 {hasMedia ? (
   <section id="top" class="relative h-[calc(100svh-64px)] md:h-[calc(100svh-80px)] min-h-[560px] max-h-[1080px] overflow-hidden bg-ink text-cream">
     {useVideo ? (
+      <>
+        {/* The poster is a <picture> under the video rather than its `poster` attribute: each screen shape
+            downloads only its own poster, the preload scanner finds it, and it's the LCP image. The video
+            stays transparent until it has a frame to show. */}
+        {firstPoster && (
+          <picture>
+            {posterNarrow && posterNarrow !== posterWide && posterNarrow.webp && <source media="(max-aspect-ratio: 4/5)" srcset={posterNarrow.webp} type="image/webp" />}
+            {posterNarrow && posterNarrow !== posterWide && <source media="(max-aspect-ratio: 4/5)" srcset={posterNarrow.src} />}
+            {firstPoster.webp && <source srcset={firstPoster.webp} type="image/webp" />}
+            <img src={firstPoster.src} alt="" class="absolute inset-0 w-full h-full object-cover" fetchpriority="high" />
+          </picture>
+        )}
       <video
         data-hero-video
-        data-preview-keep="data-wide data-small data-tall data-poster-wide data-poster-tall"
+        data-preview-keep="data-wide data-small data-tall"
         data-wide={sources.wide}
         data-small={sources.small}
         data-tall={sources.tall}
-        data-poster-wide={posterWide}
-        data-poster-tall={posterNarrow}
-        poster={posterWide}
         muted
         loop
         playsinline
@@ -111,8 +120,9 @@ const SWASH = "M203.449 626.485C203.449 626.485 222.534 651.302 222.534 651.302C
         aria-label={videoDescription || "Montage filmed at our sessions"}
         class="absolute inset-0 w-full h-full object-cover block"
       ></video>
+      </>
     ) : (
-      <img src={posterWide} alt="" class="absolute inset-0 w-full h-full object-cover" style={`object-position: ${objectPosition}`} loading="eager" fetchpriority="high" />
+      <img src={posterWide?.src} alt="" class="absolute inset-0 w-full h-full object-cover" style={`object-position: ${objectPosition}`} loading="eager" fetchpriority="high" />
     )}
     <div aria-hidden="true" class="absolute inset-0" style={`background: ${overlay}`}></div>
 
@@ -146,10 +156,12 @@ const SWASH = "M203.449 626.485C203.449 626.485 222.534 651.302 222.534 651.302C
           </span>
         )}
       </h1>
-      <div class="flex justify-between items-center gap-3 flex-wrap mt-[26px]">
-        <a href="https://instagram.com/our.movingstories" target="_blank" rel="noopener noreferrer" class="font-mono text-xs uppercase tracking-[0.04em] text-cream hover:text-coral-soft">@our.movingstories ↗</a>
+      {/* The page's main action, inside the first screen on phones too. Only when there's something to book. */}
+      {firstSession && <a href="/#whats-on" class="btn-coral self-start mt-7">Book a free session →</a>}
+      <div class="flex justify-between items-center gap-3 flex-wrap mt-[22px]">
+        <a href="https://instagram.com/our.movingstories" target="_blank" rel="noopener noreferrer" class="inline-block py-3 font-mono text-sm uppercase tracking-[0.04em] text-cream hover:text-coral-soft">@our.movingstories ↗</a>
         {useVideo && (
-          <button type="button" data-hero-toggle data-preview-keep class="font-mono text-xs uppercase tracking-[0.04em] bg-transparent text-cream px-3 py-2 border-2 border-cream hover:bg-cream hover:text-ink" aria-label="Pause the video">❚❚ Pause</button>
+          <button type="button" data-hero-toggle data-preview-keep class="min-h-11 font-mono text-sm uppercase tracking-[0.04em] bg-transparent text-cream px-3.5 py-2 border-2 border-cream hover:bg-cream hover:text-ink" aria-label="Pause the video">❚❚ Pause</button>
         )}
       </div>
     </div>
@@ -188,9 +200,14 @@ const SWASH = "M203.449 626.485C203.449 626.485 222.534 651.302 222.534 651.302C
   const video = document.querySelector<HTMLVideoElement>("[data-hero-video]");
   const toggle = document.querySelector<HTMLButtonElement>("[data-hero-toggle]");
   if (video) {
+    const conn = (navigator as any).connection;
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    // Save-Data or 2G: show the poster and only download the video if Play is pressed.
+    const lite = !!(conn && (conn.saveData || /(^|-)2g$/.test(conn.effectiveType || "")));
     const tallQuery = window.matchMedia("(max-aspect-ratio: 4/5)");
-    let paused = reduce;
+    let paused = reduce || lite;
+    // Nothing is downloaded until a source is set; reduced motion and lite connections wait for Play.
+    let wanted = !paused;
 
     const setLabel = () => {
       if (!toggle) return;
@@ -199,17 +216,14 @@ const SWASH = "M203.449 626.485C203.449 626.485 222.534 651.302 222.534 651.302C
     };
 
     const pick = () => {
+      if (!wanted) return;
       const d = video.dataset;
-      const conn = (navigator as any).connection;
       const small =
-        window.innerWidth * (window.devicePixelRatio || 1) <= 1400 ||
-        !!(conn && (conn.saveData || /(^|-)(2g|3g)$/.test(conn.effectiveType || "")));
+        window.innerWidth * (window.devicePixelRatio || 1) <= 1400 || /(^|-)3g$/.test(conn?.effectiveType || "");
       const tall = tallQuery.matches && !!d.tall;
       const src = tall ? d.tall! : small ? d.small! : d.wide!;
       if (video.dataset.current !== src) {
         video.dataset.current = src;
-        const poster = tall ? d.posterTall : d.posterWide;
-        if (poster) video.poster = poster;
         video.src = src;
       }
       if (!paused) video.play().catch(() => { paused = true; setLabel(); });
@@ -222,7 +236,8 @@ const SWASH = "M203.449 626.485C203.449 626.485 222.534 651.302 222.534 651.302C
     toggle?.addEventListener("click", () => {
       if (video.paused) {
         paused = false;
-        video.play().catch(() => {});
+        wanted = true;
+        pick();
       } else {
         paused = true;
         video.pause();
