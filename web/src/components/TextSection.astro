@@ -1,7 +1,8 @@
 ---
 import { type PortableTextBlock } from "@portabletext/types";
 import { toHTML } from "@portabletext/to-html";
-import { highlight, leaf } from "../lib/text";
+import { highlight, keepCompounds, leaf } from "../lib/text";
+import Icon from "./Icon.astro";
 
 export type Props = {
   _type: "textSection";
@@ -21,13 +22,22 @@ const { eyebrow, heading, excerpt, anchorId, theme = "cream", pillars = [], head
 const Heading = headingLevel === 1 ? "h1" : "h2";
 const layout = Astro.props.layout ?? (pillars.length ? "split" : "stacked");
 const html = excerpt ? toHTML(excerpt) : "";
+// A split section (the homepage's About) is an introduction beside its heading, not the page's main text:
+// it shows its first paragraph and opens the rest on "Read more", so the sessions below come sooner.
+// Stacked sections (Testimonials, Safeguarding) always show everything.
+const [leadBlock, ...moreBlocks] = excerpt ?? [];
+const leadHtml = layout === "split" && moreBlocks.length ? toHTML([leadBlock]) : "";
+const moreHtml = leadHtml ? toHTML(moreBlocks) : "";
 
 const themes = {
-  cream: { section: "bg-cream text-ink", eyebrow: "text-grape", heading: "text-grape", body: "", muted: "text-ink/70", rule: "border-ink", dash: "border-ink/40" },
-  purple: { section: "bg-grape text-cream", eyebrow: "text-coral-soft", heading: "text-cream", body: "[&_p:not(:first-child)]:text-lilac", muted: "text-lilac", rule: "border-cream", dash: "border-lilac-dash" },
-  dark: { section: "bg-ink text-cream", eyebrow: "text-coral-soft", heading: "text-cream", body: "[&_p:not(:first-child)]:text-lilac", muted: "text-lilac", rule: "border-cream", dash: "border-mauve-line" },
+  // `accent` is the coral for starred words and accent pillars (plain coral on every ground; see DESIGN.md).
+  cream: { section: "bg-cream text-ink", eyebrow: "text-grape", heading: "text-grape", accent: "text-coral", body: "", more: "", muted: "text-ink/70", rule: "border-ink", dash: "border-ink/40" },
+  purple: { section: "bg-grape text-cream on-dark", eyebrow: "text-coral-light", heading: "text-cream", accent: "text-coral", body: "[&_p:not(:first-child)]:text-lilac", more: "text-lilac", muted: "text-lilac", rule: "border-cream", dash: "border-lilac-dash" },
+  dark: { section: "bg-ink text-cream on-dark", eyebrow: "text-coral-soft", heading: "text-cream", accent: "text-coral", body: "[&_p:not(:first-child)]:text-lilac", more: "text-lilac", muted: "text-lilac", rule: "border-cream", dash: "border-mauve-line" },
 };
 const t = themes[theme] ?? themes.cream;
+// A page's main heading (no hero) takes the title size; section headings sit below the hero.
+const headingSize = headingLevel === 1 ? "text-title" : "text-heading";
 const decor = leaf(heading?.length ?? 0);
 ---
 
@@ -41,9 +51,23 @@ const decor = leaf(heading?.length ?? 0);
               <img src={decor.src} alt="" aria-hidden="true" style={`transform: rotate(${decor.rot}deg)`} />{eyebrow}
             </div>
           )}
-          <Heading class:list={["display text-[clamp(56px,8.6vw,128px)]", t.heading]} set:html={highlight(heading)} />
+          <Heading class:list={["display", headingSize, t.heading]} set:html={highlight(heading, t.accent)} />
         </div>
-        {html && <div class:list={["rich text-[19px] leading-relaxed self-end", t.body]} set:html={html} />}
+        {leadHtml ? (
+          <div class:list={["rich text-prose self-end", t.body]}>
+            <Fragment set:html={leadHtml} />
+            <details class="group/more mt-2">
+              <summary class="label inline-flex items-center gap-[0.6em] min-h-11 py-3 cursor-pointer list-none [&::-webkit-details-marker]:hidden hover:opacity-80">
+                <span class="group-open/more:hidden">Read more</span>
+                <span class="hidden group-open/more:inline">Show less</span>
+                <Icon name="arrow-right" class="rotate-90 group-open/more:-rotate-90 transition-transform duration-200 motion-reduce:transition-none" />
+              </summary>
+              <div class:list={["mt-2 [&>p+p]:mt-4", t.more]} set:html={moreHtml} />
+            </details>
+          </div>
+        ) : (
+          html && <div class:list={["rich text-prose self-end", t.body]} set:html={html} />
+        )}
       </div>
     ) : (
       <div class="max-w-208">
@@ -52,8 +76,8 @@ const decor = leaf(heading?.length ?? 0);
             <img src={decor.src} alt="" aria-hidden="true" style={`transform: rotate(${decor.rot}deg)`} />{eyebrow}
           </div>
         )}
-        {heading && <Heading class:list={["display text-[clamp(48px,7vw,104px)] mb-10", t.heading]} set:html={highlight(heading)} />}
-        {html && <div class:list={["rich text-[19px] leading-relaxed max-w-[42em]", t.body]} set:html={html} />}
+        {heading && <Heading class:list={["display mb-10", headingSize, t.heading]} set:html={highlight(heading, t.accent)} />}
+        {html && <div class:list={["rich text-prose max-w-[34em]", t.body]} set:html={html} />}
       </div>
     )}
 
@@ -61,8 +85,8 @@ const decor = leaf(heading?.length ?? 0);
       <div class:list={["border-t-2", t.rule, layout === "stacked" && "mt-16"]}>
         {pillars.map((p, i) => (
           <div class:list={["flex justify-between items-center gap-6 flex-wrap py-[22px]", i < pillars.length - 1 && ["border-b-[1.5px] border-dashed", t.dash]]}>
-            <span class:list={["display text-[clamp(40px,5.4vw,80px)] leading-[0.9]", p.accent && "text-coral"]}>{p.title}</span>
-            {p.text && <span class:list={["text-[17px] leading-[1.45] w-[min(100%,290px)]", t.muted]}>{p.text}</span>}
+            <span class:list={["display text-sub", p.accent && t.accent]} set:html={keepCompounds(p.title)} />
+            {p.text && <span class:list={["text-body w-[min(100%,300px)] text-pretty", t.muted]} set:html={keepCompounds(p.text)} />}
           </div>
         ))}
       </div>

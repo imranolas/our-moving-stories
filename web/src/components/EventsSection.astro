@@ -2,7 +2,8 @@
 import { allEvents } from "../lib/data";
 import { highlight } from "../lib/text";
 import EventRow from "./EventRow.astro";
-import { splitEvents, type Event } from "../lib/schedule";
+import Icon from "./Icon.astro";
+import { parseDate, splitEvents, todayISO, upcomingSessions, type Event, type Session } from "../lib/schedule";
 
 // Re-exported so pages that import these types from here keep working.
 export type { Event, Session } from "../lib/schedule";
@@ -20,36 +21,64 @@ const {
   eyebrow = "What's on",
   title = "Coming up",
   intro = "Free sessions and events across Ealing, soonest first. Open one for the full schedule and how to book.",
-  events: limit = 6,
 } = Astro.props;
 
-const { upcoming, past } = splitEvents(await allEvents(Astro.locals));
-const shown = upcoming.slice(0, limit);
+const { upcoming } = splitEvents(await allEvents(Astro.locals));
+
+// The homepage list is dated sessions, not events: every session in the next two weeks, soonest first, each
+// with its own date, time and booking link (a weekly series appears once per week). If those two weeks are
+// empty (a holiday break) it shows the next few sessions instead, so the list is never empty while dates exist.
+const WINDOW_DAYS = 14;
+const today = todayISO();
+const iso = (d: Date) => [d.getFullYear(), String(d.getMonth() + 1).padStart(2, "0"), String(d.getDate()).padStart(2, "0")].join("-");
+const addDays = (s: string, n: number) => { const d = parseDate(s); d.setDate(d.getDate() + n); return iso(d); };
+const windowEnd = addDays(today, WINDOW_DAYS - 1);
+// Sunday ends the week (Monday-first, as in the UK).
+const weekEnd = addDays(today, (7 - parseDate(today).getDay()) % 7);
+
+const all: { event: Event; session: Session }[] = upcoming
+  .flatMap((event) => upcomingSessions(event, today).filter((s) => !s.cancelled).map((session) => ({ event, session })))
+  .sort((a, b) => a.session.date.localeCompare(b.session.date) || (a.session.startTime ?? "").localeCompare(b.session.startTime ?? ""));
+const inWindow = all.filter((r) => r.session.date <= windowEnd);
+const MAX_ROWS = 10;
+const rows = (inWindow.length ? inWindow : all.slice(0, 4)).slice(0, MAX_ROWS);
+
+function when(date: string): string {
+  if (date === today) return "Today";
+  if (date === addDays(today, 1)) return "Tomorrow";
+  if (date <= weekEnd) return "This week";
+  if (date <= addDays(weekEnd, 7)) return "Next week";
+  return "Coming up";
+}
+
+// Events with nothing in the list (later one-offs, say) aren't dropped silently: the link to /events counts them.
+const listed = new Set(rows.map((r) => r.event._id ?? r.event.name));
+const later = upcoming.filter((e) => !listed.has(e._id ?? e.name)).length;
 ---
 
-<section id="whats-on" class="wrap py-20 md:py-24">
+<section id="whats-on" class="wrap pt-14 md:pt-16 pb-20 md:pb-24">
   <div class="flex items-end justify-between gap-6 flex-wrap mb-9">
     <div>
       <div class="eyebrow text-grape mb-3.5">
         <img src="/img/leaves/leaf-3.svg" alt="" aria-hidden="true" style="transform: rotate(-25deg)" />{eyebrow}
       </div>
-      <h2 class="display text-[clamp(64px,9vw,140px)] leading-[0.82] text-grape" set:html={highlight(title)} />
+      <h2 class="display text-heading text-grape" set:html={highlight(title)} />
     </div>
-    {intro && <p class="text-[17px] leading-normal max-w-[21em]">{intro}</p>}
+    {intro && <p class="text-body max-w-[22em]">{intro}</p>}
   </div>
 
   <div class="border-t-[3px] border-ink">
-    {shown.length > 0 ? (
-      shown.map((event) => <EventRow event={event} />)
+    {rows.length > 0 ? (
+      rows.map((r, i) => <EventRow event={r.event} session={r.session} when={when(r.session.date)} eager={i < 2} />)
     ) : (
-      <p class="py-8 text-lg border-b-[1.5px] border-ink">
+      <p class="py-8 text-body border-b-[1.5px] border-ink">
         No dates announced right now. Follow <a href="https://instagram.com/our.movingstories" target="_blank" rel="noopener noreferrer">@our.movingstories</a> or join the newsletter for new sessions.
       </p>
     )}
   </div>
 
-  <div class="flex items-baseline justify-between gap-6 mt-3.5 font-mono text-sm uppercase">
-    {past.length > 0 && <span class="tracking-wider">{past.length} past {past.length === 1 ? "event" : "events"}</span>}
-    <a href="/events" class="ml-auto inline-block py-3 text-ink hover:text-grape">All events →</a>
+  <div class="flex items-baseline justify-between gap-x-6 flex-wrap mt-3.5 label">
+    <a href="/sessions" class="inline-flex items-center gap-[0.6em] py-3 text-ink hover:text-grape">All dates<Icon name="arrow-right" /></a>
+    <a href="/events" class="inline-flex items-center gap-[0.6em] py-3 text-ink hover:text-grape">{later > 0 ? `${later} more ${later === 1 ? "event" : "events"} later on` : "All events"}<Icon name="arrow-right" /></a>
   </div>
 </section>

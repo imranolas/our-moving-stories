@@ -34,6 +34,7 @@ export function escapeHtml(text = ""): string {
 /**
  * Editors mark the words they want in coral by wrapping them in asterisks,
  * e.g. "Made by people, *for people.*". Returns safe HTML.
+ * Coral on every ground, by choice: on cream it is 2.4:1, below WCAG AA (see DESIGN.md, the Coral Text Rule).
  */
 export function highlight(text = "", className = "text-coral"): string {
   return escapeHtml(text).replace(
@@ -42,13 +43,37 @@ export function highlight(text = "", className = "text-coral"): string {
   );
 }
 
-/** Splits "Lead words *Highlight.*" into its two parts. The stega payload stays on the lead (or the accent). */
-export function splitHighlight(text = ""): { lead: string; accent: string } {
+/**
+ * Splits "Lead words *Highlight.*" into its parts. The stega payload stays on the lead (or the accent).
+ * A conjunction ending the lead ("art & *movement.*") is returned as `joiner`, so the hero can set it on
+ * the accent's line: "art & movement" then breaks before the "&" instead of stranding it at the end of the
+ * smaller line. This also covers a title saved without the space ("art&*movement.*").
+ */
+export function splitHighlight(text = ""): { lead: string; joiner: string; accent: string } {
   const [visible, payload] = splitStega(text);
   const m = visible.match(/^(.*?)\s*\*([^*]+)\*\s*$/s);
-  if (!m) return { lead: visible.replace(/\*/g, "") + payload, accent: "" };
-  const lead = m[1].replace(/\*/g, "");
-  return lead ? { lead: lead + payload, accent: m[2] } : { lead, accent: m[2] + payload };
+  if (!m) return { lead: visible.replace(/\*/g, "") + payload, joiner: "", accent: "" };
+  let lead = m[1].replace(/\*/g, "");
+  let joiner = "";
+  const j = lead.match(/\s*(&|\+|\band)$/i);
+  if (j && j.index !== undefined) {
+    joiner = j[1];
+    lead = lead.slice(0, j.index).trimEnd();
+  }
+  return lead ? { lead: lead + payload, joiner, accent: m[2] } : { lead, joiner, accent: m[2] + payload };
+}
+
+/**
+ * Escaped HTML in which short hyphenated words ("under-5s", "grown-ups", "community-run") can't break at
+ * the hyphen. Keeps the stega payload. In draft mode, typing into such a field shows on save rather than
+ * per keystroke (live-text.ts only rewrites a field shown as one text node).
+ */
+export function keepCompounds(text = ""): string {
+  const [visible, payload] = splitStega(text);
+  const html = escapeHtml(visible).replace(/[\p{L}\p{N}]+(?:-[\p{L}\p{N}]+)+/gu, (word) =>
+    word.length <= 16 ? `<span class="whitespace-nowrap">${word}</span>` : word,
+  );
+  return html + payload;
 }
 
 export function stripStars(text = ""): string {

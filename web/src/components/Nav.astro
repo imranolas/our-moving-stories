@@ -7,9 +7,12 @@ interface Props {
 }
 
 const { settings, nav: navigation } = Astro.props.site;
+// "What's on" is the filled button at the end, so a Sanity item pointing at the same list is left out
+// (it used to appear twice, once as "What's on" and once as "Join in").
+const WHATS_ON = "/#whats-on";
 const items = ((navigation.items ?? []) as NavigationItem[])
   .map((item) => ({ text: item.text, href: formatLink(item.navigationItemUrl) }))
-  .filter((i) => i.href);
+  .filter((i) => i.href && !/#whats-on$/.test(i.href));
 ---
 
 <header class="sticky top-0 z-100 bg-cream border-b-2 border-ink" x-data="{ open: false }" @keydown.escape.window="open = false">
@@ -18,16 +21,16 @@ const items = ((navigation.items ?? []) as NavigationItem[])
       <img src="/img/logo-purple.svg" alt="" class="h-11 md:h-[62px] w-auto block" width="96" height="70" />
     </a>
 
-    <nav aria-label="Main" class="hidden md:flex items-center gap-6 font-mono text-sm uppercase">
+    <nav aria-label="Main" class="hidden md:flex items-center gap-6 label">
       {items.map((item) => (
         <a href={item.href} class="py-3 text-ink no-underline hover:text-grape">{item.text}</a>
       ))}
-      <a href="/#whats-on" class="no-underline whitespace-nowrap bg-grape text-cream px-4 py-3 hover:bg-ink hover:text-cream">Join in</a>
+      <a href={WHATS_ON} class="no-underline whitespace-nowrap bg-grape text-cream px-4 py-3 hover:bg-ink hover:text-cream">What's on</a>
     </nav>
 
     <button
       type="button"
-      class="md:hidden min-h-11 font-mono text-sm uppercase border-2 border-ink px-4 py-2 text-ink"
+      class="md:hidden min-h-11 label border-2 border-ink px-4 py-2 text-ink"
       @click="open = !open"
       :aria-expanded="open"
       aria-controls="mobile-menu"
@@ -47,11 +50,11 @@ const items = ((navigation.items ?? []) as NavigationItem[])
     <ul class="wrap py-4 flex flex-col">
       {items.map((item) => (
         <li class="border-b-[1.5px] border-ink last:border-0">
-          <a href={item.href} @click="open = false" class="block py-3 display text-4xl text-ink no-underline hover:text-grape">{item.text}</a>
+          <a href={item.href} @click="open = false" class="block py-3 display text-sub text-ink no-underline hover:text-grape">{item.text}</a>
         </li>
       ))}
       <li class="pt-4">
-        <a href="/#whats-on" @click="open = false" class="btn-primary">Join in</a>
+        <a href={WHATS_ON} @click="open = false" class="btn-primary">What's on</a>
       </li>
     </ul>
   </nav>

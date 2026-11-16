@@ -4,6 +4,8 @@ import { urlFor, srcset } from "../../sanity/lib/urlFor";
 import { SITE, breadcrumb, eventNodes } from "../../lib/schema";
 import { toHTML } from "@portabletext/to-html";
 import Layout from "../../layouts/Layout.astro";
+import Icon from "../../components/Icon.astro";
+import { keepCompounds } from "../../lib/text";
 import {
   EVENT_FIELDS,
   formatAddress,
@@ -85,38 +87,40 @@ const schema = [
   schema={schema}
 >
   <section class="wrap pt-7 pb-20 md:pb-[88px]">
-    <a href="/events" class="inline-block py-3 font-mono text-sm uppercase text-ink no-underline mb-6 hover:text-grape">← All events</a>
+    <a href="/events" class="label inline-flex items-center gap-[0.6em] py-3 text-ink no-underline mb-6 hover:text-grape"><Icon name="arrow-left" />All events</a>
 
     <div class="grid gap-x-16 gap-y-12 items-start md:grid-cols-2">
       <div>
-        <div class="flex gap-2 flex-wrap mb-[22px] font-mono text-xs uppercase tracking-[0.04em]">
-          {event.audience && <span class="border-[1.5px] border-ink px-[9px] py-1">{event.audience}</span>}
-          <span class="border-[1.5px] border-ink px-[9px] py-1">{repeat.short}</span>
-          <span class="bg-grape text-cream px-2.5 py-[5px]">{priceLabel(event.price)}</span>
+        <div class="flex gap-2 flex-wrap mb-[22px]">
+          {event.audience && <span class="tag" set:html={keepCompounds(event.audience)} />}
+          <span class="tag">{repeat.short}</span>
+          <span class="tag bg-grape border-grape text-cream">{priceLabel(event.price)}</span>
         </div>
-        <h1 class="display text-[clamp(56px,8vw,128px)] text-grape mb-6 text-balance">{event.name}</h1>
-        {summary && <p class="text-[21px] leading-[1.45] max-w-[30em] mb-9">{summary}</p>}
+        {/* Heading size, not title: the name shares a column with the poster and is often long
+            ("Move and Make @ Open Havelock - 2026/27"), and the booking button has to stay in the first screen. */}
+        <h1 class="display text-heading text-grape mb-6">{event.name}</h1>
+        {summary && <p class="text-lead max-w-[30em] mb-9" set:html={keepCompounds(summary)} />}
 
         <div class="border-t-[3px] border-ink border-b-[1.5px] pt-5 pb-6 mb-7">
           {next ? (
             <>
               <div class="eyebrow text-grape mb-2">Next date</div>
-              <div class="display text-[clamp(44px,5vw,72px)] leading-[0.88] text-coral">{fmtLong(next.date)}</div>
-              <div class="text-lg mt-2.5">{time}{event.venue?.name ? ` · ${event.venue.name}` : ""}</div>
-              {next.note && <div class="font-mono text-[13px] mt-1.5">{next.note}</div>}
+              <div class="display text-sub text-coral">{fmtLong(next.date)}</div>
+              <div class="text-lead mt-2.5">{time}{event.venue?.name ? ` · ${event.venue.name}` : ""}</div>
+              {next.note && <div class="text-small mt-1">{next.note}</div>}
             </>
           ) : (
             <>
               <div class="eyebrow text-grape mb-2">{last ? "Past event" : "No dates yet"}</div>
-              <div class="display text-[clamp(40px,4.4vw,60px)] leading-[0.9]">{last ? ranLabel(event) : "Dates to be announced"}</div>
-              <div class="text-lg mt-2.5">New dates are announced on Instagram and in the newsletter.</div>
+              <div class="display text-sub">{last ? ranLabel(event) : "Dates to be announced"}</div>
+              <div class="text-body mt-2.5">New dates are announced on Instagram and in the newsletter.</div>
             </>
           )}
         </div>
 
         <div class="flex gap-3 flex-wrap">
-          <a href={cta.href} target="_blank" rel="noopener noreferrer" class="btn-primary">{cta.label} ↗</a>
-          {directions && <a href={directions} target="_blank" rel="noopener noreferrer" class="btn-outline">Directions ↗</a>}
+          <a href={cta.href} target="_blank" rel="noopener noreferrer" class="btn-primary">{cta.label}<Icon name="arrow-up-right" /></a>
+          {directions && <a href={directions} target="_blank" rel="noopener noreferrer" class="btn-outline">Directions<Icon name="arrow-up-right" /></a>}
         </div>
       </div>
 
@@ -131,27 +135,27 @@ const schema = [
     </div>
   </section>
 
-  <section class="bg-grape text-cream">
+  <section class="bg-grape text-cream on-dark">
     <div class="wrap pt-20 pb-[88px] grid gap-x-16 gap-y-14 items-start md:grid-cols-2">
       <div>
-        <div class="eyebrow text-coral-soft mb-[18px]">About this event</div>
-        {description && <div class="rich text-[19px] leading-relaxed mb-9 [&_a]:text-cream [&_a:hover]:text-coral-soft" set:html={description} />}
+        <div class="eyebrow text-coral-light mb-[18px]">About this event</div>
+        {description && <div class="rich text-prose mb-9 [&_a]:text-cream [&_a:hover]:text-coral-light" set:html={description} />}
         <div class="border-t-2 border-cream">
           {info.map((row) => (
-            <div class="grid grid-cols-[110px_minmax(0,1fr)] sm:grid-cols-[130px_minmax(0,1fr)] gap-4 py-3.5 border-b-[1.5px] border-dashed border-lilac-dash text-base leading-normal">
-              <span class="font-mono text-xs uppercase tracking-[0.04em] text-coral-soft pt-[3px]">{row.label}</span>
+            <div class="grid grid-cols-[120px_minmax(0,1fr)] sm:grid-cols-[150px_minmax(0,1fr)] gap-4 py-3.5 border-b-[1.5px] border-dashed border-lilac-dash text-body">
+              <span class="label text-coral-light pt-[2px]">{row.label}</span>
               <span>{row.value}</span>
             </div>
           ))}
         </div>
         {faqs.length > 0 && (
           <>
-            <h2 class="eyebrow text-coral-soft mt-14 mb-[18px]">Questions</h2>
+            <h2 class="eyebrow text-coral-light mt-14 mb-[18px]">Questions</h2>
             <dl class="border-t-2 border-cream">
               {faqs.map((f) => (
                 <div class="py-4 border-b-[1.5px] border-dashed border-lilac-dash">
-                  <dt class="font-bold text-lg leading-snug mb-1.5">{f.question}</dt>
-                  <dd class="text-base leading-relaxed whitespace-pre-line">{f.answer}</dd>
+                  <dt class="font-bold text-prose leading-snug mb-1.5">{f.question}</dt>
+                  <dd class="text-body leading-relaxed whitespace-pre-line">{f.answer}</dd>
                 </div>
               ))}
             </dl>
@@ -160,9 +164,9 @@ const schema = [
       </div>
 
       <div x-data="{ all: false }">
-        <div class="eyebrow text-coral-soft mb-[18px]">Schedule</div>
-        <div class="display text-[clamp(36px,4vw,56px)] leading-[0.9] mb-2">{repeat.long}</div>
-        <div class="font-mono text-sm text-lilac mb-[30px]">{[time, rangeLabel(event)].filter(Boolean).join(" · ")}</div>
+        <div class="eyebrow text-coral-light mb-[18px]">Schedule</div>
+        <div class="display text-sub mb-2">{repeat.long}</div>
+        <div class="text-body text-lilac mb-[30px]">{[time, rangeLabel(event)].filter(Boolean).join(" · ")}</div>
 
         {future.length > 0 ? (
           <>
@@ -170,31 +174,31 @@ const schema = [
               <div class="flex flex-col gap-[22px]" x-show={gi === 1 ? "all" : undefined} x-cloak={gi === 1 ? true : undefined} style={gi === 1 ? "margin-top: 22px" : undefined}>
                 {groups.map((m) => (
                   <div>
-                    <div class="font-mono text-xs uppercase tracking-wider pb-2 border-b-[1.5px] border-lilac-dash mb-2.5">{m.label}</div>
+                    <div class="label pb-2 border-b-[1.5px] border-lilac-dash mb-2.5">{m.label}</div>
                     <div class="flex flex-wrap gap-2">
                       {m.dates.map((d) =>
                         d.state === "next" ? (
-                          <span class="font-mono text-[13px] px-[11px] py-2 bg-coral text-ink border-[1.5px] border-coral">{d.label} · next</span>
+                          <span class="label px-[11px] py-2 bg-coral text-ink border-[1.5px] border-coral">{d.label} · next</span>
                         ) : d.state === "off" ? (
-                          <span title={d.note} class="font-mono text-[13px] px-[11px] py-2 border-[1.5px] border-dashed border-lilac-mid text-lilac-light line-through"><span class="sr-only">Cancelled: </span>{d.label}</span>
+                          <span title={d.note} class="label px-[11px] py-2 border-[1.5px] border-dashed border-lilac-mid text-lilac-light line-through"><span class="sr-only">Cancelled: </span>{d.label}</span>
                         ) : (
-                          <span class="font-mono text-[13px] px-[11px] py-2 border-[1.5px] border-lilac">{d.label}</span>
+                          <span class="label px-[11px] py-2 border-[1.5px] border-lilac">{d.label}</span>
                         )
                       )}
                     </div>
-                    {m.note && <div class="text-sm text-lilac-light mt-2">{m.note}</div>}
+                    {m.note && <div class="text-small text-lilac-light mt-2">{m.note}</div>}
                   </div>
                 ))}
               </div>
             ))}
             {groupsRest.length > 0 && (
-              <button type="button" @click="all = !all" class="mt-6 btn-outline-light py-[11px] px-4 text-[13px]">
+              <button type="button" @click="all = !all" class="mt-6 btn-outline-light py-[11px] px-4">
                 <span x-text={`all ? 'Show fewer dates' : 'Show all ${future.length} dates'`}>Show all {future.length} dates</span>
               </button>
             )}
           </>
         ) : (
-          <p class="text-lg text-lilac">No dates scheduled at the moment.</p>
+          <p class="text-body text-lilac">No dates scheduled at the moment.</p>
         )}
       </div>
     </div>

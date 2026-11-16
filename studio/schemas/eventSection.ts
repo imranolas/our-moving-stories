@@ -32,8 +32,10 @@ export const eventsSectionType = defineType({
       title: "Latest Events",
       type: "number",
       description:
-        "Maximum number of upcoming events to display. Past events are shown separately below.",
+        "No longer used: the list now shows every session in the next two weeks (see EventsSection.astro).",
       initialValue: 3,
+      // Kept so existing documents stay valid; hidden because the site ignores it.
+      hidden: true,
     }),
   ],
 });

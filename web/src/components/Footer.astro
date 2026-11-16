@@ -3,6 +3,7 @@ import { formatLink, type NavigationItem } from "../sanity/lib/links";
 import { imageSize, urlFor } from "../sanity/lib/urlFor";
 import { highlight } from "../lib/text";
 import type { SiteData } from "../lib/data";
+import Icon from "./Icon.astro";
 
 interface Props {
   site: SiteData;
@@ -28,24 +29,24 @@ const partners =
 const year = new Date().getFullYear();
 ---
 
-<footer id="contact" class="bg-ink text-cream overflow-hidden">
+<footer id="contact" class="bg-ink text-cream overflow-hidden on-dark">
   <div class="wrap pt-20 md:pt-24 pb-16 md:pb-[72px] grid gap-14 items-center md:grid-cols-2">
     <div>
       <div class="eyebrow text-coral-soft mb-[18px]">
         <img src="/img/leaves/leaf-4.svg" alt="" aria-hidden="true" style="transform: rotate(-30deg)" />{footer.contactEyebrow || "Get in touch"}
       </div>
-      <h2 class="display text-[clamp(48px,5.6vw,92px)] leading-[0.86] mb-6" set:html={highlight(heading)} />
-      <p class="text-lg leading-relaxed text-lilac max-w-[32em] mb-6">{text}</p>
-      <a href={`mailto:${email}`} class="inline-block py-2 font-mono text-lg text-coral-soft hover:text-cream">{email}</a>
+      <h2 class="display text-heading mb-6" set:html={highlight(heading, "text-coral")} />
+      <p class="text-body leading-relaxed text-lilac max-w-[32em] mb-5">{text}</p>
+      <a href={`mailto:${email}`} class="inline-block py-2 text-lead font-bold text-coral-soft underline decoration-2 underline-offset-4 hover:text-cream">{email}</a>
     </div>
 
     <div class="relative pt-20 md:pt-14 pb-6 md:px-6">
       <img src="/img/leaves/wing-left.svg" alt="" aria-hidden="true" class="absolute left-[-8%] md:left-[-12%] top-0 md:top-[-22%] w-[46%] md:w-[58%] h-auto rotate-[-14deg] pointer-events-none" />
       <img src="/img/leaves/wing-right.svg" alt="" aria-hidden="true" class="absolute right-[-8%] md:right-[-12%] top-0 md:top-[-22%] w-[46%] md:w-[58%] h-auto rotate-14 pointer-events-none" />
       <div class="relative bg-cream text-ink p-6 md:p-[30px] outline-2 outline-dashed outline-cream outline-offset-8">
-        <div class="eyebrow text-grape mb-2.5">✂ Newsletter</div>
-        <h3 class="display text-[44px] leading-[0.9] mb-2">{newsletterHeading}</h3>
-        <p class="text-base leading-normal mb-5">{newsletterText}</p>
+        <div class="eyebrow inline-flex items-center gap-[0.6em] text-grape mb-2.5"><Icon name="scissors" weight={2} />Newsletter</div>
+        <h3 class="display text-sub mb-2">{newsletterHeading}</h3>
+        <p class="text-body text-pretty mb-5">{newsletterText}</p>
         <iframe
           src="https://embeds.beehiiv.com/88e94e2d-a0b8-434a-8258-58bfb9ae99df?slim=true"
           data-test-id="beehiiv-embed"
@@ -61,7 +62,7 @@ const year = new Date().getFullYear();
     </div>
   </div>
 
-  <div class="wrap pt-6 pb-9 border-t border-mauve-line flex flex-wrap justify-between items-center gap-x-5 gap-y-3 font-mono text-sm text-mauve">
+  <div class="wrap pt-6 pb-9 border-t border-mauve-line flex flex-wrap justify-between items-center gap-x-5 gap-y-3 text-small text-mauve">
     <div class="basis-full mt-1 mb-4">
       <img src="/img/logo-cream.svg" alt="Our Moving Stories" class="w-[140px] h-auto block" width="140" height="102" />
     </div>
@@ -88,11 +89,11 @@ const year = new Date().getFullYear();
     )}
 
     {partners && <span>{partners}</span>}
-    <nav aria-label="Footer" class="flex flex-wrap gap-x-5">
+    <nav aria-label="Footer" class="flex flex-wrap gap-x-5 label">
       {links.map((l) => (
         <a href={l.href} class="inline-block py-3 text-mauve hover:text-coral-soft">{l.text}</a>
       ))}
-      <a href={`https://instagram.com/${instagram}`} target="_blank" rel="noopener noreferrer" class="inline-block py-3 text-mauve hover:text-coral-soft">Instagram</a>
+      <a href={`https://instagram.com/${instagram}`} target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-[0.5em] py-3 text-mauve hover:text-coral-soft">Instagram<Icon name="arrow-up-right" /></a>
     </nav>
     <span class="basis-full text-mauve-dim">
       {[settings.companyName || "Our Moving Stories CIC", settings.companyNumber].filter(Boolean).join(" ")} · © {year}

@@ -64,7 +64,8 @@ const analyticsToken = import.meta.env.PUBLIC_CF_WEB_ANALYTICS_TOKEN as string |
 
     <Font cssVariable="--font-big-shoulders" preload />
     <Font cssVariable="--font-karla" preload />
-    <Font cssVariable="--font-dm-mono" />
+    <!-- DM Mono sets the nav, the hero's label and its button, so it's in the first screen too. -->
+    <Font cssVariable="--font-dm-mono" preload />
 
     <!-- Open Graph -->
     <meta property="og:type" content="website" />
@@ -85,7 +86,7 @@ const analyticsToken = import.meta.env.PUBLIC_CF_WEB_ANALYTICS_TOKEN as string |
     <title>{fullTitle}</title>
   </head>
   <body>
-    <a href="#main" class="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-200 bg-ink text-cream px-4 py-2 font-mono text-sm uppercase">Skip to content</a>
+    <a href="#main" class="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-200 bg-ink text-cream px-4 py-2 label">Skip to content</a>
     <Nav site={site} />
     <main id="main">
       <slot />
