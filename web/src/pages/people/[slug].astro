@@ -6,6 +6,7 @@ import { SITE, breadcrumb, personNodes } from "../../lib/schema";
 import { toHTML } from "@portabletext/to-html";
 import Layout from "../../layouts/Layout.astro";
 import { clip } from "../../lib/text";
+import Icon from "../../components/Icon.astro";
 
 const { slug } = Astro.params;
 
@@ -52,16 +53,16 @@ const schema = [
   schema={schema}
 >
   <section class="wrap pt-7 pb-20 md:pb-[88px]">
-    <a href="/#people" class="inline-block py-3 font-mono text-sm uppercase text-ink no-underline mb-6 hover:text-grape">← The team</a>
+    <a href="/#people" class="label inline-flex items-center gap-[0.6em] py-3 text-ink no-underline mb-6 hover:text-grape"><Icon name="arrow-left" />The team</a>
     <div class="grid gap-x-16 gap-y-12 items-start md:grid-cols-[minmax(0,1fr)_minmax(0,420px)]">
       <div>
         {person.role && <div class="eyebrow text-grape mb-4">{person.role}</div>}
-        <h1 class="display text-[clamp(56px,8vw,128px)] text-grape mb-8 text-balance">{person.name}</h1>
-        {person.excerpt && <p class="text-[21px] leading-[1.45] max-w-[30em] mb-8">{person.excerpt}</p>}
+        <h1 class="display text-title text-grape mb-8">{person.name}</h1>
+        {person.excerpt && <p class="text-lead max-w-[30em] mb-8">{person.excerpt}</p>}
         {person.social?.length > 0 && (
           <div class="flex gap-3 flex-wrap">
             {person.social.map((s: { platform: string; handle: string }) => (
-              <a href={socialUrls[s.platform]?.(s.handle) || "#"} target="_blank" rel="noopener noreferrer" class="btn-outline py-2.5 px-4 text-sm">{s.platform} ↗</a>
+              <a href={socialUrls[s.platform]?.(s.handle) || "#"} target="_blank" rel="noopener noreferrer" class="btn-outline py-2.5 px-4">{s.platform}<Icon name="arrow-up-right" /></a>
             ))}
           </div>
         )}
@@ -78,20 +79,20 @@ const schema = [
   </section>
 
   {(bio || person.qual?.length > 0) && (
-    <section class="bg-grape text-cream">
+    <section class="bg-grape text-cream on-dark">
       <div class="wrap pt-20 pb-[88px] grid gap-x-16 gap-y-14 items-start md:grid-cols-2">
         {bio && (
           <div>
-            <div class="eyebrow text-coral-soft mb-[18px]">About {person.name.split(" ")[0]}</div>
-            <div class="rich text-[19px] leading-relaxed [&_a]:text-cream" set:html={bio} />
+            <div class="eyebrow text-coral-light mb-[18px]">About {person.name.split(" ")[0]}</div>
+            <div class="rich text-prose [&_a]:text-cream" set:html={bio} />
           </div>
         )}
         {person.qual?.length > 0 && (
           <div>
-            <div class="eyebrow text-coral-soft mb-[18px]">Training &amp; qualifications</div>
+            <div class="eyebrow text-coral-light mb-[18px]">Training &amp; qualifications</div>
             <ul class="border-t-2 border-cream">
               {person.qual.map((q: string) => (
-                <li class="py-3.5 border-b-[1.5px] border-dashed border-lilac-dash text-base">{q}</li>
+                <li class="py-3.5 border-b-[1.5px] border-dashed border-lilac-dash text-body">{q}</li>
               ))}
             </ul>
           </div>

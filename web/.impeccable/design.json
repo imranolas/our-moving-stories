@@ -1,0 +1,513 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-11-16T15:28:22.432Z",
+  "title": "Design System: Our Moving Stories",
+  "extensions": {
+    "colorMeta": {
+      "ink": {
+        "role": "neutral",
+        "displayName": "Midnight Ink",
+        "canonical": "#1e1433",
+        "tonalRamp": [
+          "oklch(15% 0.023 296.1)",
+          "oklch(26.4% 0.04 296.1)",
+          "oklch(37.9% 0.057 296.1)",
+          "oklch(49.3% 0.059 296.1)",
+          "oklch(60.7% 0.059 296.1)",
+          "oklch(72.1% 0.057 296.1)",
+          "oklch(83.6% 0.04 296.1)",
+          "oklch(95% 0.023 296.1)"
+        ]
+      },
+      "grape": {
+        "role": "primary",
+        "displayName": "Zine Grape",
+        "canonical": "#4b2e8f",
+        "tonalRamp": [
+          "oklch(15% 0.058 291.7)",
+          "oklch(26.4% 0.102 291.7)",
+          "oklch(37.9% 0.146 291.7)",
+          "oklch(49.3% 0.152 291.7)",
+          "oklch(60.7% 0.152 291.7)",
+          "oklch(72.1% 0.146 291.7)",
+          "oklch(83.6% 0.102 291.7)",
+          "oklch(95% 0.058 291.7)"
+        ]
+      },
+      "coral": {
+        "role": "secondary",
+        "displayName": "Signal Coral",
+        "canonical": "#ff6b57",
+        "tonalRamp": [
+          "oklch(15% 0.07 30.1)",
+          "oklch(26.4% 0.124 30.1)",
+          "oklch(37.9% 0.178 30.1)",
+          "oklch(49.3% 0.185 30.1)",
+          "oklch(60.7% 0.185 30.1)",
+          "oklch(72.1% 0.178 30.1)",
+          "oklch(83.6% 0.124 30.1)",
+          "oklch(95% 0.07 30.1)"
+        ]
+      },
+      "coral-soft": {
+        "role": "secondary",
+        "displayName": "Soft Coral",
+        "canonical": "#ff8a78",
+        "tonalRamp": [
+          "oklch(15% 0.055 30)",
+          "oklch(26.4% 0.098 30)",
+          "oklch(37.9% 0.14 30)",
+          "oklch(49.3% 0.145 30)",
+          "oklch(60.7% 0.145 30)",
+          "oklch(72.1% 0.14 30)",
+          "oklch(83.6% 0.098 30)",
+          "oklch(95% 0.055 30)"
+        ]
+      },
+      "coral-deep": {
+        "role": "secondary",
+        "displayName": "Brick Coral",
+        "canonical": "#c2412e",
+        "tonalRamp": [
+          "oklch(15% 0.064 31.2)",
+          "oklch(26.4% 0.113 31.2)",
+          "oklch(37.9% 0.162 31.2)",
+          "oklch(49.3% 0.168 31.2)",
+          "oklch(60.7% 0.168 31.2)",
+          "oklch(72.1% 0.162 31.2)",
+          "oklch(83.6% 0.113 31.2)",
+          "oklch(95% 0.064 31.2)"
+        ]
+      },
+      "cream": {
+        "role": "neutral",
+        "displayName": "Paper Cream",
+        "canonical": "#f3ede2",
+        "tonalRamp": [
+          "oklch(15% 0.006 82.8)",
+          "oklch(26.4% 0.011 82.8)",
+          "oklch(37.9% 0.015 82.8)",
+          "oklch(49.3% 0.016 82.8)",
+          "oklch(60.7% 0.016 82.8)",
+          "oklch(72.1% 0.015 82.8)",
+          "oklch(83.6% 0.011 82.8)",
+          "oklch(95% 0.006 82.8)"
+        ]
+      },
+      "lilac": {
+        "role": "tertiary",
+        "displayName": "Pale Lilac",
+        "canonical": "#dcd0f7",
+        "tonalRamp": [
+          "oklch(15% 0.021 299.3)",
+          "oklch(26.4% 0.037 299.3)",
+          "oklch(37.9% 0.053 299.3)",
+          "oklch(49.3% 0.055 299.3)",
+          "oklch(60.7% 0.055 299.3)",
+          "oklch(72.1% 0.053 299.3)",
+          "oklch(83.6% 0.037 299.3)",
+          "oklch(95% 0.021 299.3)"
+        ]
+      },
+      "lilac-light": {
+        "role": "tertiary",
+        "displayName": "Lavender",
+        "canonical": "#b9a6ee",
+        "tonalRamp": [
+          "oklch(15% 0.039 296)",
+          "oklch(26.4% 0.069 296)",
+          "oklch(37.9% 0.099 296)",
+          "oklch(49.3% 0.103 296)",
+          "oklch(60.7% 0.103 296)",
+          "oklch(72.1% 0.099 296)",
+          "oklch(83.6% 0.069 296)",
+          "oklch(95% 0.039 296)"
+        ]
+      },
+      "lilac-mid": {
+        "role": "tertiary",
+        "displayName": "Mid Lilac",
+        "canonical": "#8c74d9",
+        "tonalRamp": [
+          "oklch(15% 0.057 292.5)",
+          "oklch(26.4% 0.1 292.5)",
+          "oklch(37.9% 0.143 292.5)",
+          "oklch(49.3% 0.149 292.5)",
+          "oklch(60.7% 0.149 292.5)",
+          "oklch(72.1% 0.143 292.5)",
+          "oklch(83.6% 0.1 292.5)",
+          "oklch(95% 0.057 292.5)"
+        ]
+      },
+      "lilac-dash": {
+        "role": "tertiary",
+        "displayName": "Dash Lilac",
+        "canonical": "#9f8bdb",
+        "tonalRamp": [
+          "oklch(15% 0.045 294.6)",
+          "oklch(26.4% 0.079 294.6)",
+          "oklch(37.9% 0.113 294.6)",
+          "oklch(49.3% 0.117 294.6)",
+          "oklch(60.7% 0.117 294.6)",
+          "oklch(72.1% 0.113 294.6)",
+          "oklch(83.6% 0.079 294.6)",
+          "oklch(95% 0.045 294.6)"
+        ]
+      },
+      "peach": {
+        "role": "neutral",
+        "displayName": "Peach Wash",
+        "canonical": "#ffd9cf",
+        "tonalRamp": [
+          "oklch(15% 0.017 35.1)",
+          "oklch(26.4% 0.03 35.1)",
+          "oklch(37.9% 0.043 35.1)",
+          "oklch(49.3% 0.045 35.1)",
+          "oklch(60.7% 0.045 35.1)",
+          "oklch(72.1% 0.043 35.1)",
+          "oklch(83.6% 0.03 35.1)",
+          "oklch(95% 0.017 35.1)"
+        ]
+      },
+      "sand": {
+        "role": "neutral",
+        "displayName": "Sand Card",
+        "canonical": "#e8ded0",
+        "tonalRamp": [
+          "oklch(15% 0.008 76.5)",
+          "oklch(26.4% 0.015 76.5)",
+          "oklch(37.9% 0.021 76.5)",
+          "oklch(49.3% 0.022 76.5)",
+          "oklch(60.7% 0.022 76.5)",
+          "oklch(72.1% 0.021 76.5)",
+          "oklch(83.6% 0.015 76.5)",
+          "oklch(95% 0.008 76.5)"
+        ]
+      },
+      "mauve": {
+        "role": "neutral",
+        "displayName": "Small-Print Mauve",
+        "canonical": "#a898c9",
+        "tonalRamp": [
+          "oklch(15% 0.028 299.5)",
+          "oklch(26.4% 0.049 299.5)",
+          "oklch(37.9% 0.07 299.5)",
+          "oklch(49.3% 0.072 299.5)",
+          "oklch(60.7% 0.072 299.5)",
+          "oklch(72.1% 0.07 299.5)",
+          "oklch(83.6% 0.049 299.5)",
+          "oklch(95% 0.028 299.5)"
+        ]
+      },
+      "mauve-dim": {
+        "role": "neutral",
+        "displayName": "Dim Mauve",
+        "canonical": "#8a79ae",
+        "tonalRamp": [
+          "oklch(15% 0.031 298.7)",
+          "oklch(26.4% 0.054 298.7)",
+          "oklch(37.9% 0.078 298.7)",
+          "oklch(49.3% 0.081 298.7)",
+          "oklch(60.7% 0.081 298.7)",
+          "oklch(72.1% 0.078 298.7)",
+          "oklch(83.6% 0.054 298.7)",
+          "oklch(95% 0.031 298.7)"
+        ]
+      },
+      "mauve-line": {
+        "role": "neutral",
+        "displayName": "Night Rule",
+        "canonical": "#3a2c5c",
+        "tonalRamp": [
+          "oklch(15% 0.032 295)",
+          "oklch(26.4% 0.056 295)",
+          "oklch(37.9% 0.08 295)",
+          "oklch(49.3% 0.083 295)",
+          "oklch(60.7% 0.083 295)",
+          "oklch(72.1% 0.08 295)",
+          "oklch(83.6% 0.056 295)",
+          "oklch(95% 0.032 295)"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "hero": {
+        "displayName": "Hero",
+        "purpose": "The homepage hero's cream lead; its coral accent is sized in Hero.astro to fill the width."
+      },
+      "title": {
+        "displayName": "Title",
+        "purpose": "A page's h1 when it has no hero."
+      },
+      "heading": {
+        "displayName": "Heading",
+        "purpose": "Section h2s, and h1s that share a column (the event name beside its poster)."
+      },
+      "sub": {
+        "displayName": "Sub",
+        "purpose": "Pillars, the next date, newsletter heading, mobile menu items, h2 in prose."
+      },
+      "item": {
+        "displayName": "Item",
+        "purpose": "Dates in listings, team names, the Next up title, h3 in prose."
+      },
+      "lead": {
+        "displayName": "Lead",
+        "purpose": "Intros under a title; bold for event names in listings."
+      },
+      "prose": {
+        "displayName": "Prose",
+        "purpose": "Long-form editor text, max 40em, coral link underlines."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "Everything else, including times, venues and FAQ answers."
+      },
+      "small": {
+        "displayName": "Small",
+        "purpose": "Notes, card bios, small print."
+      },
+      "tag": {
+        "displayName": "Tag",
+        "purpose": "Karla bold facts in the editor's case: who it's for, repeat, Free."
+      },
+      "label": {
+        "displayName": "Label",
+        "purpose": "DM Mono's one size: eyebrows, nav, buttons, kickers, chips, filters."
+      }
+    },
+    "shadows": [
+      {
+        "name": "hero-title-legibility",
+        "value": "0 2px 24px rgba(30,20,51,0.35)",
+        "purpose": "Text-shadow on the hero title over video. The only shadow on the public site; no box shadows."
+      }
+    ],
+    "motion": [
+      {
+        "name": "color-swap",
+        "value": "150ms ease (transition-colors)",
+        "purpose": "Button and link hover: colour change to ink, nothing lifts."
+      },
+      {
+        "name": "row-shift",
+        "value": "150ms ease (transition-all)",
+        "purpose": "Listing row hover: peach band and 16px horizontal padding."
+      },
+      {
+        "name": "portrait-reveal",
+        "value": "300ms ease (filter)",
+        "purpose": "Team portrait eases from grayscale multiply to full colour on hover."
+      },
+      {
+        "name": "badge-spin",
+        "value": "oms-spin 20s linear infinite",
+        "purpose": "The Free badge's ring text; stopped under prefers-reduced-motion."
+      },
+      {
+        "name": "menu-fade",
+        "value": "Alpine x-transition.opacity",
+        "purpose": "Mobile menu open and close."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "sm",
+        "value": "640px"
+      },
+      {
+        "name": "md",
+        "value": "768px"
+      },
+      {
+        "name": "lg",
+        "value": "1024px"
+      },
+      {
+        "name": "page",
+        "value": "1360px"
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "The default action: See what's on, Eventbrite booking links (with arrow-up-right).",
+      "html": "<a href=\"#\" class=\"ds-btn-primary\">Book on Eventbrite<svg viewBox=\"0 0 24 24\" width=\"1em\" height=\"1em\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.25\" stroke-linecap=\"square\" aria-hidden=\"true\" style=\"flex-shrink:0;vertical-align:-0.125em\"><path d=\"M6 18 17.5 6.5M8.5 5.5h10v10\"/></svg></a>",
+      "css": ".ds-btn-primary { display: inline-flex; align-items: center; gap: .6em; font-family: var(--font-mono, 'DM Mono', monospace); font-weight: 400; font-size: 14px; line-height: 1.5; text-transform: uppercase; letter-spacing: .05em; text-decoration: none; padding: 15px 22px; border-radius: 0; border: 0; cursor: pointer; transition: background-color .15s, color .15s; background: var(--color-grape, #4b2e8f); color: var(--color-cream, #f3ede2); } .ds-btn-primary:hover { background: var(--color-ink, #1e1433); color: var(--color-cream, #f3ede2); } .ds-btn-primary:focus-visible { outline: 2px solid var(--color-coral, #ff6b57); outline-offset: 3px; }"
+    },
+    {
+      "name": "Coral Button",
+      "kind": "button",
+      "refersTo": "button-coral",
+      "description": "The single loudest action on a page: Book a free session.",
+      "html": "<a href=\"#\" class=\"ds-btn-coral\">Book a free session<svg viewBox=\"0 0 24 24\" width=\"1em\" height=\"1em\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.25\" stroke-linecap=\"square\" aria-hidden=\"true\" style=\"flex-shrink:0;vertical-align:-0.125em\"><path d=\"M3 12h16M13 5.5l6.5 6.5-6.5 6.5\"/></svg></a>",
+      "css": ".ds-btn-coral { display: inline-flex; align-items: center; gap: .6em; font-family: var(--font-mono, 'DM Mono', monospace); font-weight: 400; font-size: 14px; line-height: 1.5; text-transform: uppercase; letter-spacing: .05em; text-decoration: none; padding: 15px 22px; border-radius: 0; border: 0; cursor: pointer; transition: background-color .15s, color .15s; background: var(--color-coral, #ff6b57); color: var(--color-ink, #1e1433); } .ds-btn-coral:hover { background: var(--color-ink, #1e1433); color: var(--color-cream, #f3ede2); } .ds-btn-coral:focus-visible { outline: 2px solid var(--color-coral, #ff6b57); outline-offset: 3px; }"
+    },
+    {
+      "name": "Outline Button",
+      "kind": "button",
+      "refersTo": "button-outline",
+      "description": "The second action beside a primary, on cream.",
+      "html": "<a href=\"#\" class=\"ds-btn-outline\">Directions<svg viewBox=\"0 0 24 24\" width=\"1em\" height=\"1em\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.25\" stroke-linecap=\"square\" aria-hidden=\"true\" style=\"flex-shrink:0;vertical-align:-0.125em\"><path d=\"M6 18 17.5 6.5M8.5 5.5h10v10\"/></svg></a>",
+      "css": ".ds-btn-outline { display: inline-flex; align-items: center; gap: .6em; font-family: var(--font-mono, 'DM Mono', monospace); font-weight: 400; font-size: 14px; line-height: 1.5; text-transform: uppercase; letter-spacing: .05em; text-decoration: none; padding: 15px 22px; border-radius: 0; border: 0; cursor: pointer; transition: background-color .15s, color .15s; padding: 13px 20px; background: transparent; color: var(--color-ink, #1e1433); border: 2px solid var(--color-ink, #1e1433); } .ds-btn-outline:hover { background: var(--color-ink, #1e1433); color: var(--color-cream, #f3ede2); } .ds-btn-outline:focus-visible { outline: 2px solid var(--color-coral, #ff6b57); outline-offset: 3px; }"
+    },
+    {
+      "name": "Outline Light Button",
+      "kind": "button",
+      "refersTo": "button-outline-light",
+      "description": "The outline button on grape and ink grounds.",
+      "html": "<div class=\"ds-on-grape\"><button type=\"button\" class=\"ds-btn-outline-light\">Show all dates</button></div>",
+      "css": ".ds-on-grape { background: var(--color-grape, #4b2e8f); padding: 24px; } .ds-btn-outline-light { display: inline-flex; align-items: center; gap: .6em; font-family: var(--font-mono, 'DM Mono', monospace); font-weight: 400; font-size: 14px; line-height: 1.5; text-transform: uppercase; letter-spacing: .05em; text-decoration: none; padding: 15px 22px; border-radius: 0; border: 0; cursor: pointer; transition: background-color .15s, color .15s; padding: 13px 20px; background: transparent; color: var(--color-cream, #f3ede2); border: 2px solid var(--color-cream, #f3ede2); } .ds-btn-outline-light:hover { background: var(--color-cream, #f3ede2); color: var(--color-grape, #4b2e8f); } .ds-btn-outline-light:focus-visible { outline: 2px solid var(--color-coral, #ff6b57); outline-offset: 3px; }"
+    },
+    {
+      "name": "Tags",
+      "kind": "chip",
+      "refersTo": "tag",
+      "description": "Karla bold facts in the editor's own case: who it's for, repeat pattern, and the grape Free price tag.",
+      "html": "<div class=\"ds-tags\"><span class=\"ds-tag\">Under-5s and their grown-ups</span><span class=\"ds-tag\">Every Wed</span><span class=\"ds-tag ds-tag-price\">Free</span></div>",
+      "css": ".ds-tags { display: flex; flex-wrap: wrap; gap: 8px; color: var(--color-ink, #1e1433); } .ds-tag { display: inline-block; font-family: var(--font-sans, Karla, sans-serif); font-weight: 700; font-size: 15px; line-height: 1.25; border: 1.5px solid currentColor; padding: 4px 10px; } .ds-tag-price { background: var(--color-grape, #4b2e8f); border-color: var(--color-grape, #4b2e8f); color: var(--color-cream, #f3ede2); }"
+    },
+    {
+      "name": "Session Chips",
+      "kind": "chip",
+      "refersTo": "session-chip",
+      "description": "Event page dates on grape: next in coral, upcoming outlined lilac, cancelled dashed and struck through.",
+      "html": "<div class=\"ds-chips\"><span class=\"ds-chip ds-chip-next\">Wed 19 · next</span><span class=\"ds-chip\">Wed 26</span><span class=\"ds-chip ds-chip-off\"><span class=\"ds-sr\">Cancelled: </span>Wed 3</span><span class=\"ds-chip\">Wed 10</span></div>",
+      "css": ".ds-chips { display: flex; flex-wrap: wrap; gap: 8px; background: var(--color-grape, #4b2e8f); color: var(--color-cream, #f3ede2); padding: 24px; } .ds-chip { font-family: var(--font-mono, 'DM Mono', monospace); font-weight: 400; font-size: 14px; line-height: 1.5; text-transform: uppercase; letter-spacing: .05em; padding: 8px 11px; border: 1.5px solid var(--color-lilac, #dcd0f7); } .ds-chip-next { background: var(--color-coral, #ff6b57); border-color: var(--color-coral, #ff6b57); color: var(--color-ink, #1e1433); } .ds-chip-off { border-style: dashed; border-color: var(--color-lilac-mid, #8c74d9); color: var(--color-lilac-light, #b9a6ee); text-decoration: line-through; } .ds-sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }"
+    },
+    {
+      "name": "Session Filters",
+      "kind": "input",
+      "refersTo": "filter-toggle",
+      "description": "Sessions page filters: aria-pressed toggles and native selects, 44px tall.",
+      "html": "<div class=\"ds-filters\"><div role=\"group\" aria-label=\"When\" class=\"ds-toggles\"><button type=\"button\" class=\"ds-toggle\" aria-pressed=\"true\">This week</button><button type=\"button\" class=\"ds-toggle\" aria-pressed=\"false\">This month</button><button type=\"button\" class=\"ds-toggle\" aria-pressed=\"false\">All</button></div><select class=\"ds-select\" aria-label=\"Venue\"><option>All venues</option><option>Open Havelock</option></select></div>",
+      "css": ".ds-filters { display: flex; flex-direction: column; gap: 12px; } .ds-toggles { display: flex; flex-wrap: wrap; gap: 8px; } .ds-toggle, .ds-select { font-family: var(--font-mono, 'DM Mono', monospace); font-weight: 400; font-size: 14px; line-height: 1.5; text-transform: uppercase; letter-spacing: .05em; min-height: 44px; border: 2px solid var(--color-ink, #1e1433); border-radius: 0; color: var(--color-ink, #1e1433); } .ds-toggle { background: transparent; padding: 8px 16px; cursor: pointer; } .ds-toggle[aria-pressed=\"true\"] { background: var(--color-ink, #1e1433); color: var(--color-cream, #f3ede2); } .ds-select { background: var(--color-cream, #f3ede2); padding: 8px 12px; align-self: flex-start; } .ds-toggle:focus-visible { outline: 2px solid var(--color-coral, #ff6b57); outline-offset: 3px; } .ds-select:focus-visible { outline: 2px solid var(--color-coral, #ff6b57); outline-offset: 3px; }"
+    },
+    {
+      "name": "Navigation",
+      "kind": "nav",
+      "refersTo": "nav-bar",
+      "description": "Sticky cream bar with a 2px ink rule, label links and the grape Join in block.",
+      "html": "<header class=\"ds-nav\"><a href=\"#\" class=\"ds-nav-logo\">Our Moving Stories</a><nav class=\"ds-nav-links\"><a href=\"#\">What's on</a><a href=\"#\">Sessions</a><a href=\"#\">Testimonials</a><a href=\"#\" class=\"ds-nav-join\">Join in</a></nav></header>",
+      "css": ".ds-nav { display: flex; align-items: center; justify-content: space-between; gap: 24px; height: 80px; padding: 0 28px; background: var(--color-cream, #f3ede2); border-bottom: 2px solid var(--color-ink, #1e1433); } .ds-nav-logo { font-family: var(--font-display, 'Big Shoulders Display', sans-serif); font-weight: 900; text-transform: uppercase; line-height: .9; text-wrap: balance; font-size: 26px; color: var(--color-grape, #4b2e8f); text-decoration: none; max-width: 6em; } .ds-nav-links { display: flex; align-items: center; gap: 24px; font-family: var(--font-mono, 'DM Mono', monospace); font-weight: 400; font-size: 14px; line-height: 1.5; text-transform: uppercase; letter-spacing: .05em; } .ds-nav-links a { color: var(--color-ink, #1e1433); text-decoration: none; padding: 12px 0; } .ds-nav-links a:hover { color: var(--color-grape, #4b2e8f); } .ds-nav-links .ds-nav-join { background: var(--color-grape, #4b2e8f); color: var(--color-cream, #f3ede2); padding: 12px 16px; } .ds-nav-links .ds-nav-join:hover { background: var(--color-ink, #1e1433); color: var(--color-cream, #f3ede2); } .ds-nav a:focus-visible { outline: 2px solid var(--color-coral, #ff6b57); outline-offset: 3px; }"
+    },
+    {
+      "name": "Event Row",
+      "kind": "custom",
+      "refersTo": "event-row",
+      "description": "Signature listing row: tilted thumbnail, label kicker over an item date, bold lead name, body facts, tag, coral Details; peach hover band.",
+      "html": "<div class=\"ds-list\"><a href=\"#\" class=\"ds-row\"><div class=\"ds-row-thumb\"></div><div><div class=\"ds-row-label\">Next date</div><div class=\"ds-row-date\">Wed 19 Nov</div><div class=\"ds-row-label ds-row-repeat\">Every Wed</div></div><div><div class=\"ds-row-name\">Move and Make @ Open Havelock</div><div class=\"ds-row-meta\">9:30–11:30 · Open Havelock</div><span class=\"ds-row-tag\">Under-5s and their grown-ups</span></div><span class=\"ds-row-cta\">Details<svg viewBox=\"0 0 24 24\" width=\"1em\" height=\"1em\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.25\" stroke-linecap=\"square\" aria-hidden=\"true\" style=\"flex-shrink:0;vertical-align:-0.125em\"><path d=\"M3 12h16M13 5.5l6.5 6.5-6.5 6.5\"/></svg></span></a></div>",
+      "css": ".ds-list { border-top: 3px solid var(--color-ink, #1e1433); } .ds-row { display: grid; grid-template-columns: 104px 176px minmax(0,1fr) auto; gap: 12px 28px; align-items: center; padding: 20px 0; border-bottom: 1.5px solid var(--color-ink, #1e1433); color: var(--color-ink, #1e1433); text-decoration: none; transition: all .15s; } .ds-row:hover { background: var(--color-peach, #ffd9cf); padding-left: 16px; padding-right: 16px; } .ds-row-thumb { width: 104px; aspect-ratio: 3/4; background: var(--color-sand, #e8ded0); transform: rotate(-1.5deg); } .ds-row-label { font-family: var(--font-mono, 'DM Mono', monospace); font-weight: 400; font-size: 14px; line-height: 1.5; text-transform: uppercase; letter-spacing: .05em; margin-bottom: 4px; } .ds-row-repeat { margin: 4px 0 0; } .ds-row-date { font-family: var(--font-display, 'Big Shoulders Display', sans-serif); font-weight: 900; text-transform: uppercase; line-height: .9; text-wrap: balance; font-size: clamp(28px, 2.4vw, 34px); color: var(--color-grape, #4b2e8f); } .ds-row-name { font-family: var(--font-sans, Karla, sans-serif); font-weight: 700; font-size: 21px; line-height: 1.25; margin-bottom: 4px; } .ds-row-meta { font-family: var(--font-sans, Karla, sans-serif); font-size: 17px; line-height: 1.5; } .ds-row-tag { display: inline-block; font-family: var(--font-sans, Karla, sans-serif); font-weight: 700; font-size: 15px; line-height: 1.25; border: 1.5px solid currentColor; padding: 4px 10px; margin-top: 8px; } .ds-row-cta { display: inline-flex; align-items: center; gap: .6em; font-family: var(--font-mono, 'DM Mono', monospace); font-weight: 400; font-size: 14px; line-height: 1.5; text-transform: uppercase; letter-spacing: .05em; white-space: nowrap; padding: 12px 16px; background: var(--color-coral, #ff6b57); color: var(--color-ink, #1e1433); } .ds-row:hover .ds-row-cta { background: var(--color-ink, #1e1433); color: var(--color-cream, #f3ede2); } .ds-row:focus-visible { outline: 2px solid var(--color-coral, #ff6b57); outline-offset: 3px; }"
+    },
+    {
+      "name": "Section Header",
+      "kind": "custom",
+      "refersTo": "heading",
+      "description": "Label eyebrow over a heading-role display title; editors star the coral word (coral-deep on cream, per the Coral Text Rule).",
+      "html": "<div class=\"ds-head\"><div><div class=\"ds-eyebrow\">The people</div><h2 class=\"ds-display\">A small, <span class=\"ds-accent\">mighty</span> team</h2></div><p class=\"ds-intro\">Dancers, artists and early-years practitioners who live and work locally.</p></div>",
+      "css": ".ds-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 24px; flex-wrap: wrap; background: var(--color-cream, #f3ede2); color: var(--color-ink, #1e1433); padding: 32px; } .ds-eyebrow { font-family: var(--font-mono, 'DM Mono', monospace); font-weight: 400; font-size: 14px; line-height: 1.5; text-transform: uppercase; letter-spacing: .05em; color: var(--color-grape, #4b2e8f); margin-bottom: 14px; } .ds-display { font-family: var(--font-display, 'Big Shoulders Display', sans-serif); font-weight: 900; text-transform: uppercase; line-height: .9; text-wrap: balance; font-size: clamp(44px, 5.25vw, 76px); color: var(--color-grape, #4b2e8f); margin: 0; } .ds-accent { color: var(--color-coral-deep, #c2412e); } .ds-intro { font-family: var(--font-sans, Karla, sans-serif); font-size: 17px; line-height: 1.5; max-width: 22em; margin: 0; text-wrap: pretty; }"
+    },
+    {
+      "name": "Newsletter Coupon",
+      "kind": "card",
+      "refersTo": "newsletter-card",
+      "description": "Cream card on ink with a dashed cut-line outline, scissors-icon eyebrow and sub-size display heading.",
+      "html": "<div class=\"ds-coupon-wrap\"><div class=\"ds-coupon\"><div class=\"ds-coupon-eyebrow\"><svg viewBox=\"0 0 24 24\" width=\"1em\" height=\"1em\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"square\" aria-hidden=\"true\" style=\"flex-shrink:0;vertical-align:-0.125em\"><circle cx=\"6\" cy=\"6.5\" r=\"3\"/><circle cx=\"6\" cy=\"17.5\" r=\"3\"/><path d=\"M8.5 8.2 20.5 17M8.5 15.8 20.5 7\"/></svg>Newsletter</div><h3 class=\"ds-coupon-title\">Stay in the loop</h3><p class=\"ds-coupon-text\">New dates, projects and community stories, straight to your inbox.</p><div class=\"ds-coupon-field\"><span>Enter your email</span><span class=\"ds-coupon-btn\">Subscribe</span></div></div></div>",
+      "css": ".ds-coupon-wrap { background: var(--color-ink, #1e1433); padding: 40px; } .ds-coupon { background: var(--color-cream, #f3ede2); color: var(--color-ink, #1e1433); padding: 30px; outline: 2px dashed var(--color-cream, #f3ede2); outline-offset: 8px; } .ds-coupon-eyebrow { display: inline-flex; align-items: center; gap: .6em; font-family: var(--font-mono, 'DM Mono', monospace); font-weight: 400; font-size: 14px; line-height: 1.5; text-transform: uppercase; letter-spacing: .05em; color: var(--color-grape, #4b2e8f); margin-bottom: 10px; } .ds-coupon-title { font-family: var(--font-display, 'Big Shoulders Display', sans-serif); font-weight: 900; text-transform: uppercase; line-height: .9; text-wrap: balance; font-size: clamp(32px, 3.6vw, 52px); margin: 0 0 8px; } .ds-coupon-text { font-family: var(--font-sans, Karla, sans-serif); font-size: 17px; line-height: 1.5; margin: 0 0 20px; text-wrap: pretty; } .ds-coupon-field { display: flex; justify-content: space-between; align-items: center; border: 2px solid var(--color-ink, #1e1433); padding-left: 12px; font-family: var(--font-sans, Karla, sans-serif); font-size: 15px; color: rgba(30,20,51,.6); } .ds-coupon-btn { background: var(--color-grape, #4b2e8f); color: var(--color-cream, #f3ede2); font-family: var(--font-mono, 'DM Mono', monospace); font-weight: 400; font-size: 14px; line-height: 1.5; text-transform: uppercase; letter-spacing: .05em; padding: 12px 16px; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Community Zine",
+    "overview": "The site reads like a zine made by the people who run the sessions: photocopy-cream paper, condensed headlines loud enough to read from across the hall, ruled listings, and pasted-on cut-outs (leaves, paper wings, a spinning \"Free\" badge, a scissor-marked newsletter coupon). It is joyful, loud and local. The loudness belongs to the type and the two saturated colours, grape and coral. The layout underneath stays plain, so a parent on a phone still finds when, where, who it's for and that it's free in one glance.\n\nHand-made touches go on the edges, never on the facts. Photos tilt a degree and a half, leaves turn ±18–30° next to section labels, and a coral block sits offset behind the event poster. Dates, times, venues and buttons stay square and straight, and the facts are set in plain Karla rather than in caps. Everything is flat: no box shadows, no gradients except the hero's legibility overlay, no rounded corners except the badge circle. Depth comes from overlap and rotation, like layers of paper.\n\nDensity depends on the job. Section openers are big and sparse (a display heading over a short intro). Listings are tight rows divided by rules. Proof is always real: consented footage and photos from the organisation's own sessions, the team's portraits, families' own words. Never stock imagery of children.",
+    "keyCharacteristics": [
+      "Big Shoulders Display at weight 900, uppercase, line-height 0.9, balanced, for every heading and every date.",
+      "Five display roles and four text roles, named in `@theme`; no ad-hoc sizes.",
+      "Three grounds only: cream, grape and ink. Each one has its own fixed text and rule colours.",
+      "Coral carries the heading's starred words, the main call to action and the next date.",
+      "Listings are ruled rows (a 3px ink top rule, 1.5px dividers) with a peach hover band.",
+      "Square corners, 2px ink outlines, DM Mono caps for labels and buttons, and square-ended SVG icons.",
+      "Cut-out decoration (leaves, paper wings, a dashed coupon edge, tilted photos) sits only at the edges."
+    ],
+    "rules": [
+      {
+        "name": "The Three Grounds Rule",
+        "body": "A section sits on cream, grape or ink, nothing else. On cream: grape headings, coral starred words, ink text and rules. On grape and ink: cream headings, lilac body, coral-soft eyebrows, cream solid rules and lilac-dash (grape) or mauve-line (ink) dashed rules.",
+        "section": "colors"
+      },
+      {
+        "name": "The Coral Text Rule",
+        "body": "Coral is text only on ink (6.2:1) or grape (3.6:1, display sizes only). On cream it measures 2.41:1, below AA even for large text, so coral words on cream use coral-deep. Today the site still uses plain coral on cream in several places: starred heading words on cream sections (`highlight()` in `src/lib/text.ts` defaults to `text-coral`), the coral word in the What's on, All sessions and 404 titles, the event page's next date, and pillar accents on the cream theme. That is a known AA gap, not a pattern to copy.",
+        "section": "colors"
+      },
+      {
+        "name": "The Hover-to-Ink Rule",
+        "body": "Every filled or outlined control turns ink with cream text on hover (outline-light on grape turns cream with grape text). Hover changes colour; nothing lifts, grows or casts a shadow.",
+        "section": "colors"
+      },
+      {
+        "name": "The Shout, Say, Label Rule",
+        "body": "Big Shoulders shouts (headings, dates, names). Karla says: every sentence, and every fact a family needs (event names, times, venues, who it's for). DM Mono labels: kickers, buttons, nav, filters. A sentence never goes in display or mono, and facts never go in mono caps.",
+        "section": "typography"
+      },
+      {
+        "name": "The One Mono Size Rule",
+        "body": "DM Mono has one job and one size: the 14px `.label`. Smaller mono caps are hard to read on phones. Its `font-normal` is deliberate: only a 400 file exists, so mono inside bold text would be faked.",
+        "section": "typography"
+      },
+      {
+        "name": "The Named Role Rule",
+        "body": "Size text with a role class, never a pixel value. The only sizes outside the roles are the hero's lead and accent, and the badge text that scales with its container (`9.5cqi`).",
+        "section": "typography"
+      },
+      {
+        "name": "The Weights-in-Config Rule",
+        "body": "Only 800/900 display, 400/700 Karla and 400 mono are loaded, and nothing uses 800 now. Add a weight to the `fonts` config in `astro.config.mjs` before using it, or the browser fakes it.",
+        "section": "typography"
+      },
+      {
+        "name": "The Unbroken Compound Rule",
+        "body": "Editor text that is shown as a fact or lead (\"under-5s\", \"grown-ups\") goes through `keepCompounds()` (`src/lib/text.ts`), so short hyphenated words never break at the hyphen.",
+        "section": "typography"
+      },
+      {
+        "name": "The Ruled List Rule",
+        "body": "Every list of events, sessions or people starts with a 3px ink rule. Rows are divided by 1.5px solid ink on cream, or 1.5px dashed lilac-dash or mauve-line on dark grounds. The last row keeps its divider. Lists never sit in boxes.",
+        "section": "layout"
+      },
+      {
+        "name": "The Flat Paper Rule",
+        "body": "If something needs to stand out, change its ground, rule weight or rotation, not its shadow.",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "**Do** take every colour from the `@theme` tokens in `src/styles/tailwind.css` (`bg-grape`, `text-ink`, `border-lilac-dash`).",
+      "**Do** size type with the role classes (`text-title`, `text-heading`, `text-sub`, `text-item`, `text-lead`, `text-prose`, `text-body`, `text-small`) and use `.label` for every mono label.",
+      "**Do** start every listing with a 3px ink rule and divide its rows with 1.5px rules (the Ruled List Rule).",
+      "**Do** set every date in display type, grape on cream or coral on dark, and say \"Free\" up front with the grape price tag or the badge.",
+      "**Do** use coral-deep for coral text on cream; keep plain coral for fills, focus rings and text on ink or grape (the Coral Text Rule).",
+      "**Do** draw arrows, play/pause and scissors with `Icon.astro`; the fonts are Latin-only subsets with no arrow glyphs.",
+      "**Do** pass editor text shown as a fact or lead through `keepCompounds()`.",
+      "**Do** keep every tap target at least 44px tall.",
+      "**Do** keep the coral 2px focus outline with its 3px offset on everything focusable.",
+      "**Do** stop all motion under `prefers-reduced-motion`: the badge ring stops, and the hero video waits for Play.",
+      "**Do** let editors' asterisks choose the coral words. Don't hard-code coral spans in headings that come from Sanity.",
+      "**Do** use only consented footage and photos from the organisation's own sessions."
+    ],
+    "donts": [
+      "**Don't** round corners, add box shadows, or add gradients outside the hero overlay (the Flat Paper Rule).",
+      "**Don't** put a section on any ground other than cream, grape or ink, or introduce new hues. The marigold and butter in the leaf SVGs stay inside the illustrations.",
+      "**Don't** use the legacy colour names (`text`, `primary`, `dark`, `light`) in new code; `primary` is coral, not grape.",
+      "**Don't** type Unicode arrows or symbols (→ ↗ ← ▶ ❚❚ ✂); they fall back to another font, thinner and off the baseline.",
+      "**Don't** set mono below 14px, or put sentences, times, venues or event names in mono or display.",
+      "**Don't** use pixel sizes for text, or a font weight that isn't in the fonts config.",
+      "**Don't** rotate text, icons, buttons, dates or form controls; tilt only images, colour blocks and cut-outs.",
+      "**Don't** make hover lift, scale or cast a shadow; it changes colour (and a listing row moves in 16px).",
+      "**Don't** use stock imagery of children, or invent statistics or badges of proof.",
+      "**Don't** box listings in cards; they are ruled rows on the page."
+    ]
+  }
+}

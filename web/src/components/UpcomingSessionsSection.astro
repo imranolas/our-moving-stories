@@ -2,6 +2,7 @@
 import { allEvents } from "../lib/data";
 import { highlight } from "../lib/text";
 import { eventHref, fmtShort, parseDate, timeRange, todayISO } from "../lib/schedule";
+import Icon from "./Icon.astro";
 
 export type Props = {
   _type: "upcomingSessions";
@@ -11,14 +12,23 @@ export type Props = {
   limit?: number;
 };
 
-const { eyebrow = "Diary", title = "Upcoming sessions", limit = 8 } = Astro.props;
+const { eyebrow = "Diary", title = "This week", limit = 8 } = Astro.props;
 
 const today = todayISO();
+
+// Only the coming week (today and the six days after): "Coming up" above already lists every event, so this is
+// the short "what can we do this week" answer rather than a second listing. With nothing on this week the
+// section hides; the full timetable is at /sessions.
+const weekEnd = (() => {
+  const d = parseDate(today);
+  d.setDate(d.getDate() + 6);
+  return [d.getFullYear(), String(d.getMonth() + 1).padStart(2, "0"), String(d.getDate()).padStart(2, "0")].join("-");
+})();
 
 const rows = (await allEvents(Astro.locals))
   .flatMap((e) =>
     (e.sessions ?? [])
-      .filter((s) => !s.cancelled && s.date >= today)
+      .filter((s) => !s.cancelled && s.date >= today && s.date <= weekEnd)
       .map((s) => ({ ...s, event: e }))
   )
   .sort((a, b) => a.date.localeCompare(b.date) || (a.startTime ?? "").localeCompare(b.startTime ?? ""))
@@ -38,20 +48,20 @@ function relative(date: string) {
       <div class="eyebrow text-grape mb-3.5">
         <img src="/img/leaves/leaf-5.svg" alt="" aria-hidden="true" style="transform: rotate(18deg)" />{eyebrow}
       </div>
-      <h2 class="display text-[clamp(48px,7vw,104px)] leading-[0.84] text-grape mb-9" set:html={highlight(title)} />
+      <h2 class="display text-heading text-grape mb-9" set:html={highlight(title)} />
       <ul class="border-t-[3px] border-ink">
         {rows.map((r) => (
           <li>
-            <a href={eventHref(r.event)} class="grid grid-cols-[minmax(0,1fr)] sm:grid-cols-[180px_170px_minmax(0,1fr)_auto] gap-x-6 gap-y-1 items-baseline py-4 border-b-[1.5px] border-ink text-ink no-underline hover:bg-peach hover:px-4 transition-all duration-150">
-              <time datetime={r.startTime ? `${r.date}T${r.startTime}` : r.date} class="display text-[28px] leading-none text-grape">{relative(r.date)}</time>
-              <span class="font-mono text-sm uppercase">{timeRange(r.startTime, r.endTime)}</span>
-              <span class="text-[19px] font-bold leading-tight">{r.event.name}{r.note && <span class="block font-normal text-[15px] text-ink/70">{r.note}</span>}</span>
-              <span class="font-mono text-sm">{r.event.venue?.name}</span>
+            <a href={eventHref(r.event)} class="grid grid-cols-[minmax(0,1fr)] sm:grid-cols-[180px_170px_minmax(0,1fr)_auto] gap-x-6 gap-y-1 items-baseline py-4 border-b-[1.5px] border-ink text-ink no-underline row-hover">
+              <time datetime={r.startTime ? `${r.date}T${r.startTime}` : r.date} class="display text-item text-grape">{relative(r.date)}</time>
+              <span class="text-body">{timeRange(r.startTime, r.endTime)}</span>
+              <span class="text-lead font-bold leading-tight">{r.event.name}{r.note && <span class="block font-normal text-small text-ink/70 mt-0.5">{r.note}</span>}</span>
+              <span class="text-body">{r.event.venue?.name}</span>
             </a>
           </li>
         ))}
       </ul>
-      <a href="/sessions" class="inline-block mt-3.5 py-3 font-mono text-sm uppercase text-ink hover:text-grape">All sessions →</a>
+      <a href="/sessions" class="label inline-flex items-center gap-[0.6em] mt-3.5 py-3 text-ink hover:text-grape">All sessions<Icon name="arrow-right" /></a>
     </div>
   </section>
 )}

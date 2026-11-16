@@ -224,6 +224,15 @@ export const priceLabel = (price?: number) => (price ? `£${price}` : "Free");
 
 export const eventHref = (e: Event) => (e.slug?.current ? `/events/${e.slug.current}` : e.link || "#");
 
+/**
+ * Where to book the next session, straight from a listing: the event's own link, when it has a date to come
+ * and the link is a booking page (not an Instagram post). Null otherwise; the listing then links to the event.
+ */
+export function bookingLink(e: Event): { href: string; label: string } | null {
+  if (!e.link || !nextSession(e) || /instagram\.com/.test(e.link)) return null;
+  return { href: e.link, label: /eventbrite/.test(e.link) ? "Book free on Eventbrite" : "Book your place" };
+}
+
 /** Upcoming events (soonest first) and past events (most recent first). */
 export function splitEvents(events: Event[], today = todayISO()) {
   const upcoming = events

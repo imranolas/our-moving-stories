@@ -24,7 +24,7 @@ export const upcomingSessionsSectionType = defineType({
       name: "limit",
       title: "Max Sessions",
       type: "number",
-      description: "Maximum number of upcoming sessions to display.",
+      description: "Most sessions to show. Only sessions in the coming 7 days are listed; the section hides when there are none.",
       initialValue: 8,
       validation: (Rule) => Rule.min(1).max(50),
     }),

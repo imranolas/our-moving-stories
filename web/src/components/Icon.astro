@@ -1,0 +1,46 @@
+---
+/**
+ * Small icons drawn to sit with the type. The fonts are Latin-only subsets with no arrows, so the Unicode
+ * arrows we used to type (→ ↗ ← ❚❚ ✂) were drawn by whatever font had them (Courier New, Arial, Menlo):
+ * thinner, smaller and off the baseline. These are on a 24-unit grid in `currentColor`, sized in em so they
+ * scale with the text they finish, with square ends to match the condensed capitals.
+ *
+ * `weight` is the stroke on that grid: 2.25 suits 14px labels; heavier display text wants about 3.
+ */
+type Name = "arrow-right" | "arrow-left" | "arrow-up-right" | "pause" | "play" | "scissors";
+
+interface Props {
+  name: Name;
+  weight?: number;
+  class?: string;
+}
+
+const { name, weight = 2.25, class: className } = Astro.props;
+const filled = name === "pause" || name === "play";
+---
+
+<svg
+  viewBox="0 0 24 24"
+  width="1em"
+  height="1em"
+  fill={filled ? "currentColor" : "none"}
+  stroke={filled ? "none" : "currentColor"}
+  stroke-width={weight}
+  stroke-linecap="square"
+  aria-hidden="true"
+  focusable="false"
+  class:list={["inline-block shrink-0 align-[-0.125em]", className]}
+>
+  {name === "arrow-right" && <path d="M3 12h16M13 5.5l6.5 6.5-6.5 6.5" />}
+  {name === "arrow-left" && <path d="M21 12H5M11 5.5 4.5 12l6.5 6.5" />}
+  {name === "arrow-up-right" && <path d="M6 18 17.5 6.5M8.5 5.5h10v10" />}
+  {name === "pause" && <path d="M5.5 4h4.5v16H5.5zM14 4h4.5v16H14z" />}
+  {name === "play" && <path d="M6 3.5 20.5 12 6 20.5z" />}
+  {name === "scissors" && (
+    <>
+      <circle cx="6" cy="6.5" r="3" />
+      <circle cx="6" cy="17.5" r="3" />
+      <path d="M8.5 8.2 20.5 17M8.5 15.8 20.5 7" />
+    </>
+  )}
+</svg>

@@ -6,7 +6,8 @@
   --color-grape: #4b2e8f;
   --color-coral: #ff6b57;
   --color-coral-soft: #ff8a78;
-  --color-coral-deep: #c2412e;
+  --color-coral-deep: #c2412e; /* passes AA as display text on cream (4.41:1); unused: see DESIGN.md, the Coral Text Rule */
+  --color-coral-light: #ffa395; /* coral text on grape: 5.24:1, fine for 14px labels (coral-soft is 4.39:1) */
   --color-cream: #f3ede2;
   --color-lilac: #dcd0f7;
   --color-lilac-light: #b9a6ee;
@@ -28,6 +29,28 @@
   --font-display: var(--font-big-shoulders);
   --font-sans: var(--font-karla);
   --font-mono: var(--font-dm-mono);
+
+  /*
+    Type roles. Display sizes are Big Shoulders capitals (with `.display`); every display role shares
+    line-height 0.9, which leaves 0.1em between lines of its 0.8em-tall capitals. Only the homepage hero is
+    bigger than `title` (Hero.astro sizes it). Text sizes are Karla; DM Mono only sets `.label`.
+  */
+  --text-title: clamp(56px, 7.5vw, 112px); /* a page's h1 when it has no hero */
+  --text-title--line-height: 0.9;
+  --text-heading: clamp(44px, 5.25vw, 76px); /* section h2s, and h1s that share a column */
+  --text-heading--line-height: 0.9;
+  --text-sub: clamp(32px, 3.6vw, 52px); /* pillars, the next date, newsletter, menu items */
+  --text-sub--line-height: 0.9;
+  --text-item: clamp(28px, 2.4vw, 34px); /* dates in lists, people's names, the Next up title */
+  --text-item--line-height: 0.9;
+  --text-lead: 21px; /* intros under a title, item names (bold) */
+  --text-lead--line-height: 1.45;
+  --text-prose: 19px; /* long-form text from Sanity */
+  --text-prose--line-height: 1.6;
+  --text-body: 17px; /* everything else, including times, venues and FAQ answers */
+  --text-body--line-height: 1.5;
+  --text-small: 15px; /* notes, card bios, small print */
+  --text-small--line-height: 1.5;
 
   --container-page: 1360px;
 
@@ -69,23 +92,34 @@
   @apply max-w-page mx-auto px-5 sm:px-7;
 }
 
+@utility label {
+  /* DM Mono's one job: 14px capitals for labels, nav and buttons (smaller mono caps are hard to read on
+     phones). font-normal because there is only a 400 file: inside bold text the browser would fake a bold. */
+  @apply font-mono font-normal text-sm leading-normal uppercase tracking-[0.05em];
+}
+
 @utility eyebrow {
-  /* Small uppercase label above headings (14px: smaller mono caps are hard to read on phones) */
-  @apply font-mono text-sm uppercase tracking-wider;
+  /* Small label above headings */
+  @apply label;
   & img {
     @apply inline-block h-6 w-auto mr-2.5 align-[-7px];
   }
 }
 
 @utility display {
-  /* Condensed display type */
+  /* Condensed display type. Size it with a display role (text-title, text-heading, text-sub, text-item),
+     which also sets the 0.9 line-height; this one matches it for the hero's own sizes. */
   @apply font-display font-black uppercase;
-  line-height: 0.84;
+  line-height: 0.9;
+  text-wrap: balance;
 }
 
 @utility btn {
   /* Buttons */
-  @apply inline-block font-mono text-sm uppercase no-underline px-[22px] py-[15px] transition-colors;
+  @apply label inline-flex items-center gap-[0.6em] no-underline px-[22px] py-[15px];
+  /* Colours only: transition-colors would also animate the focus outline in from the text colour. */
+  transition-property: color, background-color, border-color;
+  transition-duration: 150ms;
 }
 
 @utility btn-primary {
@@ -117,8 +151,9 @@
 }
 
 @utility tag {
-  /* Outlined tag */
-  @apply inline-block font-mono text-[11px] uppercase tracking-[0.04em] border-[1.5px] border-current px-2 py-[3px];
+  /* Outlined tag for facts such as who an event is for: Karla bold in the editor's own case, so it reads at
+     a glance, including for readers whose first language isn't English. */
+  @apply inline-block font-sans font-bold text-small leading-tight border-[1.5px] border-current px-2.5 py-1;
 }
 
 @utility rich {
@@ -139,19 +174,15 @@
     @apply list-decimal pl-5 space-y-1;
   }
   & h2 {
-    @apply font-display font-black uppercase leading-[0.9] mt-8 mb-3;
+    @apply display text-sub mt-8 mb-3;
   }
   & h3 {
-    @apply font-display font-black uppercase leading-[0.9] mt-8 mb-3;
-  }
-  & h2 {
-    @apply text-4xl;
-  }
-  & h3 {
-    @apply text-3xl;
+    @apply display text-item mt-8 mb-3;
   }
   & a {
     @apply underline underline-offset-2 decoration-2 decoration-coral;
+    /* Long URLs pasted into Sanity must wrap, or phones zoom the whole page out to fit them. */
+    overflow-wrap: anywhere;
   }
 }
 
@@ -169,6 +200,12 @@
     @apply bg-cream text-ink font-sans antialiased;
     font-size: 17px;
   }
+  /* Body copy avoids a lone last word (headings balance instead; see `.display`). */
+  p,
+  li,
+  dd {
+    text-wrap: pretty;
+  }
   ::selection {
     @apply bg-coral text-ink;
   }
@@ -178,10 +215,34 @@
   a:hover {
     @apply text-ink;
   }
+  /* Focus ring: ink on light grounds (15:1 on cream), coral on dark ones (`.on-dark`: 6.2:1 on ink, 3.6:1
+     on grape). Coral on cream is 2.4:1, below the 3:1 a focus indicator needs. */
   :focus-visible {
-    outline: 2px solid #FF6B57;
+    outline: 2px solid var(--focus-ring, var(--color-ink));
     outline-offset: 3px;
   }
+}
+
+@utility row-hover {
+  /* Listing rows fill peach on hover, and the fill reaches 16px past the text on each side (side shadows) so
+     nothing moves: animating padding shifted every row's content. Only where a pointer can hover: on touch
+     screens a tap would leave the row peach. */
+  transition:
+    background-color 150ms,
+    box-shadow 150ms;
+  @media (hover: hover) {
+    &:hover {
+      background-color: var(--color-peach);
+      box-shadow:
+        -16px 0 0 var(--color-peach),
+        16px 0 0 var(--color-peach);
+    }
+  }
+}
+
+@utility on-dark {
+  /* Put on a dark (ink, grape or video) section so focus rings inside it turn coral. */
+  --focus-ring: var(--color-coral);
 }
 
 @media (prefers-reduced-motion: reduce) {

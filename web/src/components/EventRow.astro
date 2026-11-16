@@ -1,40 +1,61 @@
 ---
 import { srcset } from "../sanity/lib/urlFor";
-import { eventHref, fmtShort, nextSession, repeatLabel, timeRange, type Event } from "../lib/schedule";
+import { bookingLink, eventHref, fmtShort, nextSession, repeatLabel, timeRange, type Event, type Session } from "../lib/schedule";
+import { keepCompounds } from "../lib/text";
+import Icon from "./Icon.astro";
 
 interface Props {
   event: Event;
+  /** One dated session of the event (the homepage's list): the row shows that date and time instead of the
+      event's next one. */
+  session?: Session;
+  /** The small label over the date, e.g. "This week"; defaults to "Next date" for event rows. */
+  when?: string;
   /** Load the thumbnail straight away: for rows in the first screen. */
   eager?: boolean;
 }
 
-const { event, eager = false } = Astro.props;
-const next = nextSession(event);
+const { event, session, when, eager = false } = Astro.props;
+const next = session ?? nextSession(event);
 const image = event.photo?.asset ? event.photo : event.poster;
 const thumb = image?.asset ? srcset(image, 3 / 4, [104, 208, 312]) : undefined;
 const external = !event.slug?.current;
+const book = bookingLink(event);
 ---
 
-<a
-  href={eventHref(event)}
-  target={external ? "_blank" : undefined}
-  rel={external ? "noopener noreferrer" : undefined}
-  class="group grid grid-cols-[72px_minmax(0,1fr)] sm:grid-cols-[104px_minmax(0,1fr)] lg:grid-cols-[104px_176px_minmax(0,1fr)_auto] gap-x-5 sm:gap-x-7 gap-y-3 items-center py-5 border-b-[1.5px] border-ink text-ink no-underline transition-all duration-150 hover:bg-peach hover:px-4 hover:text-ink"
->
+{/* The whole row opens the event (the name's link is stretched over it with ::after); "Book free" sits
+    above that layer and goes straight to the booking page, so a parent can book from the list in one step. */}
+<div class="group relative grid grid-cols-[72px_minmax(0,1fr)] sm:grid-cols-[104px_minmax(0,1fr)] lg:grid-cols-[104px_176px_minmax(0,1fr)_auto] gap-x-5 sm:gap-x-7 gap-y-3 items-center py-5 border-b-[1.5px] border-ink text-ink row-hover has-[.row-link:focus-visible]:outline-2 has-[.row-link:focus-visible]:outline-ink has-[.row-link:focus-visible]:outline-offset-3">
   <div class="row-span-2 lg:row-span-1 w-[72px] sm:w-[104px] aspect-3/4 overflow-hidden bg-sand rotate-[-1.5deg]">
     {thumb && <img {...thumb} sizes="(min-width: 640px) 104px, 72px" alt="" class="w-full h-full object-cover block" loading={eager ? "eager" : "lazy"} width="104" height="139" />}
   </div>
   <div>
-    <div class="font-mono text-[11px] uppercase tracking-wider mb-1.5">Next date</div>
-    <div class="display text-[30px] sm:text-[36px] leading-[0.9] text-grape">{next ? fmtShort(next.date) : "TBC"}</div>
-    <div class="font-mono text-xs uppercase mt-1.5">{repeatLabel(event).short}</div>
+    <div class="label mb-1">{when ?? "Next date"}</div>
+    <div class="display text-item text-grape">{next ? <time datetime={next.date}>{fmtShort(next.date)}</time> : "TBC"}</div>
+    <div class="label mt-1">{repeatLabel(event).short}</div>
   </div>
   <div class="col-start-2 lg:col-start-auto">
-    <div class="text-[20px] sm:text-[23px] font-bold leading-[1.15] mb-1.5">{event.name}</div>
-    <div class="font-mono text-sm leading-relaxed">
+    <a
+      href={eventHref(event)}
+      target={external ? "_blank" : undefined}
+      rel={external ? "noopener noreferrer" : undefined}
+      class="row-link block text-lead font-bold leading-tight mb-1 text-ink no-underline hover:text-ink focus-visible:outline-none after:absolute after:inset-0"
+    >{event.name}</a>
+    <div class="text-body">
       {next ? timeRange(next.startTime, next.endTime) : ""}{event.venue?.name ? ` · ${event.venue.name}` : ""}
     </div>
-    {event.audience && <div class="tag mt-2">{event.audience}</div>}
+    {session?.note && <div class="text-small text-ink/70 mt-0.5">{session.note}</div>}
+    {event.audience && <div class="tag mt-2" set:html={keepCompounds(event.audience)} />}
   </div>
-  <span class="hidden lg:inline-block font-mono text-sm uppercase whitespace-nowrap px-4 py-3 bg-coral text-ink group-hover:bg-ink group-hover:text-cream">Details →</span>
-</a>
+  {book ? (
+    <a
+      href={book.href}
+      target="_blank"
+      rel="noopener noreferrer"
+      aria-label={`${book.label}: ${event.name}${session ? `, ${fmtShort(session.date)}` : ""}`}
+      class="btn-coral relative z-1 col-start-2 lg:col-start-auto justify-self-start lg:justify-self-end px-4 py-3 whitespace-nowrap"
+    >Book free<Icon name="arrow-up-right" /></a>
+  ) : (
+    <span aria-hidden="true" class="hidden lg:inline-flex items-center gap-[0.6em] label whitespace-nowrap px-4 py-3 border-2 border-ink text-ink group-hover:bg-ink group-hover:text-cream">Details<Icon name="arrow-right" /></span>
+  )}
+</div>

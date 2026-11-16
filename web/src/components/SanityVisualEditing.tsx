@@ -22,7 +22,7 @@ export default function SanityVisualEditing() {
       {inPresentation === false && (
         <a
           href={`/api/draft-mode/disable?to=${encodeURIComponent(window.location.pathname)}`}
-          className="fixed bottom-4 right-4 z-1000 border-2 border-ink bg-ink px-4 py-2 font-mono text-sm uppercase text-cream shadow-lg hover:bg-coral hover:border-coral"
+          className="fixed bottom-4 right-4 z-1000 border-2 border-ink bg-ink px-4 py-2 label text-cream shadow-lg hover:bg-coral hover:border-coral"
         >
           Previewing drafts · Exit
         </a>
